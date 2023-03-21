@@ -1,0 +1,19 @@
+{
+    "name": "torqit/data-importer-extensions-bundle",
+    "type": "pimcore-bundle",
+    "require": {
+        "pimcore/data-importer": "^1.7"
+    },
+    "autoload": {
+        "psr-4": {
+            "TorqIT\\DataImporterExtensionsBundle\\": "src"
+        }
+    },
+    "extra": {
+        "pimcore": {
+            "bundles": [
+                "TorqIT\\DataImporterExtensionsBundle\\TorqITDataImporterExtensionsBundle"
+            ]
+        }
+    }
+}

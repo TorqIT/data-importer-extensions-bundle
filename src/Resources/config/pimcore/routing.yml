@@ -1,0 +1,5 @@
+torq_it_data_importer_extensions:
+    resource: "@TorqITDataImporterExtensionsBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
