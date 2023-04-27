@@ -39,10 +39,12 @@ class AdvancedPathStrategy extends \Pimcore\Bundle\DataImporterBundle\Resolver\L
             
             $matches = array();
 
-            preg_match('/\$\[([0-9]+)\]/', $part, $matches);
+            preg_match_all('/\$\[([0-9]+)\]/', $part, $matches);
 
-            if(count($matches)){
-                $parts[$partIndex] = $inputData[$matches[1]];
+            if(count($matches) && count($matches[0])){
+                foreach($matches[0] as $mIndex => $m){
+                    $parts[$partIndex] = str_replace($m, $inputData[$matches[1][$mIndex]], $parts[$partIndex]);
+                }
             }
 
             $parts[$partIndex] = ElementService::getValidKey($parts[$partIndex], 'object');
