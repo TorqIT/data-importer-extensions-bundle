@@ -2,7 +2,8 @@
     "name": "torqit/data-importer-extensions-bundle",
     "type": "pimcore-bundle",
     "require": {
-        "pimcore/data-importer": "^1.7"
+        "pimcore/data-importer": "^1.7",
+        "box/spout": "^3.3"
     },
     "autoload": {
         "psr-4": {
