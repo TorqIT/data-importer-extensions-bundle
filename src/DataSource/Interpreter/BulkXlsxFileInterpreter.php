@@ -21,6 +21,7 @@ use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Carbon\Carbon;
 use Pimcore\Bundle\DataImporterBundle\Processing\ImportProcessingService;
 use Pimcore\Db;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class BulkXlsxFileInterpreter extends \Pimcore\Bundle\DataImporterBundle\DataSource\Interpreter\XlsxFileInterpreter
 {
@@ -55,26 +56,34 @@ class BulkXlsxFileInterpreter extends \Pimcore\Bundle\DataImporterBundle\DataSou
     {
         $this->uniqueHashes = array();
 
-        $data=array();
-        $reader = ReaderEntityFactory::createXLSXReader();
-        $reader->open($path);
+        // $data=array();
+        // $reader = ReaderEntityFactory::createXLSXReader();
+        // $reader->open($path);
 
-        foreach($reader->getSheetIterator() as $sheet){
-            if($sheet->getName() != $this->sheetName){
-                continue;
-            }
+        // foreach($reader->getSheetIterator() as $sheet){
+        //     if($sheet->getName() != $this->sheetName){
+        //         continue;
+        //     }
 
-            foreach($sheet->getRowIterator() as $row){
-                $cells = $row->getCells();
-                $dataRow = [];
-                foreach ($cells as $cell) {
-                    $dataRow[] = $cell->getValue();
-                }
-                $data[]=$dataRow;
-            }
-        }
+        //     foreach($sheet->getRowIterator() as $row){
+        //         $cells = $row->getCells();
+        //         $dataRow = [];
+        //         foreach ($cells as $cell) {
+        //             $dataRow[] = $cell->getValue();
+        //         }
+        //         $data[]=$dataRow;
+        //     }
+        // }
 
-        $reader->close();
+        // $reader->close();
+
+        $reader = IOFactory::createReaderForFile($path);
+        $reader->setReadDataOnly(true);
+        $spreadSheet = $reader->load($path);
+
+        $spreadSheet->setActiveSheetIndexByName($this->sheetName);
+
+        $data = $spreadSheet->getActiveSheet()->toArray();
 
         if ($this->skipFirstRow) {
             array_shift($data);
