@@ -64,7 +64,7 @@ class AdvancedParentStrategy implements LocationStrategyInterface
             
             $matches = array();
 
-            preg_match('/\$\[([0-9]+)\]/', $part, $matches);
+            preg_match('/\$\[([0-9A-Za-z]+)\]/', $part, $matches);
 
             if(count($matches)){
                 $parts[$partIndex] = $inputData[$matches[1]];

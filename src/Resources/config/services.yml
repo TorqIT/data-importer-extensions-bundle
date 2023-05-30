@@ -43,6 +43,13 @@ services:
             - { name: monolog.logger, channel: 'DATA-IMPORTER' }
             - { name: "pimcore.datahub.data_importer.interpreter", type: "bulkXlsx" }
 
+    TorqIT\DataImporterExtensionsBundle\DataSource\Interpreter\PiesFileInterpreter:
+        calls:
+            - [ setLogger, [ '@logger' ] ]
+        tags:
+            - { name: monolog.logger, channel: 'DATA-IMPORTER' }
+            - { name: "pimcore.datahub.data_importer.interpreter", type: "pies" }
+
 
     TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Simple\SafeKey:
         tags:
@@ -56,6 +63,10 @@ services:
     TorqIT\DataImporterExtensionsBundle\Mapping\DataTarget\Property:
         tags:
             - { name: "pimcore.datahub.data_importer.data_target", type: "property" }
+
+    TorqIT\DataImporterExtensionsBundle\EventListener\PiesSaveListener:
+      tags:
+          - { name: kernel.event_listener, event: Pimcore\Bundle\DataImporterBundle\Event\DataObject\PreSaveEvent, method: piesSave }
 
 
 # add more services, or override services that need manual wiring
