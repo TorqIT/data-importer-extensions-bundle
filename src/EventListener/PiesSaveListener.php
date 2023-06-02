@@ -3,15 +3,15 @@ namespace TorqIT\DataImporterExtensionsBundle\EventListener;
 
 use Pimcore\Bundle\DataImporterBundle\Event\DataObject\PreSaveEvent;
 use Pimcore\Bundle\DataImporterBundle\Settings\ConfigurationPreparationService;
-use Pimcore\Event\Model\ElementEventInterface;
-use Pimcore\Event\Model\DataObjectEvent;
-use Pimcore\Event\Model\AssetEvent;
-use Pimcore\Event\Model\DocumentEvent;
-use Symfony\Component\EventDispatcher\GenericEvent;
-use Pimcore\Model\DataObject\Product\Listing as ProductListing;
 use Pimcore\Model\DataObject\AutomotiveProduct;
 use Carbon\Carbon;
 use Pimcore\Model\Asset;
+use Pimcore\Model\DataObject\Classificationstore;
+use Pimcore\Model\DataObject\Classificationstore\StoreConfig;
+use Pimcore\Model\DataObject\Classificationstore\GroupConfig;
+use Pimcore\Model\DataObject\Classificationstore\KeyConfig;
+use Pimcore\Model\DataObject\Classificationstore\KeyGroupRelation;
+use Pimcore\Model\DataObject\ClassDefinition\Data\Input;
 use Pimcore\Model\DataObject\Data\Hotspotimage;
 use Pimcore\Model\DataObject\Data\ImageGallery;
 use Pimcore\Model\DataObject\Data\QuantityValue;
@@ -64,6 +64,7 @@ class PiesSaveListener {
         $this->setImages($object, $data);
         $this->setExtendedAttribtues($object, $data);
         $this->setPackaging($object, $data);
+        $this->setProductAttributes($object, $data);
 
         $object->setHazardousMaterialCode($data['HazardousMaterialCode'] == 'Y' ? true : false);
     }
@@ -244,4 +245,69 @@ class PiesSaveListener {
         }
     }
 
+    private function setProductAttributes(AutomotiveProduct $product, $data){
+        $store = StoreConfig::getByName('ProductAttributes');
+
+        if(!$store){
+            $store = new StoreConfig();
+            $store->setName('ProductAttributes');
+            $store->save();
+        }
+
+        $group = GroupConfig::getByName($data['PartTerminologyID'], $store->getId());
+
+        if(!$group){
+            $group = new GroupConfig();
+            $group->setName($data['PartTerminologyID']);
+            $group->setStoreId($store->getId());
+            $group->save();
+        }
+
+        $iterate = $data['ProductAttributes']['ProductAttribute'];
+
+        if(isset($data['ProductAttributes']['ProductAttribute']['MaintenanceType'])){
+            $iterate = $data['ProductAttributes'];
+        }
+
+        $cs = $product->getProductAttributes() ?? new Classificationstore();
+
+        $cs->setActiveGroups([$group->getId() => true]);
+        
+
+        foreach($iterate as $productAttribute){
+            $attributeName = str_replace(' ', '', $productAttribute['AttributeID']);
+
+            $key = KeyConfig::getByName($attributeName, $store->getId());
+
+            if(!$key){
+
+                $definition = new Input();
+                $definition->setName($attributeName);
+                $definition->setTitle($productAttribute['AttributeID']);
+
+                $key = new KeyConfig();
+                $key->setStoreId($store->getId());
+                $key->setName($attributeName);
+                $key->setEnabled(true);
+                $key->setDescription($productAttribute['AttributeID']);
+                $key->setDefinition(json_encode($definition));
+                $key->setType('input');
+                $key->save();
+            }
+           
+            $keyGroupRelation = KeyGroupRelation::getByGroupAndKeyId($group->getId(), $key->getId());
+
+            if(!$keyGroupRelation){
+                $keyGroupRelation = new KeyGroupRelation();
+                $keyGroupRelation->setGroupId($group->getId());
+                $keyGroupRelation->setKeyId($key->getId());
+                $keyGroupRelation->save();
+            }
+
+            $cs->setLocalizedKeyValue($group->getId(), $key->getId(), $productAttribute['value'] );
+        }
+
+        $product->setProductAttributes($cs);
+
+    }
 }
