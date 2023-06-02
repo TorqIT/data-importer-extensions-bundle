@@ -15,6 +15,8 @@ use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\Data\Hotspotimage;
 use Pimcore\Model\DataObject\Data\ImageGallery;
 use Pimcore\Model\DataObject\Data\QuantityValue;
+use Pimcore\Model\DataObject\Fieldcollection;
+use Pimcore\Model\DataObject\Fieldcollection\Data\Packaging;
 
 class PiesSaveListener {
      
@@ -49,9 +51,19 @@ class PiesSaveListener {
             $object->setPartTerminologyID($data['PartTerminologyID']);
         }
 
+        if(isset($data['MinimumOrderQuantity']['value'])){
+            $object->setMinimumOrderQuantity($data['MinimumOrderQuantity']['value']);
+        }
+
+        if(isset($data['QuantityPerApplication']['value'])){
+            $object->setQuantityPerApplication($data['QuantityPerApplication']['value']);
+        }
+
         $this->setDescriptions($object, $data);
         $this->setPrices($object, $data);
         $this->setImages($object, $data);
+        $this->setExtendedAttribtues($object, $data);
+        $this->setPackaging($object, $data);
 
         $object->setHazardousMaterialCode($data['HazardousMaterialCode'] == 'Y' ? true : false);
     }
@@ -142,6 +154,94 @@ class PiesSaveListener {
 
         $imageGallery->setItems($galleryItems);
         $product->setImages($imageGallery);
+    }
+
+    private function setExtendedAttribtues(AutomotiveProduct $product, $data){
+        if(!isset($data['ExtendedInformation']['ExtendedProductInformation'])){
+            return;
+        }
+
+        foreach($data['ExtendedInformation']['ExtendedProductInformation'] as $ei){
+            $value = $ei['value'];
+            switch($ei['EXPICode']){
+
+                case 'CTO':
+                    $product->setCountryOfOrigin($value);
+                    break;
+                case 'HSB':
+                    $product->setHSBCode($value);
+                    break;
+                case 'HTS':
+                    $product->setHTSCode($value);
+                    break;
+                case 'TAX':
+                    $product->setTaxable($value === 'Y');
+                    break;
+                case 'WT1':
+                    $product->setWarrantyMonths($value);
+                    break;
+            }
+        }
+    }
+
+    private function setPackaging(AutomotiveProduct $product, $data){
+        if(!isset($data['Packages']['Package'])){
+            return;
+        }
+
+        $iterate = $data['Packages']['Package'];
+
+        if(isset($data['Packages']['Package']['MaintenanceType'])){
+            $iterate = $data['Packages'];
+        }
+
+        foreach($iterate as $package){
+            if(!$package['PackageUOM'] == 'EA'){
+                continue;
+            }
+
+            $fieldCollection = $product->getPackagingEach() ?? new Fieldcollection();
+            $packaging =  $fieldCollection->getItems()[0] ?? new Packaging();
+
+            if(isset($package['PackageLevelGTIN'])){
+                $packaging->setGTIN($package['PackageLevelGTIN']);
+            }
+            
+            $packaging->setUOM($package['PackageUOM']);
+            $packaging->setQuantityOfEaches($package['QuantityofEaches']);
+
+            if(isset($package['Dimensions']['MerchandisingHeight'])){
+                $packaging->setMerchandisingHeight(new QuantityValue($package['Dimensions']['MerchandisingHeight'], $package['Dimensions']['UOM']));
+            }
+            if(isset($package['Dimensions']['MerchandisingWidth'])){
+                $packaging->setMerchandisingWidth(new QuantityValue($package['Dimensions']['MerchandisingWidth'], $package['Dimensions']['UOM']));
+            }
+            if(isset($package['Dimensions']['MerchandisingLength'])){
+                $packaging->setMerchandisingLength(new QuantityValue($package['Dimensions']['MerchandisingLength'], $package['Dimensions']['UOM']));
+            }
+            if(isset($package['Dimensions']['ShippingHeight'])){
+                $packaging->setShippingHeight(new QuantityValue($package['Dimensions']['ShippingHeight'], $package['Dimensions']['UOM']));
+            }
+            if(isset($package['Dimensions']['ShippingWidth'])){
+                $packaging->setShippingWidth(new QuantityValue($package['Dimensions']['ShippingWidth'], $package['Dimensions']['UOM']));
+            }
+            if(isset($package['Dimensions']['ShippingLength'])){
+                $packaging->setShippingLength(new QuantityValue($package['Dimensions']['ShippingLength'], $package['Dimensions']['UOM']));
+            }
+            if(isset($package['Weights']['Weight'])){
+                $packaging->setWeight($package['Weights']['Weight']);
+            }
+            if(isset($package['Weights']['DimensionalWeight'])){
+                $packaging->setDimensionalWeight($package['Weights']['DimensionalWeight']);
+            }
+
+            
+            
+
+            $fieldCollection->setItems([$packaging]);
+            $product->setPackagingEach($fieldCollection);
+
+        }
     }
 
 }
