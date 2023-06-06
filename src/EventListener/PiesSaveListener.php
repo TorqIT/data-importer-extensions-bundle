@@ -4,6 +4,7 @@ namespace TorqIT\DataImporterExtensionsBundle\EventListener;
 use Pimcore\Bundle\DataImporterBundle\Event\DataObject\PreSaveEvent;
 use Pimcore\Bundle\DataImporterBundle\Settings\ConfigurationPreparationService;
 use Pimcore\Model\DataObject\AutomotiveProduct;
+use Pimcore\Model\DataObject\Brand;
 use Carbon\Carbon;
 use Pimcore\Model\Asset;
 use Pimcore\Model\DataObject\Classificationstore;
@@ -59,6 +60,17 @@ class PiesSaveListener {
             $object->setQuantityPerApplication($data['QuantityPerApplication']['value']);
         }
 
+        if(isset($data['QuantityPerApplication']['value'])){
+            $object->setQuantityPerApplication($data['QuantityPerApplication']['value']);
+        }
+
+        if(isset($data['BrandAAIAID'])){
+            $brand = Brand::getByAAIAID($data['BrandAAIAID'], 1);
+            if($brand){
+                $object->setBrand($brand);
+            }
+        }
+
         $this->setDescriptions($object, $data);
         $this->setPrices($object, $data);
         $this->setImages($object, $data);
@@ -75,7 +87,12 @@ class PiesSaveListener {
             return;
         }
 
+        $product->setInstructionalDescription('');
+
         foreach($data['Descriptions']['Description'] as $description){
+            if(isset($description['LanguageCode']) && $description['LanguageCode'] !="EN"){
+                continue;
+            }
             $value = $description['value'];
             switch($description['DescriptionCode']){
 
@@ -90,6 +107,9 @@ class PiesSaveListener {
                     break;
                 case 'MKT':
                     $product->setMarketingDescription($value);
+                    break;
+                case 'ASC':
+                    $product->setInstructionalDescription($value . "\n" . $product->getInstructionalDescription() );
                     break;
             }
         }
@@ -197,7 +217,7 @@ class PiesSaveListener {
         }
 
         foreach($iterate as $package){
-            if(!$package['PackageUOM'] == 'EA'){
+            if($package['PackageUOM'] != 'EA'){
                 continue;
             }
 
@@ -219,6 +239,15 @@ class PiesSaveListener {
             }
             if(isset($package['Dimensions']['MerchandisingLength'])){
                 $packaging->setMerchandisingLength(new QuantityValue($package['Dimensions']['MerchandisingLength'], $package['Dimensions']['UOM']));
+            }
+            if(isset($package['Dimensions']['Height'])){
+                $packaging->setMerchandisingHeight(new QuantityValue($package['Dimensions']['Height'], $package['Dimensions']['UOM']));
+            }
+            if(isset($package['Dimensions']['Width'])){
+                $packaging->setMerchandisingWidth(new QuantityValue($package['Dimensions']['Width'], $package['Dimensions']['UOM']));
+            }
+            if(isset($package['Dimensions']['Length'])){
+                $packaging->setMerchandisingLength(new QuantityValue($package['Dimensions']['Length'], $package['Dimensions']['UOM']));
             }
             if(isset($package['Dimensions']['ShippingHeight'])){
                 $packaging->setShippingHeight(new QuantityValue($package['Dimensions']['ShippingHeight'], $package['Dimensions']['UOM']));
@@ -246,6 +275,10 @@ class PiesSaveListener {
     }
 
     private function setProductAttributes(AutomotiveProduct $product, $data){
+        if(!isset($data['ProductAttributes']['ProductAttribute'])){
+            return;
+        }
+
         $store = StoreConfig::getByName('ProductAttributes');
 
         if(!$store){
@@ -275,7 +308,7 @@ class PiesSaveListener {
         
 
         foreach($iterate as $productAttribute){
-            $attributeName = str_replace(' ', '', $productAttribute['AttributeID']);
+            $attributeName = str_replace(' ', '', $productAttribute['AttributeID'] );
 
             $key = KeyConfig::getByName($attributeName, $store->getId());
 

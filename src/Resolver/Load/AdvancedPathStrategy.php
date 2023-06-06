@@ -39,11 +39,18 @@ class AdvancedPathStrategy extends \Pimcore\Bundle\DataImporterBundle\Resolver\L
             
             $matches = array();
 
-            preg_match_all('/\$\[([0-9A-Za-z]+)\]/', $part, $matches);
+            preg_match_all('/\$((\[[0-9A-Za-z]+\])+)/', $part, $matches);
 
             if(count($matches) && count($matches[0])){
                 foreach($matches[0] as $mIndex => $m){
-                    $parts[$partIndex] = str_replace($m, $inputData[$matches[1][$mIndex]], $parts[$partIndex]);
+                    //get keys out of array string
+                    $keyString = $matches[1][$mIndex];
+                    $keys = explode(',',str_replace(']', '', str_replace('[', '', str_replace('][', ',', $keyString))));
+                    $val = $inputData;
+                    foreach($keys as $k){
+                        $val = $val[$k];
+                    }
+                    $parts[$partIndex] = str_replace($m, $val, $parts[$partIndex]);
                 }
             }
 
