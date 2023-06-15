@@ -20,6 +20,7 @@ class TorqITDataImporterExtensionsBundle extends AbstractPimcoreBundle
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/operator/safe-key.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/operator/constant.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/datatarget/property.js',
+            '/bundles/torqitdataimporterextensions/js/pimcore/mapping/datatarget/advanced-classification-store.js',
         ];
     }
 }
