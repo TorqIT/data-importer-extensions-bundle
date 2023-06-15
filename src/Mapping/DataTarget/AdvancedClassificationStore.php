@@ -18,6 +18,7 @@ namespace TorqIT\DataImporterExtensionsBundle\Mapping\DataTarget;
 use Pimcore\Bundle\DataImporterBundle\Exception\InvalidConfigurationException;
 use Pimcore\Model\Element\ElementInterface;
 use Pimcore\Bundle\DataImporterBundle\Mapping\DataTarget\Classificationstore as ClassificationStoreDataTarget;
+use Pimcore\Model\DataObject\Data\QuantityValue;
 
 
 class AdvancedClassificationStore extends ClassificationStoreDataTarget
