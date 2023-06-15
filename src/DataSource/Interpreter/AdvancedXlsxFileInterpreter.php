@@ -18,6 +18,8 @@ namespace TorqIT\DataImporterExtensionsBundle\DataSource\Interpreter;
 use Box\Spout\Reader\Common\Creator\ReaderEntityFactory;
 use Pimcore\Bundle\DataImporterBundle\Preview\Model\PreviewData;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
+use TorqIT\DataImporterExtensionsBundle\DataSource\DataLoader\Xlsx\XlsxDataLoaderFactory;
+
 class AdvancedXlsxFileInterpreter extends \Pimcore\Bundle\DataImporterBundle\DataSource\Interpreter\XlsxFileInterpreter
 {
 
@@ -31,36 +33,22 @@ class AdvancedXlsxFileInterpreter extends \Pimcore\Bundle\DataImporterBundle\Dat
      */
     protected $uniqueHashes;
 
-
     /**
      * @var string
      */
     protected $rowFilter;
 
+    /**
+     * @var bool
+     */
+    protected $lowMemoryReader = false;
+
     protected function doInterpretFileAndCallProcessRow(string $path): void
     {
         $this->uniqueHashes = array();
 
-        $data=array();
-        $reader = ReaderEntityFactory::createXLSXReader();
-        $reader->open($path);
-
-        foreach($reader->getSheetIterator() as $sheet){
-            if($sheet->getName() != $this->sheetName){
-                continue;
-            }
-
-            foreach($sheet->getRowIterator() as $row){
-                $cells = $row->getCells();
-                $dataRow = [];
-                foreach ($cells as $cell) {
-                    $dataRow[] = $cell->getValue();
-                }
-                $data[]=$dataRow;
-            }
-        }
-
-        $reader->close();
+        $excelLoader = XlsxDataLoaderFactory::getExcelDataLoader($this->lowMemoryReader);
+        $data = $excelLoader->getRows($path, $this->sheetName);
 
         if ($this->skipFirstRow) {
             array_shift($data);
@@ -108,5 +96,7 @@ class AdvancedXlsxFileInterpreter extends \Pimcore\Bundle\DataImporterBundle\Dat
         else{
             $this->uniqueColumns = array();
         }        
+
+        $this->lowMemoryReader = isset($settings['lowMemoryReader']) ? $settings['lowMemoryReader'] : false;
     }
 }

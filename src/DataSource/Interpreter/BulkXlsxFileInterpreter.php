@@ -15,13 +15,12 @@
 
 namespace TorqIT\DataImporterExtensionsBundle\DataSource\Interpreter;
 
-use Box\Spout\Reader\Common\Creator\ReaderEntityFactory;
 use Box\Spout\Writer\Common\Creator\WriterEntityFactory;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Carbon\Carbon;
 use Pimcore\Bundle\DataImporterBundle\Processing\ImportProcessingService;
 use Pimcore\Db;
-use PhpOffice\PhpSpreadsheet\IOFactory;
+use TorqIT\DataImporterExtensionsBundle\DataSource\DataLoader\Xlsx\XlsxDataLoaderFactory;
 
 class BulkXlsxFileInterpreter extends \Pimcore\Bundle\DataImporterBundle\DataSource\Interpreter\XlsxFileInterpreter
 {
@@ -36,62 +35,31 @@ class BulkXlsxFileInterpreter extends \Pimcore\Bundle\DataImporterBundle\DataSou
      */
     protected $uniqueHashes;
 
-
     /**
      * @var string
      */
     protected $rowFilter;
 
     /**
-     * @var int
+     * @var boolean
      */
-    private $batchCount = 0;
-
-    /**
-     * @var int
-     */
-    private $batchSize = 500;
+    protected $lowMemoryReader = false;
 
     protected function doInterpretFileAndCallProcessRow(string $path): void
     {
         $this->uniqueHashes = array();
-
-        // $data=array();
-        // $reader = ReaderEntityFactory::createXLSXReader();
-        // $reader->open($path);
-
-        // foreach($reader->getSheetIterator() as $sheet){
-        //     if($sheet->getName() != $this->sheetName){
-        //         continue;
-        //     }
-
-        //     foreach($sheet->getRowIterator() as $row){
-        //         $cells = $row->getCells();
-        //         $dataRow = [];
-        //         foreach ($cells as $cell) {
-        //             $dataRow[] = $cell->getValue();
-        //         }
-        //         $data[]=$dataRow;
-        //     }
-        // }
-
-        // $reader->close();
-
-        $reader = IOFactory::createReaderForFile($path);
-        $reader->setReadDataOnly(true);
-        $spreadSheet = $reader->load($path);
-
-        $spreadSheet->setActiveSheetIndexByName($this->sheetName);
-
-        $data = $spreadSheet->getActiveSheet()->toArray();
+        
+        $excelLoader = XlsxDataLoaderFactory::getExcelDataLoader($this->lowMemoryReader);
+        $data = $excelLoader->getRows($path, $this->sheetName);
 
         if ($this->skipFirstRow) {
             array_shift($data);
         }
 
+        $tmpCsv = tempnam(sys_get_temp_dir(), 'pimcore_bulk_load');
         $writer = WriterEntityFactory::createCSVWriter();
         $writer->setFieldEnclosure("'");
-        $writer->openToFile('/var/www/html/test.csv');
+        $writer->openToFile($tmpCsv);
         /** @var Carbon $carbonNow */
         $carbonNow = Carbon::now();
         $db = Db::get();
@@ -114,7 +82,6 @@ class BulkXlsxFileInterpreter extends \Pimcore\Bundle\DataImporterBundle\DataSou
                 $filterResult = $expressionLanguage->evaluate($this->rowFilter, ['row' => $rowData]);
 
                 if(!$filterResult){
-
                     continue;
                 }
             }
@@ -131,8 +98,6 @@ class BulkXlsxFileInterpreter extends \Pimcore\Bundle\DataImporterBundle\DataSou
                 WriterEntityFactory::createCell(ImportProcessingService::JOB_TYPE_PROCESS)
             ];
 
-           // $this->processImportRow($rowData);
-
             $singleRow = WriterEntityFactory::createRow($cells);
             $writer->addRow($singleRow);
 
@@ -141,8 +106,9 @@ class BulkXlsxFileInterpreter extends \Pimcore\Bundle\DataImporterBundle\DataSou
 
         $writer->close();
 
+        $quote = "'";
         $sql = <<<SQL
-        LOAD DATA LOCAL INFILE '/var/www/html/test.csv' INTO TABLE bundle_data_hub_data_importer_queue
+        LOAD DATA LOCAL INFILE $quote$tmpCsv$quote INTO TABLE bundle_data_hub_data_importer_queue
             FIELDS 
                 TERMINATED BY ','
                 ENCLOSED BY "'"
@@ -153,6 +119,8 @@ class BulkXlsxFileInterpreter extends \Pimcore\Bundle\DataImporterBundle\DataSou
         SQL;
 
         $db->executeQuery($sql);
+
+        unlink($tmpCsv);
     }
 
     public function setSettings(array $settings): void
@@ -166,6 +134,9 @@ class BulkXlsxFileInterpreter extends \Pimcore\Bundle\DataImporterBundle\DataSou
         }
         else{
             $this->uniqueColumns = array();
-        }        
+        }  
+        
+        $this->lowMemoryReader = isset($settings['lowMemoryReader']) ? $settings['lowMemoryReader'] : false;
+        
     }
 }
