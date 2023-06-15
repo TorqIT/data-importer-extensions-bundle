@@ -83,6 +83,7 @@ class AdvancedClassificationStore extends ClassificationStoreDataTarget
         if (!empty($currentValue) && $this->writeIfTargetIsNotEmpty === false) {
             return false;
         }
+        
         if ($this->writeIfSourceIsEmpty === false && (empty($newValue) || ($newValue instanceof QuantityValue && empty($newValue->getValue())))) {
             return false;
         }
