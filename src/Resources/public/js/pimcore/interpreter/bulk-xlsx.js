@@ -11,10 +11,10 @@
  *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
-pimcore.registerNS("pimcore.plugin.pimcoreDataImporterBundle.configuration.components.interpreter.advancedXlsx");
-pimcore.plugin.pimcoreDataImporterBundle.configuration.components.interpreter.advancedXlsx = Class.create(pimcore.plugin.pimcoreDataImporterBundle.configuration.components.abstractOptionType, {
+pimcore.registerNS("pimcore.plugin.pimcoreDataImporterBundle.configuration.components.interpreter.bulkXlsx");
+pimcore.plugin.pimcoreDataImporterBundle.configuration.components.interpreter.bulkXlsx = Class.create(pimcore.plugin.pimcoreDataImporterBundle.configuration.components.abstractOptionType, {
 
-    type: 'advancedXlsx',
+    type: 'bulkXlsx',
 
     buildSettingsForm: function() {
 

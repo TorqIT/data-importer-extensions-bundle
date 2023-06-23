@@ -15,12 +15,14 @@
 
 namespace TorqIT\DataImporterExtensionsBundle\DataSource\Interpreter;
 
-use Box\Spout\Reader\Common\Creator\ReaderEntityFactory;
-use Pimcore\Bundle\DataImporterBundle\Preview\Model\PreviewData;
+use Box\Spout\Writer\Common\Creator\WriterEntityFactory;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
+use Carbon\Carbon;
+use Pimcore\Bundle\DataImporterBundle\Processing\ImportProcessingService;
+use Pimcore\Db;
 use TorqIT\DataImporterExtensionsBundle\DataSource\DataLoader\Xlsx\XlsxDataLoaderFactory;
 
-class AdvancedXlsxFileInterpreter extends \Pimcore\Bundle\DataImporterBundle\DataSource\Interpreter\XlsxFileInterpreter
+class BulkXlsxFileInterpreter extends \Pimcore\Bundle\DataImporterBundle\DataSource\Interpreter\XlsxFileInterpreter
 {
 
     /**
@@ -39,20 +41,28 @@ class AdvancedXlsxFileInterpreter extends \Pimcore\Bundle\DataImporterBundle\Dat
     protected $rowFilter;
 
     /**
-     * @var bool
+     * @var boolean
      */
     protected $lowMemoryReader = false;
 
     protected function doInterpretFileAndCallProcessRow(string $path): void
     {
         $this->uniqueHashes = array();
-
+        
         $excelLoader = XlsxDataLoaderFactory::getExcelDataLoader($this->lowMemoryReader);
         $data = $excelLoader->getRows($path, $this->sheetName);
 
         if ($this->skipFirstRow) {
             array_shift($data);
         }
+
+        $tmpCsv = tempnam(sys_get_temp_dir(), 'pimcore_bulk_load');
+        $writer = WriterEntityFactory::createCSVWriter();
+        $writer->setFieldEnclosure("'");
+        $writer->openToFile($tmpCsv);
+        /** @var Carbon $carbonNow */
+        $carbonNow = Carbon::now();
+        $db = Db::get();
 
         foreach ($data as $rowData) {
             
@@ -72,17 +82,46 @@ class AdvancedXlsxFileInterpreter extends \Pimcore\Bundle\DataImporterBundle\Dat
                 $filterResult = $expressionLanguage->evaluate($this->rowFilter, ['row' => $rowData]);
 
                 if(!$filterResult){
-
                     continue;
                 }
             }
 
-            $this->processImportRow($rowData);
+            $json =  json_encode($rowData);
+
+            $c = WriterEntityFactory::createCell($json);
+            $c->setValue($c->getValue());
+            $cells = [
+                WriterEntityFactory::createCell((int)($carbonNow->getTimestamp() . str_pad((string)$carbonNow->milli, 3, '0'))),
+                WriterEntityFactory::createCell($this->configName),
+                $c,
+                WriterEntityFactory::createCell($this->executionType),
+                WriterEntityFactory::createCell(ImportProcessingService::JOB_TYPE_PROCESS)
+            ];
+
+            $singleRow = WriterEntityFactory::createRow($cells);
+            $writer->addRow($singleRow);
 
             $this->uniqueHashes[$hashKey]=true;
         }
-    }
 
+        $writer->close();
+
+        $quote = "'";
+        $sql = <<<SQL
+        LOAD DATA LOCAL INFILE $quote$tmpCsv$quote INTO TABLE bundle_data_hub_data_importer_queue
+            FIELDS 
+                TERMINATED BY ','
+                ENCLOSED BY "'"
+                ESCAPED BY ''
+            LINES TERMINATED BY '\n'
+
+            (timestamp, configName, data, executionType, jobType)
+        SQL;
+
+        $db->executeQuery($sql);
+
+        unlink($tmpCsv);
+    }
 
     public function setSettings(array $settings): void
     {
@@ -95,8 +134,9 @@ class AdvancedXlsxFileInterpreter extends \Pimcore\Bundle\DataImporterBundle\Dat
         }
         else{
             $this->uniqueColumns = array();
-        }        
-
+        }  
+        
         $this->lowMemoryReader = isset($settings['lowMemoryReader']) ? $settings['lowMemoryReader'] : false;
+        
     }
 }

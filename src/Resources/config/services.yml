@@ -36,6 +36,12 @@ services:
             - { name: monolog.logger, channel: 'DATA-IMPORTER' }
             - { name: "pimcore.datahub.data_importer.interpreter", type: "advancedXlsx" }
 
+    TorqIT\DataImporterExtensionsBundle\DataSource\Interpreter\BulkXlsxFileInterpreter:
+        calls:
+            - [ setLogger, [ '@logger' ] ]
+        tags:
+            - { name: monolog.logger, channel: 'DATA-IMPORTER' }
+            - { name: "pimcore.datahub.data_importer.interpreter", type: "bulkXlsx" }
 
     TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Simple\SafeKey:
         tags:
@@ -45,10 +51,13 @@ services:
         tags:
             - { name: "pimcore.datahub.data_importer.operator", type: "constant" }
 
-
     TorqIT\DataImporterExtensionsBundle\Mapping\DataTarget\Property:
         tags:
             - { name: "pimcore.datahub.data_importer.data_target", type: "property" }
+
+    TorqIT\DataImporterExtensionsBundle\Mapping\DataTarget\AdvancedClassificationStore:
+        tags:
+            - { name: "pimcore.datahub.data_importer.data_target", type: "advancedClassificationStore" }
 
 
 # add more services, or override services that need manual wiring
