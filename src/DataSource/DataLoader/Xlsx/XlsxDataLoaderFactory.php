@@ -4,15 +4,8 @@ namespace TorqIT\DataImporterExtensionsBundle\DataSource\DataLoader\Xlsx;
 
 class XlsxDataLoaderFactory
 {
-    public static function getExcelDataLoader(bool $lowMemorySupport): XlsxDataLoaderInterface
+    public static function getExcelDataLoader(): XlsxDataLoaderInterface
     {
-        if($lowMemorySupport)
-        {
-            return new BoxXlsxDataLoader();
-        }
-        else 
-        {
-            return new PhpOfficeXlsxDataLoader();
-        }
+        return new BoxXlsxDataLoader();
     }
 }

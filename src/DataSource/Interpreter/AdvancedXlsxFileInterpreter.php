@@ -38,16 +38,13 @@ class AdvancedXlsxFileInterpreter extends \Pimcore\Bundle\DataImporterBundle\Dat
      */
     protected $rowFilter;
 
-    /**
-     * @var bool
-     */
-    protected $lowMemoryReader = false;
 
     protected function doInterpretFileAndCallProcessRow(string $path): void
     {
         $this->uniqueHashes = array();
 
-        $excelLoader = XlsxDataLoaderFactory::getExcelDataLoader($this->lowMemoryReader);
+        $excelLoader = XlsxDataLoaderFactory::getExcelDataLoader();
+
         $data = $excelLoader->getRows($path, $this->sheetName);
 
         if ($this->skipFirstRow) {
@@ -96,7 +93,5 @@ class AdvancedXlsxFileInterpreter extends \Pimcore\Bundle\DataImporterBundle\Dat
         else{
             $this->uniqueColumns = array();
         }        
-
-        $this->lowMemoryReader = isset($settings['lowMemoryReader']) ? $settings['lowMemoryReader'] : false;
     }
 }

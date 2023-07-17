@@ -47,12 +47,6 @@ pimcore.plugin.pimcoreDataImporterBundle.configuration.components.interpreter.bu
                         fieldLabel: t('plugin_pimcore_datahub_data_importer_configpanel_advanced_xlsx_row_filter'),
                         name: this.dataNamePrefix + 'rowFilter',
                         value: this.data.rowFilter || ''
-                    },{
-                        xtype: 'checkbox',
-                        fieldLabel: t('plugin_pimcore_datahub_data_importer_configpanel_low_memory_reader'),
-                        name: this.dataNamePrefix + 'lowMemoryReader',
-                        value: this.data.hasOwnProperty('lowMemoryReader') ? this.data.lowMemoryReader : false,
-                        inputValue: true
                     }
                 ]
             });

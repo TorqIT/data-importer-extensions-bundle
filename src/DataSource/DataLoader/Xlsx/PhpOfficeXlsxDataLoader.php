@@ -5,6 +5,10 @@ namespace TorqIT\DataImporterExtensionsBundle\DataSource\DataLoader\Xlsx;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 /**
+ * @deprecated
+ * 
+ * This class is no longer supported as is here as reference. PHPOffice has proven to cause large memory leaks.
+ * 
  * PHPOffice uses significantly more memory but is faster. Use this implementation when you have lots of memory and want speed.
  */
 

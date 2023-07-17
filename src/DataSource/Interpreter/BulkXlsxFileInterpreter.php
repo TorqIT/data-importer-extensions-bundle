@@ -40,16 +40,12 @@ class BulkXlsxFileInterpreter extends \Pimcore\Bundle\DataImporterBundle\DataSou
      */
     protected $rowFilter;
 
-    /**
-     * @var boolean
-     */
-    protected $lowMemoryReader = false;
 
     protected function doInterpretFileAndCallProcessRow(string $path): void
     {
         $this->uniqueHashes = array();
         
-        $excelLoader = XlsxDataLoaderFactory::getExcelDataLoader($this->lowMemoryReader);
+        $excelLoader = XlsxDataLoaderFactory::getExcelDataLoader();
         $data = $excelLoader->getRows($path, $this->sheetName);
 
         if ($this->skipFirstRow) {
@@ -135,8 +131,6 @@ class BulkXlsxFileInterpreter extends \Pimcore\Bundle\DataImporterBundle\DataSou
         else{
             $this->uniqueColumns = array();
         }  
-        
-        $this->lowMemoryReader = isset($settings['lowMemoryReader']) ? $settings['lowMemoryReader'] : false;
         
     }
 }
