@@ -90,13 +90,10 @@ class ImageGalleryAppender extends Direct
                     }
                 }
             } 
-
            
             $galleryItems[] = $newImage;
             $gallery->setItems($galleryItems);
         }
-
-        
 
         parent::assignData($element, $gallery);
     }
@@ -109,10 +106,6 @@ class ImageGalleryAppender extends Direct
     public function setSettings(array $settings): void
     {
         parent::setSettings($settings);
-
-        //note - cannot be replaced with ?? as $settings['writeIfSourceIsEmpty'] can be false on purpose
-        $this->writeIfSourceIsEmpty = isset($settings['writeIfSourceIsEmpty']) ? $settings['writeIfSourceIsEmpty'] : true;
-        $this->writeIfTargetIsNotEmpty = isset($settings['writeIfTargetIsNotEmpty']) ? $settings['writeIfTargetIsNotEmpty'] : true;
     }
    
 }
