@@ -6,7 +6,7 @@ use Pimcore\Model\Element\Service as ElementService;
 
 class AdvancedPathBuilder{
 
-    public static function buildPath(array $inputData, string $path): string{
+    public static function buildPath(array $inputData, string $path, string $type='object'): string{
 
         $parts = explode('/', $path);
 
@@ -29,7 +29,7 @@ class AdvancedPathBuilder{
                 }
             }
 
-            $parts[$partIndex] = ElementService::getValidKey($parts[$partIndex], 'object');
+            $parts[$partIndex] = ElementService::getValidKey($parts[$partIndex], $type);
         }
 
         $path = implode('/',$parts);
