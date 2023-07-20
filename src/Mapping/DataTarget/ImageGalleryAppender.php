@@ -17,9 +17,7 @@ namespace TorqIT\DataImporterExtensionsBundle\Mapping\DataTarget;
 
 use Pimcore\Bundle\DataImporterBundle\Exception\InvalidConfigurationException;
 use Pimcore\Bundle\DataImporterBundle\Mapping\DataTarget\Direct;
-use Pimcore\Model\DataObject\ClassDefinition\Data\Hotspotimage;
 use Pimcore\Model\DataObject\Data\ImageGallery;
-use Pimcore\Model\DataObject\Data\QuantityValue;
 use Pimcore\Model\Element\ElementInterface;
 
 class ImageGalleryAppender extends Direct
