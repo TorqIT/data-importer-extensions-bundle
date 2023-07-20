@@ -18,6 +18,7 @@ namespace TorqIT\DataImporterExtensionsBundle\Resolver\Load;
 use Pimcore\Bundle\DataImporterBundle\Exception\InvalidConfigurationException;
 use Pimcore\Model\Element\ElementInterface;
 use Pimcore\Model\Element\Service as ElementService;
+use TorqIT\DataImporterExtensionsBundle\Helper\AdvancedPathBuilder;
 
 class AdvancedPathStrategy extends \Pimcore\Bundle\DataImporterBundle\Resolver\Load\AbstractLoad
 {
@@ -33,31 +34,7 @@ class AdvancedPathStrategy extends \Pimcore\Bundle\DataImporterBundle\Resolver\L
      */
     public function loadElement(array $inputData): ?ElementInterface
     {
-        $parts = explode('/', $this->advancedPath);
-
-        foreach($parts as $partIndex => $part){
-            
-            $matches = array();
-
-            preg_match_all('/\$((\[[0-9A-Za-z]+\])+)/', $part, $matches);
-
-            if(count($matches) && count($matches[0])){
-                foreach($matches[0] as $mIndex => $m){
-                    //get keys out of array string
-                    $keyString = $matches[1][$mIndex];
-                    $keys = explode(',',str_replace(']', '', str_replace('[', '', str_replace('][', ',', $keyString))));
-                    $val = $inputData;
-                    foreach($keys as $k){
-                        $val = $val[$k];
-                    }
-                    $parts[$partIndex] = str_replace($m, $val, $parts[$partIndex]);
-                }
-            }
-
-            $parts[$partIndex] = ElementService::getValidKey($parts[$partIndex], 'object');
-        }
-
-        $path = implode('/',$parts);
+        $path = AdvancedPathBuilder::buildPath($inputData, $this->advancedPath);
 
         return $this->dataObjectLoader->loadByPath($path, $this->getClassName());
     }
