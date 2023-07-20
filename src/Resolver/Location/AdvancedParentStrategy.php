@@ -22,6 +22,7 @@ use Pimcore\Model\DataObject\Service;
 use Pimcore\Model\Element\ElementInterface;
 use Pimcore\Bundle\DataImporterBundle\Resolver\Location\LocationStrategyInterface;
 use Pimcore\Model\Element\Service as ElementService;
+use TorqIT\DataImporterExtensionsBundle\Helper\AdvancedPathBuilder;
 
 class AdvancedParentStrategy implements LocationStrategyInterface
 {
@@ -58,22 +59,7 @@ class AdvancedParentStrategy implements LocationStrategyInterface
     {
         $newParent = null;
 
-        $parts = explode('/', $this->advancedParent);
-
-        foreach($parts as $partIndex => $part){
-            
-            $matches = array();
-
-            preg_match('/\$\[([0-9A-Za-z]+)\]/', $part, $matches);
-
-            if(count($matches)){
-                $parts[$partIndex] = $inputData[$matches[1]];
-            }
-
-            $parts[$partIndex] = ElementService::getValidKey($parts[$partIndex], 'object');
-        }
-
-        $path = implode('/',$parts);
+        $path = AdvancedPathBuilder::buildPath($inputData, $this->advancedParent);
 
         $newParent = $this->dataObjectLoader->loadByPath($path);
 
@@ -94,5 +80,6 @@ class AdvancedParentStrategy implements LocationStrategyInterface
 
     protected function loadById()
     {
+        
     }
 }

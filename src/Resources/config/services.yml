@@ -59,6 +59,14 @@ services:
         tags:
             - { name: "pimcore.datahub.data_importer.data_target", type: "advancedClassificationStore" }
 
+    TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Simple\ImportAssetAdvanced:
+        tags:
+            - { name: "pimcore.datahub.data_importer.operator", type: "importAssetAdvanced" }
+
+    TorqIT\DataImporterExtensionsBundle\Mapping\DataTarget\ImageGalleryAppender:
+        tags:
+            - { name: "pimcore.datahub.data_importer.data_target", type: "imageGalleryAppender" }
+
 
 # add more services, or override services that need manual wiring
 #    TorqIT\DataImporterExtensionsBundle\ExampleClass:
