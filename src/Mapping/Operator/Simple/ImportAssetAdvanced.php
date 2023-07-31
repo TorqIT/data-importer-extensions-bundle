@@ -14,6 +14,11 @@ class ImportAssetAdvanced extends ImportAsset
     protected $path;
 
     /**
+     * @var string
+     */
+    protected $urlPropertyName;
+
+    /**
      * @param mixed $inputData
      * @param bool $dryRun
      *
@@ -25,7 +30,15 @@ class ImportAssetAdvanced extends ImportAsset
     {
         $this->parentFolderPath = AdvancedPathBuilder::buildPath($inputData, $this->path, 'asset');
 
-        return parent::process(array_reverse($inputData)[0], $dryRun);
+        $rawUrl = array_reverse($inputData)[0];
+        $assetReturn = parent::process($rawUrl, $dryRun);
+
+        if($assetReturn instanceof \Pimcore\Model\Asset\Image){
+            $assetReturn->setProperty($this->urlPropertyName, "text",  $rawUrl);
+            $assetReturn->save();
+        }
+
+        return $assetReturn;
     }
      
     
@@ -39,6 +52,7 @@ class ImportAssetAdvanced extends ImportAsset
         parent::setSettings($settings);
 
         $this->path = $settings['path'] ?? '';
+        $this->urlPropertyName = $settings["urlPropertyName"] ?? null;
     }
 
 }
