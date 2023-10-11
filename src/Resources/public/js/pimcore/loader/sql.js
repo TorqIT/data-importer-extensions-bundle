@@ -18,14 +18,12 @@ pimcore.plugin.pimcoreDataImporterBundle.configuration.components.loader.sql = C
 
     buildSettingsForm: function() {
 
-        if(!this.form) {
-
-            var dataStore = Ext.create('Ext.data.Store', {
+        if (!this.form) {
+            const dataStore = Ext.create('Ext.data.Store', {
                 autoLoad: true,
-                fields: ['key1', 'key2'],
                 proxy: {
                     type: 'ajax',
-                    url: '/admin/torqitpimcoredataimporter/getSqlConnections',
+                    url: '/admin/pimcoredataimporter/get-connections',
                     reader: {
                         type: 'json'
                     }
@@ -42,21 +40,15 @@ pimcore.plugin.pimcoreDataImporterBundle.configuration.components.loader.sql = C
                     {
                         xtype: 'combobox',
                         name: this.dataNamePrefix + 'connectionName',
-                        itemId: 'combo1',
                         value: this.data.connectionName,
-                        fieldLabel: 'Connection Name',
+                        fieldLabel: t('plugin_pimcore_datahub_data_importer_configpanel_loader_connection_name'),
                         displayField: 'name',
                         valueField: 'value',
                         store: dataStore,
-                        listeners: {
-                            expand: function(comboBox) {
-                                console.log(comboBox.getStore().getRange());
-                            }
-                        }
                     },
                     {
                         xtype: 'textareafield',
-                        fieldLabel: 'SQL',
+                        fieldLabel: t('plugin_pimcore_datahub_data_importer_configpanel_type_sql'),
                         name: this.dataNamePrefix + 'sql',
                         value: this.data.sql,
                         allowBlank: false,
@@ -64,7 +56,6 @@ pimcore.plugin.pimcoreDataImporterBundle.configuration.components.loader.sql = C
                         scrollable: true,
                         maxRows: 20,
                         height:500
-
                     }
                 ]
             });
@@ -72,5 +63,4 @@ pimcore.plugin.pimcoreDataImporterBundle.configuration.components.loader.sql = C
 
         return this.form;
     }
-
 });
