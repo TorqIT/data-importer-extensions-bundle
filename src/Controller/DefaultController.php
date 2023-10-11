@@ -3,7 +3,7 @@
 namespace TorqIT\DataImporterExtensionsBundle\Controller;
 
 use Doctrine\Persistence\ManagerRegistry;
-use Pimcore\Controller\FrontendController;
+use Pimcore\Bundle\AdminBundle\Controller\GDPR\AdminController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @Route("/admin/torqitpimcoredataimporter/")
  */
-class DefaultController extends FrontendController
+class DefaultController extends AdminController
 {
     /**
      * @Route("/torq_it_data_importer_extensions")
