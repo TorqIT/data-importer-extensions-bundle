@@ -3,7 +3,7 @@
 namespace TorqIT\DataImporterExtensionsBundle\Controller;
 
 use Doctrine\Persistence\ManagerRegistry;
-use Pimcore\Bundle\AdminBundle\Controller\GDPR\AdminController;
+use Pimcore\Bundle\AdminBundle\Controller\AdminAbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -11,16 +11,8 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @Route("/admin/torqitpimcoredataimporter/")
  */
-class DefaultController extends AdminController
+class DefaultController extends AdminAbstractController
 {
-    /**
-     * @Route("/torq_it_data_importer_extensions")
-     */
-    public function indexAction(Request $request)
-    {
-        return new Response('Hello world from torq_it_data_importer_extensions');
-    }
-
     /**
      * @Route("getSqlConnections")
      */
@@ -38,5 +30,5 @@ class DefaultController extends AdminController
         }
         return new Response(json_encode($mapped));
     }
-    
+
 }
