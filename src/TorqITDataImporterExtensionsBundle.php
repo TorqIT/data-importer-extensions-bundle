@@ -3,10 +3,20 @@
 namespace TorqIT\DataImporterExtensionsBundle;
 
 use Pimcore\Extension\Bundle\AbstractPimcoreBundle;
+use Pimcore\Extension\Bundle\PimcoreBundleAdminClassicInterface;
 
-class TorqITDataImporterExtensionsBundle extends AbstractPimcoreBundle
+class TorqITDataImporterExtensionsBundle extends AbstractPimcoreBundle implements PimcoreBundleAdminClassicInterface
 {
-    public function getJsPaths()
+
+    public function getAdminIframePath() { }
+
+    public function getCssPaths(): array {  return []; }
+
+    public function getEditmodeJsPaths(): array { return []; }
+
+    public function getEditmodeCssPaths(): array { return []; }
+   
+    public function getJsPaths() : array
     {
         return [
             '/bundles/torqitdataimporterextensions/js/pimcore/startup.js',
@@ -21,6 +31,7 @@ class TorqITDataImporterExtensionsBundle extends AbstractPimcoreBundle
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/datatarget/advanced-classification-store.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/operator/import-asset-advanced.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/datatarget/image-gallery-appender.js',
+            '/bundles/torqitdataimporterextensions/js/pimcore/loader/sql.js',
 
         ];
     }
