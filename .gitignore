@@ -1,0 +1,12 @@
+/.php-cs-fixer.php
+/.php-cs-fixer.cache
+
+/vendor/
+
+.idea
+nbproject
+
+.temp
+
+cache
+.env
