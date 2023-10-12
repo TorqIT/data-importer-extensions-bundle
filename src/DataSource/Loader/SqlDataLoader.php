@@ -16,6 +16,8 @@ use Pimcore\Logger;
 use Symfony\Component;
 use TorqIT\DataImporterExtensionsBundle\Exception\FetchDatabaseDataException;
 use TorqIT\DataImporterExtensionsBundle\Exception\InvalidConnectionException;
+use TorqIT\DataImporterExtensionsBundle\Exception\NotResourceException;
+use TorqIT\DataImporterExtensionsBundle\Exception\ParseArrayToJsonException;
 
 class SqlDataLoader implements DataLoaderInterface
 {
@@ -33,6 +35,8 @@ class SqlDataLoader implements DataLoaderInterface
      * @throws InvalidConfigurationException
      * @throws InvalidConnectionException
      * @throws FetchDatabaseDataException
+     * @throws NotResourceException
+     * @throws ParseArrayToJsonException
      */
     public function loadData(): string
     {
@@ -50,11 +54,21 @@ class SqlDataLoader implements DataLoaderInterface
         }
 
         $filesystemLocal = new Filesystem(new LocalFilesystemAdapter('/'));
+        $stream = fopen('php://temp', 'r+');
+        $resultAsJson = json_encode($result);
+
+        if (!is_resource($stream)) {
+            throw new NotResourceException('Cannot create temporary resource');
+        }
+
+        if (!is_string($resultAsJson)) {
+            throw new ParseArrayToJsonException('Error while parsing array to JSON');
+        }
+
+        fwrite($stream, $resultAsJson);
+        rewind($stream);
 
         try {
-            $stream = fopen('php://temp', 'r+');
-            fwrite($stream, json_encode($result));
-            rewind($stream);
             $filesystemLocal->writeStream($this->importFilePath, $stream);
 
             return $this->importFilePath;
@@ -78,6 +92,8 @@ class SqlDataLoader implements DataLoaderInterface
     }
 
     /**
+     * @param array<string, string> $settings
+     *
      * @throws InvalidConfigurationException
      */
     public function setSettings(array $settings): void
@@ -98,7 +114,12 @@ class SqlDataLoader implements DataLoaderInterface
      */
     private function setUpConnection(): void
     {
-        $connection = Pimcore::getContainer()->get($this->connectionName);
+        $container = Pimcore::getContainer();
+        $connection = null;
+
+        if ($container instanceof Component\DependencyInjection\ContainerInterface) {
+            $connection = $container->get($this->connectionName);
+        }
 
         if (!$connection instanceof Connection) {
             throw new InvalidConnectionException('Connection not found or connection not exist');
