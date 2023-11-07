@@ -1,0 +1,9 @@
+includes:
+    - vendor/ekino/phpstan-banned-code/extension.neon
+    - vendor/phpstan/phpstan/conf/bleedingEdge.neon
+    - vendor/phpstan/phpstan-doctrine/extension.neon
+parameters:
+    bootstrapFiles:
+        - ./phpstan-bootstrap.php
+    checkGenericClassInNonGenericObjectType: false
+    level: 8
