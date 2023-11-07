@@ -63,6 +63,24 @@ This Bulk XLSX Interpreter has the same options as the Advanced XLSX Interpreter
 
 See [MySQL Documentation](https://dev.mysql.com/doc/refman/8.0/en/load-data-local-security.html#load-data-local-configuration) regarding `LOCAL INFILE`.
 
+Also in your database connection you'll need to add the Bulk option (1001:true) in example:
+
+```
+doctrine:
+    dbal:
+        connections:
+            default:
+                host: "%env(string:DATABASE_HOST)%"
+                port: 3306
+                user: "%env(string:DATABASE_USER)%"
+                password: "%env(string:DATABASE_PASSWORD)%"
+                dbname: "%env(string:DATABASE_NAME)%"
+                mapping_types: { enum: string, bit: boolean }
+                server_version: "5.5.5-10.4.22-MariaDB-1:10.4.22+maria~focal"
+                options:
+                    1001: true
+```
+
 ## Data Loaders
 
 ### SQL Data Loader
