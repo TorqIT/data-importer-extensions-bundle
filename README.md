@@ -38,6 +38,13 @@ For an XML file:
 ```
 the **Path Syntax** would use the Attribute names instead `/Products/Cars/$[Make]/$[Model]/$[Year]`
 
+## Data Source
+
+### SQL
+
+This data source allows for SQL to be used to supply data to the Data Importer. The database connection is pulled from the `config/database.yaml` file and supports any database that the Doctrine library has a connector for. See [Doctrine DBAL Documentation](https://www.doctrine-project.org/projects/doctrine-dbal/en/3.7/reference/platforms.html) for more information.
+
+** When using the SQL loader, make sure the File Format is configured to JSON **
 
 
 ## Data Interpreters
