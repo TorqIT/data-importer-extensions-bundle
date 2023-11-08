@@ -28,6 +28,11 @@ class ImportAssetAdvanced extends ImportAsset
      */
     public function process($inputData, bool $dryRun = false)
     {
+        
+        if(is_string($inputData)){
+            $inputData = [$inputData];
+        }
+        
         $this->parentFolderPath = AdvancedPathBuilder::buildPath($inputData, $this->path, 'asset');
 
         $rawUrl = array_reverse($inputData)[0];
