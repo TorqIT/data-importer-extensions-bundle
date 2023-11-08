@@ -1,0 +1,45 @@
+.DS_Store
+Thumbs.db
+*.log
+
+# PHP-CS-Fixer
+/.php_cs
+/.php_cs.cache
+/.php-cs-fixer.php
+/.php-cs-fixer.cache
+
+# composer
+composer.lock
+
+# PhpStorm / IDEA
+.idea
+.idea_modules
+# NetBeans
+nbproject
+
+
+# symfony default
+/.web-server-pid
+/app/config/parameters.yml
+/build/
+/phpunit.xml
+/web/bundles/
+/web/var/
+
+
+# composer
+/composer.lock
+
+# Test env
+/bin
+/cache
+/config
+/kernel
+/public
+/templates
+/var
+/vendor
+/.env
+/.htaccess
+/auth.json
+/config.json

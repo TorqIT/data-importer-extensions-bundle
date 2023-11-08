@@ -1,93 +1,101 @@
 <?php
 
-/**
- * Pimcore
- *
- * This source file is available under two different licenses:
- * - GNU General Public License version 3 (GPLv3)
- * - Pimcore Commercial License (PCL)
- * Full copyright and license information is available in
- * LICENSE.md which is distributed with this source code.
- *
- *  @copyright  Copyright (c) Pimcore GmbH (http://www.pimcore.org)
- *  @license    http://www.pimcore.org/license     GPLv3 and PCL
- */
+declare(strict_types=1);
 
 namespace TorqIT\DataImporterExtensionsBundle\DataSource\Loader;
 
-use Pimcore\Bundle\DataImporterBundle\DataSource\Loader\DataLoaderInterface;
-use Pimcore\Bundle\DataImporterBundle\Exception\InvalidConfigurationException;
-use League\Flysystem\Local\LocalFilesystemAdapter;
-use Pimcore\Logger;
 use Doctrine\DBAL\Connection;
-use Symfony\Component;
+use Doctrine\DBAL\Exception;
 use League\Flysystem\Filesystem;
 use League\Flysystem\FilesystemException;
+use League\Flysystem\Local\LocalFilesystemAdapter;
+use Pimcore;
+use Pimcore\Bundle\DataImporterBundle\DataSource\Loader\DataLoaderInterface;
+use Pimcore\Bundle\DataImporterBundle\Exception\InvalidConfigurationException;
+use Pimcore\Logger;
+use Symfony\Component;
+use TorqIT\DataImporterExtensionsBundle\Exception\FetchDatabaseDataException;
+use TorqIT\DataImporterExtensionsBundle\Exception\InvalidConnectionException;
+use TorqIT\DataImporterExtensionsBundle\Exception\NotResourceException;
+use TorqIT\DataImporterExtensionsBundle\Exception\ParseArrayToJsonException;
 
 class SqlDataLoader implements DataLoaderInterface
 {
-    
-    /**
-     * @var string
-     */
-    protected $importFilePath;
-
-    /**
-     * @var string
-     */
-    protected $connectionName;
-
-    /**
-     * @var string
-     */
-    protected $sql;
-
-    /**
-     * @var Connection
-     */
+    private string $connectionName;
+    private string $sql;
+    private string $importFilePath;
     private Connection $connection;
 
-
-    public function __construct(protected Component\Filesystem\Filesystem $filesystem) {
+    public function __construct(protected Component\Filesystem\Filesystem $filesystem)
+    {
 
     }
 
+    /**
+     * @throws InvalidConfigurationException
+     * @throws InvalidConnectionException
+     * @throws FetchDatabaseDataException
+     * @throws NotResourceException
+     * @throws ParseArrayToJsonException
+     */
     public function loadData(): string
     {
-        $this->connection = \Pimcore::getContainer()->get($this->connectionName);
-
-        $result = $this->connection->fetchAllAssociative($this->sql);
-
-
-        $folder = PIMCORE_PRIVATE_VAR . '/tmp/datahub/dataimporter/sql-loader/';
-        $this->filesystem->mkdir($folder, 0775);
-        $this->importFilePath = $folder . uniqid('sql-import-');
-
-        $filesystemLocal = new Filesystem(new LocalFilesystemAdapter('/'));
+        $this->setUpConnection();
+        $this->setUpImportFilePath();
 
         try {
+            $result = $this->connection->fetchAllAssociative($this->sql);
+        } catch (Exception $e) {
+            Logger::error($e->getMessage());
 
+            throw new FetchDatabaseDataException(
+                sprintf('Cannot fetch database data due to error: %s', $e->getMessage())
+            );
+        }
 
-            $stream = fopen('php://temp', 'r+');
-            fwrite($stream, json_encode($result));
-            rewind($stream);
+        $filesystemLocal = new Filesystem(new LocalFilesystemAdapter('/'));
+        $stream = fopen('php://temp', 'r+');
+        $resultAsJson = json_encode($result);
 
+        if (!is_resource($stream)) {
+            throw new NotResourceException('Cannot create temporary resource');
+        }
+
+        if (!is_string($resultAsJson)) {
+            throw new ParseArrayToJsonException('Error while parsing array to JSON');
+        }
+
+        fwrite($stream, $resultAsJson);
+        rewind($stream);
+
+        try {
             $filesystemLocal->writeStream($this->importFilePath, $stream);
 
             return $this->importFilePath;
-            
         } catch (FilesystemException $e) {
-            Logger::error($e);
-            throw new InvalidConfigurationException(sprintf('Could not copy from remote location `%s` to local tmp file `%s`', $loggingRemoteUrl, $this->importFilePath));
-        }
+            Logger::error($e->getMessage());
 
+            throw new InvalidConfigurationException(
+                sprintf(
+                    'Could not create JSON file based on database data to local tmp file `%s`',
+                    $this->importFilePath
+                )
+            );
+        }
     }
 
     public function cleanup(): void
     {
         $this->connection->close();
+
+        unlink($this->importFilePath);
     }
 
+    /**
+     * @param array<string, string> $settings
+     *
+     * @throws InvalidConfigurationException
+     */
     public function setSettings(array $settings): void
     {
         if (empty($settings['connectionName'])) {
@@ -99,5 +107,32 @@ class SqlDataLoader implements DataLoaderInterface
             throw new InvalidConfigurationException('Empty SQL');
         }
         $this->sql = $settings['sql'];
+    }
+
+    /**
+     * @throws InvalidConnectionException
+     */
+    private function setUpConnection(): void
+    {
+        $container = Pimcore::getContainer();
+        $connection = null;
+
+        if ($container instanceof Component\DependencyInjection\ContainerInterface) {
+            $connection = $container->get($this->connectionName);
+        }
+
+        if (!$connection instanceof Connection) {
+            throw new InvalidConnectionException('Connection not found or connection not exist');
+        }
+
+        $this->connection = $connection;
+    }
+
+    private function setUpImportFilePath(): void
+    {
+        $folder = PIMCORE_PRIVATE_VAR . '/tmp/datahub/dataimporter/sql-loader/';
+        $this->filesystem->mkdir($folder, 0775);
+
+        $this->importFilePath = $folder . uniqid('sql-import-');
     }
 }
