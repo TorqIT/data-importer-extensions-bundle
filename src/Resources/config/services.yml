@@ -48,7 +48,7 @@ services:
             - [ setLogger, [ '@logger' ] ]
         tags:
             - { name: monolog.logger, channel: 'DATA-IMPORTER' }
-            - { name: "pimcore.datahub.data_importer.interpreter", type: "optionalElementsXML" }
+            - { name: "pimcore.datahub.data_importer.interpreter", type: "optionalElementsXml" }
 
     TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Simple\SafeKey:
         tags:
