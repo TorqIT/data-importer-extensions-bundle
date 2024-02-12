@@ -43,6 +43,13 @@ services:
             - { name: monolog.logger, channel: 'DATA-IMPORTER' }
             - { name: "pimcore.datahub.data_importer.interpreter", type: "bulkXlsx" }
 
+    TorqIT\DataImporterExtensionsBundle\DataSource\Interpreter\OptionalElementsXMLFileInterpreter:
+        calls:
+            - [ setLogger, [ '@logger' ] ]
+        tags:
+            - { name: monolog.logger, channel: 'DATA-IMPORTER' }
+            - { name: "pimcore.datahub.data_importer.interpreter", type: "optionalElementsXML" }
+
     TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Simple\SafeKey:
         tags:
             - { name: "pimcore.datahub.data_importer.operator", type: "safeKey" }
