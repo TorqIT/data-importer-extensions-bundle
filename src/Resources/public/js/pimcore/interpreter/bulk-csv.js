@@ -26,13 +26,6 @@ pimcore.plugin.pimcoreDataImporterBundle.configuration.components.interpreter.bu
                 },
                 border: false,
                 items: [
-                    {
-                        xtype: 'checkbox',
-                        fieldLabel: t('plugin_pimcore_datahub_data_importer_configpanel_csv_skip_first_row'),
-                        name: this.dataNamePrefix + 'skipFirstRow',
-                        value: this.data.hasOwnProperty('skipFirstRow') ? this.data.skipFirstRow : false,
-                        inputValue: true
-                    },
                 ]
             });
         }

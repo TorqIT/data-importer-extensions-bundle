@@ -25,4 +25,9 @@ class BulkCsvFileInterpreter extends CsvFileInterpreter
 
         $db->executeQuery($sql);
     }
+
+    public function setSettings(array $settings): void
+    {
+        parent::setSettings([]);
+    }
 }
