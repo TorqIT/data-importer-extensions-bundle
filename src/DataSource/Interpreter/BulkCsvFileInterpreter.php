@@ -48,8 +48,6 @@ class BulkCsvFileInterpreter extends CsvFileInterpreter
                     enclosure: $writeEnclosure,
                     escape: $writeEscape
                 );
-                fwrite($writeHandle, "\n");
-
             }
             fclose($writeHandle);
             fclose($readHandle);
