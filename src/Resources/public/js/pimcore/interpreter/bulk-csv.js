@@ -32,21 +32,6 @@ pimcore.plugin.pimcoreDataImporterBundle.configuration.components.interpreter.bu
                         name: this.dataNamePrefix + 'skipFirstRow',
                         value: this.data.hasOwnProperty('skipFirstRow') ? this.data.skipFirstRow : false,
                         inputValue: true
-                    },{
-                        xtype: 'textfield',
-                        fieldLabel: t('plugin_pimcore_datahub_data_importer_configpanel_xlsx_sheet'),
-                        name: this.dataNamePrefix + 'sheetName',
-                        value: this.data.sheetName || 'Sheet1'
-                    },{
-                        xtype: 'textfield',
-                        fieldLabel: t('plugin_pimcore_datahub_data_importer_configpanel_advanced_xlsx_unique_columns'),
-                        name: this.dataNamePrefix + 'uniqueColumns',
-                        value: this.data.uniqueColumns || ''
-                    },{
-                        xtype: 'textfield',
-                        fieldLabel: t('plugin_pimcore_datahub_data_importer_configpanel_advanced_xlsx_row_filter'),
-                        name: this.dataNamePrefix + 'rowFilter',
-                        value: this.data.rowFilter || ''
                     }
                 ]
             });

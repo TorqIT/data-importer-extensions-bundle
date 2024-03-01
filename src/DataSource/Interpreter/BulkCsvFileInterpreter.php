@@ -18,6 +18,9 @@ class BulkCsvFileInterpreter extends CsvFileInterpreter
 
         if (($readHandle = fopen($path, 'r')) !== false && ($writeHandle = fopen($tmpCsv, 'w')) !== false) {
             while (($row = fgetcsv($readHandle)) !== false) {
+                if ($this->skipFirstRow) {
+                    continue;
+                }
                 fputcsv($writeHandle, [
                     $timestamp,
                     $this->configName,
@@ -43,10 +46,5 @@ class BulkCsvFileInterpreter extends CsvFileInterpreter
         SQL;
 
         $db->executeQuery($sql);
-    }
-
-    public function setSettings(array $settings): void
-    {
-        parent::setSettings([]);
     }
 }
