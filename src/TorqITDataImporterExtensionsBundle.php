@@ -25,7 +25,7 @@ class TorqITDataImporterExtensionsBundle extends AbstractPimcoreBundle implement
             '/bundles/torqitdataimporterextensions/js/pimcore/resolver/location/advanced-parent.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/interpreter/advanced-xlsx.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/interpreter/bulk-xlsx.js',
-            '/bundles/torqitdataimporterextensions/js/pimcore/interpreter/optional-elements-xml.js',
+            '/bundles/torqitdataimporterextensions/js/pimcore/interpreter/xml-schema-based-preview.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/operator/safe-key.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/operator/constant.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/datatarget/property.js',

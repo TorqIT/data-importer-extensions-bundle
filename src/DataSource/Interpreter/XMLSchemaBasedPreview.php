@@ -16,7 +16,7 @@ use Pimcore\Bundle\DataImporterBundle\Exception\InvalidInputException;
 use Pimcore\Bundle\DataImporterBundle\Exception\InvalidConfigurationException;
 use Symfony\Component\Validator\Constraints\Length;
 
-class OptionalElementsXmlFileInterpreter extends \Pimcore\Bundle\DataImporterBundle\DataSource\Interpreter\XmlFileInterpreter
+class XMLSchemaBasedPreview extends \Pimcore\Bundle\DataImporterBundle\DataSource\Interpreter\XmlFileInterpreter
 {
 
     public function previewData(string $path, int $recordNumber = 0, array $mappedColumns = []): PreviewData
