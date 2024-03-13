@@ -10,7 +10,7 @@ pimcore.plugin.pimcoreDataImporterBundle.configuration.components.loader.sql = C
                 autoLoad: true,
                 proxy: {
                     type: 'ajax',
-                    url: Routing.generate('pimcore_dataimporter_connections'),
+                    url: Routing.generate('/admin/pimcoredataimporter/get-connections'),
                     reader: {
                         type: 'json'
                     }
