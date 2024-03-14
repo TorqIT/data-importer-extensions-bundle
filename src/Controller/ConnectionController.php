@@ -32,6 +32,6 @@ class ConnectionController extends AdminAbstractController
             'value' => $value
         ], array_keys($connections), $connections);
 
-        return $this->adminJson($mappedConnections);
+        return $this->json($mappedConnections);
     }
 }

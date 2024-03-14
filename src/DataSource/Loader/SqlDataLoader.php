@@ -21,14 +21,17 @@ use TorqIT\DataImporterExtensionsBundle\Exception\ParseArrayToJsonException;
 
 class SqlDataLoader implements DataLoaderInterface
 {
-    private string $connectionName;
-    private string $sql;
+    private string $connection;
+    private string $select;
+    private string $from;
+    private string $where;
+    private string $groupBy;
+
     private string $importFilePath;
-    private Connection $connection;
+    private Connection $databaseConnection;
 
     public function __construct(protected Component\Filesystem\Filesystem $filesystem)
     {
-
     }
 
     /**
@@ -43,50 +46,41 @@ class SqlDataLoader implements DataLoaderInterface
         $this->setUpConnection();
         $this->setUpImportFilePath();
 
-        try {
-            $result = $this->connection->fetchAllAssociative($this->sql);
-        } catch (Exception $e) {
-            Logger::error($e->getMessage());
+        $queryBuilder = $this->databaseConnection->createQueryBuilder();
+        $queryBuilder->select($this->select)
+            ->from($this->from);
 
-            throw new FetchDatabaseDataException(
-                sprintf('Cannot fetch database data due to error: %s', $e->getMessage())
-            );
+        if (!empty($this->where)) {
+            $queryBuilder->where($this->where);
         }
+
+        if (!empty($this->groupBy)) {
+            $queryBuilder->groupBy($this->groupBy);
+        }
+
+        $results = $queryBuilder->executeQuery();
 
         $filesystemLocal = new Filesystem(new LocalFilesystemAdapter('/'));
         $stream = fopen('php://temp', 'r+');
-        $resultAsJson = json_encode($result);
-
-        if (!is_resource($stream)) {
-            throw new NotResourceException('Cannot create temporary resource');
+        $columnNamesAdded = false;
+        while (($result = $results->fetchAssociative()) !== false) {
+            if (!$columnNamesAdded) {
+                fputcsv($stream, array_keys($result));
+                $columnNamesAdded = true;
+            }
+            fputcsv($stream, $result);
         }
 
-        if (!is_string($resultAsJson)) {
-            throw new ParseArrayToJsonException('Error while parsing array to JSON');
-        }
-
-        fwrite($stream, $resultAsJson);
         rewind($stream);
 
-        try {
-            $filesystemLocal->writeStream($this->importFilePath, $stream);
+        $filesystemLocal->writeStream($this->importFilePath, $stream);
 
-            return $this->importFilePath;
-        } catch (FilesystemException $e) {
-            Logger::error($e->getMessage());
-
-            throw new InvalidConfigurationException(
-                sprintf(
-                    'Could not create JSON file based on database data to local tmp file `%s`',
-                    $this->importFilePath
-                )
-            );
-        }
+        return $this->importFilePath;
     }
 
     public function cleanup(): void
     {
-        $this->connection->close();
+        $this->databaseConnection->close();
 
         unlink($this->importFilePath);
     }
@@ -98,15 +92,23 @@ class SqlDataLoader implements DataLoaderInterface
      */
     public function setSettings(array $settings): void
     {
-        if (empty($settings['connectionName'])) {
-            throw new InvalidConfigurationException('Empty Connection Name.');
+        if (empty($settings['connection'])) {
+            throw new InvalidConfigurationException('Empty connection.');
         }
-        $this->connectionName = $settings['connectionName'];
+        $this->connection = $settings['connection'];
 
-        if (empty($settings['sql'])) {
-            throw new InvalidConfigurationException('Empty SQL');
+        if (empty($settings['select'])) {
+            throw new InvalidConfigurationException('Empty select.');
         }
-        $this->sql = $settings['sql'];
+        $this->select = $settings['select'];
+
+        if (empty($settings['from'])) {
+            throw new InvalidConfigurationException('Empty from.');
+        }
+        $this->from = $settings['from'];
+
+        $this->where = $settings['where'];
+        $this->groupBy = $settings['groupBy'];
     }
 
     /**
@@ -115,17 +117,17 @@ class SqlDataLoader implements DataLoaderInterface
     private function setUpConnection(): void
     {
         $container = Pimcore::getContainer();
-        $connection = null;
+        $databaseConnection = null;
 
         if ($container instanceof Component\DependencyInjection\ContainerInterface) {
-            $connection = $container->get($this->connectionName);
+            $databaseConnection = $container->get($this->connection);
         }
 
-        if (!$connection instanceof Connection) {
-            throw new InvalidConnectionException('Connection not found or connection not exist');
+        if (!$databaseConnection instanceof Connection) {
+            throw new InvalidConnectionException('Connection not found');
         }
 
-        $this->connection = $connection;
+        $this->databaseConnection = $databaseConnection;
     }
 
     private function setUpImportFilePath(): void
