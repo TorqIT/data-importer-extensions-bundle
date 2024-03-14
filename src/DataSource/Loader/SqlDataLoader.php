@@ -58,13 +58,19 @@ class SqlDataLoader implements DataLoaderInterface
             $queryBuilder->groupBy($this->groupBy);
         }
 
-        $result = $queryBuilder->executeQuery()->fetchAllAssociative();
+        $results = $queryBuilder->executeQuery();
 
         $filesystemLocal = new Filesystem(new LocalFilesystemAdapter('/'));
         $stream = fopen('php://temp', 'r+');
-        $resultAsJson = json_encode($result);
+        $columnNamesAdded = false;
+        while (($result = $results->fetchAssociative()) !== false) {
+            if (!$columnNamesAdded) {
+                fputcsv($stream, array_keys($result));
+                $columnNamesAdded = true;
+            }
+            fputcsv($stream, $result);
+        }
 
-        fwrite($stream, $resultAsJson);
         rewind($stream);
 
         $filesystemLocal->writeStream($this->importFilePath, $stream);
@@ -111,14 +117,14 @@ class SqlDataLoader implements DataLoaderInterface
     private function setUpConnection(): void
     {
         $container = Pimcore::getContainer();
-        $connection = null;
+        $databaseConnection = null;
 
         if ($container instanceof Component\DependencyInjection\ContainerInterface) {
-            $connection = $container->get($this->connectionName);
+            $databaseConnection = $container->get($this->connection);
         }
 
-        if (!$connection instanceof Connection) {
-            throw new InvalidConnectionException('Connection not found or connection not exist');
+        if (!$databaseConnection instanceof Connection) {
+            throw new InvalidConnectionException('Connection not found');
         }
 
         $this->databaseConnection = $databaseConnection;
