@@ -72,6 +72,10 @@ services:
         tags:
             - { name: "pimcore.datahub.data_importer.operator", type: "constant" }
 
+    TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Simple\Arithmetic:
+        tags:
+            - { name: "pimcore.datahub.data_importer.operator", type: "arithmetic" }
+
     TorqIT\DataImporterExtensionsBundle\Mapping\DataTarget\Property:
         tags:
             - { name: "pimcore.datahub.data_importer.data_target", type: "property" }
