@@ -16,7 +16,7 @@
     ],
     "require": {
         "pimcore/data-importer": "^1.8",
-        "box/spout": "^3.3",
+        "openspout/openspout": "^4.0",
         "pimcore/pimcore": "^11.0",
         "pimcore/compatibility-bridge-v10": "^1.0",
         "pimcore/admin-ui-classic-bundle": "^1.1"

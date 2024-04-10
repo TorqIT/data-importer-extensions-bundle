@@ -2,15 +2,15 @@
 
 namespace TorqIT\DataImporterExtensionsBundle\DataSource\DataLoader\Xlsx;
 
+use OpenSpout\Reader\XLSX\Reader;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use Box\Spout\Reader\Common\Creator\ReaderEntityFactory;
 
 
 /**
  * PHPOffice uses significantly more memory but is faster. Use this implementation when you have lots of memory and want speed.
  */
 
-class BoxXlsxDataLoader implements XlsxDataLoaderInterface
+class SpoutXlsxDataLoader implements XlsxDataLoaderInterface
 {
     /**
      * @param string $file
@@ -22,7 +22,7 @@ class BoxXlsxDataLoader implements XlsxDataLoaderInterface
     public function getRows(string $file, string $sheet): array{
 
         $data=array();
-        $reader = ReaderEntityFactory::createXLSXReader();
+        $reader = new Reader();
         $reader->open($file);
 
         foreach($reader->getSheetIterator() as $currentSheet){
