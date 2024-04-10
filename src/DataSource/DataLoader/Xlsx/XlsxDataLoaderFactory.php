@@ -6,6 +6,6 @@ class XlsxDataLoaderFactory
 {
     public static function getExcelDataLoader(): XlsxDataLoaderInterface
     {
-        return new BoxXlsxDataLoader();
+        return new SpoutXlsxDataLoader();
     }
 }

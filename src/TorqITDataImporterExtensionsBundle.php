@@ -30,7 +30,6 @@ class TorqITDataImporterExtensionsBundle extends AbstractPimcoreBundle implement
     public function getJsPaths(): array
     {
         return [
-            '/bundles/torqitdataimporterextensions/js/pimcore/startup.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/resolver/load/advanced-path.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/resolver/load/property.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/resolver/location/advanced-parent.js',
@@ -47,7 +46,6 @@ class TorqITDataImporterExtensionsBundle extends AbstractPimcoreBundle implement
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/operator/import-asset-advanced.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/datatarget/image-gallery-appender.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/loader/sql.js',
-
         ];
     }
 }
