@@ -8,15 +8,26 @@ use Pimcore\Extension\Bundle\PimcoreBundleAdminClassicInterface;
 class TorqITDataImporterExtensionsBundle extends AbstractPimcoreBundle implements PimcoreBundleAdminClassicInterface
 {
 
-    public function getAdminIframePath() { }
+    public function getAdminIframePath()
+    {
+    }
 
-    public function getCssPaths(): array {  return []; }
+    public function getCssPaths(): array
+    {
+        return [];
+    }
 
-    public function getEditmodeJsPaths(): array { return []; }
+    public function getEditmodeJsPaths(): array
+    {
+        return [];
+    }
 
-    public function getEditmodeCssPaths(): array { return []; }
-   
-    public function getJsPaths() : array
+    public function getEditmodeCssPaths(): array
+    {
+        return [];
+    }
+
+    public function getJsPaths(): array
     {
         return [
             '/bundles/torqitdataimporterextensions/js/pimcore/startup.js',
@@ -29,6 +40,7 @@ class TorqITDataImporterExtensionsBundle extends AbstractPimcoreBundle implement
             '/bundles/torqitdataimporterextensions/js/pimcore/interpreter/bulk-csv.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/interpreter/sql.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/operator/safe-key.js',
+            '/bundles/torqitdataimporterextensions/js/pimcore/mapping/operator/arithmetic.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/operator/constant.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/datatarget/property.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/datatarget/advanced-classification-store.js',
