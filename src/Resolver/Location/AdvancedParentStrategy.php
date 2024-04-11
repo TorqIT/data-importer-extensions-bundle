@@ -75,6 +75,7 @@ class AdvancedParentStrategy implements LocationStrategyInterface
                 }
                 catch(\Exception){}
             }
+            $lock->release();
             $newParent = $this->dataObjectLoader->loadByPath($path);
         }
 
