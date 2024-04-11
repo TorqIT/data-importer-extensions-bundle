@@ -74,8 +74,9 @@ class AdvancedParentStrategy implements LocationStrategyInterface
                     Service::createFolderByPath($path);
                 }
                 catch(\Exception){}
+                $lock->release();
             }
-            $lock->release();
+            
             $newParent = $this->dataObjectLoader->loadByPath($path);
         }
 
