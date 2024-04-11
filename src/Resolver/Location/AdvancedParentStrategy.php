@@ -22,6 +22,8 @@ use Pimcore\Model\DataObject\Service;
 use Pimcore\Model\Element\ElementInterface;
 use Pimcore\Bundle\DataImporterBundle\Resolver\Location\LocationStrategyInterface;
 use Pimcore\Model\Element\Service as ElementService;
+use Symfony\Component\Lock\LockFactory;
+use Symfony\Component\Lock\PersistingStoreInterface;
 use TorqIT\DataImporterExtensionsBundle\Helper\AdvancedPathBuilder;
 
 class AdvancedParentStrategy implements LocationStrategyInterface
@@ -36,11 +38,13 @@ class AdvancedParentStrategy implements LocationStrategyInterface
      */
     protected $fallbackPath;
 
+    private const LOCK_PREFIX = 'data-importer-extensions-advanced-parent-';
+
 
     /**
      * @param DataObjectLoader $dataObjectLoader
      */
-    public function __construct(protected DataObjectLoader $dataObjectLoader)
+    public function __construct(protected DataObjectLoader $dataObjectLoader, private LockFactory $lockFactory, private PersistingStoreInterface $lockStore)
     {
     }
 
@@ -64,7 +68,16 @@ class AdvancedParentStrategy implements LocationStrategyInterface
         $newParent = $this->dataObjectLoader->loadByPath($path);
 
         if (!($newParent instanceof DataObject) && $path) {
-            $newParent = Service::createFolderByPath($path);
+            $lock = $this->lockFactory->createLock($this::LOCK_PREFIX . $path);
+            if($lock->acquire(true)){
+                try{
+                    Service::createFolderByPath($path);
+                }
+                catch(\Exception){}
+                $lock->release();
+            }
+            
+            $newParent = $this->dataObjectLoader->loadByPath($path);
         }
 
         if (!($newParent instanceof DataObject) && $this->fallbackPath) {
@@ -78,8 +91,4 @@ class AdvancedParentStrategy implements LocationStrategyInterface
         return $element;
     }
 
-    protected function loadById()
-    {
-        
-    }
 }
