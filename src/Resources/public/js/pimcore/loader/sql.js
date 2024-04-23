@@ -81,6 +81,14 @@ pimcore.plugin.pimcoreDataImporterBundle.configuration.components.loader.sql = C
                         grow: true,
                         growMax: 400,
                     },
+                    {
+                        xtype: 'textfield',
+                        fieldLabel: "LIMIT",
+                        name: this.dataNamePrefix + 'limit',
+                        value: this.data.limit,
+                        msgTarget: 'under',
+                        maskRe: /[0-9]/
+                    },
                 ]
             });
         }
