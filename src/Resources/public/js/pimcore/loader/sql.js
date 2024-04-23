@@ -36,6 +36,12 @@ pimcore.plugin.pimcoreDataImporterBundle.configuration.components.loader.sql = C
                         store: dataStore,
                     },
                     {
+                        xtype: 'checkbox',
+                        fieldLabel: t('plugin_pimcore_datahub_data_importer_configpanel_sql_preview_only'),
+                        name: this.dataNamePrefix + 'preview',
+                        value: this.data.preview
+                    },
+                    {
                         xtype: 'textarea',
                         fieldLabel: "SELECT <br /><small>(eg. a,b,c)*</small>",
                         name: this.dataNamePrefix + 'select',

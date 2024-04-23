@@ -26,6 +26,7 @@ class SqlDataLoader implements DataLoaderInterface
     private string $from;
     private string $where;
     private string $groupBy;
+    private bool $previewOnly;
 
     private string $importFilePath;
     private Connection $databaseConnection;
@@ -56,6 +57,10 @@ class SqlDataLoader implements DataLoaderInterface
 
         if (!empty($this->groupBy)) {
             $queryBuilder->groupBy($this->groupBy);
+        }
+
+        if($this->previewOnly){
+            $queryBuilder->setMaxResults(10);
         }
 
         $results = $queryBuilder->executeQuery();
@@ -109,6 +114,8 @@ class SqlDataLoader implements DataLoaderInterface
 
         $this->where = $settings['where'];
         $this->groupBy = $settings['groupBy'];
+
+        $this->previewOnly = array_key_exists('preview', $settings) ? !!$settings['preview'] : false;
     }
 
     /**
