@@ -43,6 +43,27 @@ services:
             - { name: monolog.logger, channel: 'DATA-IMPORTER' }
             - { name: "pimcore.datahub.data_importer.interpreter", type: "bulkXlsx" }
 
+    TorqIT\DataImporterExtensionsBundle\DataSource\Interpreter\XMLSchemaBasedPreview:
+        calls:
+            - [ setLogger, [ '@logger' ] ]
+        tags:
+            - { name: monolog.logger, channel: 'DATA-IMPORTER' }
+            - { name: "pimcore.datahub.data_importer.interpreter", type: "XMLSchemaBasedPreview" }
+
+    TorqIT\DataImporterExtensionsBundle\DataSource\Interpreter\BulkCsvFileInterpreter:
+        calls:
+            - [ setLogger, [ '@logger' ] ]
+        tags:
+            - { name: monolog.logger, channel: 'DATA-IMPORTER' }
+            - { name: "pimcore.datahub.data_importer.interpreter", type: "bulkCsv" }
+
+    TorqIT\DataImporterExtensionsBundle\DataSource\Interpreter\SqlFileInterpreter:
+        calls:
+            - [ setLogger, [ '@logger' ] ]
+        tags:
+            - { name: monolog.logger, channel: 'DATA-IMPORTER' }
+            - { name: "pimcore.datahub.data_importer.interpreter", type: "sql" }
+
     TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Simple\SafeKey:
         tags:
             - { name: "pimcore.datahub.data_importer.operator", type: "safeKey" }
@@ -50,6 +71,10 @@ services:
     TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Simple\Constant:
         tags:
             - { name: "pimcore.datahub.data_importer.operator", type: "constant" }
+
+    TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Simple\Arithmetic:
+        tags:
+            - { name: "pimcore.datahub.data_importer.operator", type: "arithmetic" }
 
     TorqIT\DataImporterExtensionsBundle\Mapping\DataTarget\Property:
         tags:

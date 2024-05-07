@@ -15,12 +15,15 @@
 
 namespace TorqIT\DataImporterExtensionsBundle\DataSource\Interpreter;
 
-use Box\Spout\Writer\Common\Creator\WriterEntityFactory;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Carbon\Carbon;
+use OpenSpout\Writer\CSV\Options;
+use OpenSpout\Writer\CSV\Writer;
 use Pimcore\Bundle\DataImporterBundle\Processing\ImportProcessingService;
 use Pimcore\Db;
 use TorqIT\DataImporterExtensionsBundle\DataSource\DataLoader\Xlsx\XlsxDataLoaderFactory;
+use OpenSpout\Common\Entity\Cell;
+use OpenSpout\Common\Entity\Row;
 
 class BulkXlsxFileInterpreter extends \Pimcore\Bundle\DataImporterBundle\DataSource\Interpreter\XlsxFileInterpreter
 {
@@ -53,8 +56,9 @@ class BulkXlsxFileInterpreter extends \Pimcore\Bundle\DataImporterBundle\DataSou
         }
 
         $tmpCsv = tempnam(sys_get_temp_dir(), 'pimcore_bulk_load');
-        $writer = WriterEntityFactory::createCSVWriter();
-        $writer->setFieldEnclosure("'");
+        $options = new Options();
+        $options->FIELD_ENCLOSURE = "'";
+        $writer = new Writer($options);
         $writer->openToFile($tmpCsv);
         /** @var Carbon $carbonNow */
         $carbonNow = Carbon::now();
@@ -84,17 +88,17 @@ class BulkXlsxFileInterpreter extends \Pimcore\Bundle\DataImporterBundle\DataSou
 
             $json =  json_encode($rowData);
 
-            $c = WriterEntityFactory::createCell($json);
-            $c->setValue($c->getValue());
+            $c = Cell::fromValue($json);
+
             $cells = [
-                WriterEntityFactory::createCell((int)($carbonNow->getTimestamp() . str_pad((string)$carbonNow->milli, 3, '0'))),
-                WriterEntityFactory::createCell($this->configName),
+                Cell::fromValue((int)($carbonNow->getTimestamp() . str_pad((string)$carbonNow->milli, 3, '0'))),
+                Cell::fromValue($this->configName),
                 $c,
-                WriterEntityFactory::createCell($this->executionType),
-                WriterEntityFactory::createCell(ImportProcessingService::JOB_TYPE_PROCESS)
+                Cell::fromValue($this->executionType),
+                Cell::fromValue(ImportProcessingService::JOB_TYPE_PROCESS)
             ];
 
-            $singleRow = WriterEntityFactory::createRow($cells);
+            $singleRow = new Row($cells);
             $writer->addRow($singleRow);
 
             $this->uniqueHashes[$hashKey]=true;
