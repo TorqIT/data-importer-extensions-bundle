@@ -4,7 +4,7 @@ title: Data Importer
  
 # Torq IT Data Importer Extensions
 
-This extension adds a number of additional features to the [Pimcore Data Importer](https://github.com/pimcore/data-importer) extension.
+This extension adds a number of additional features to the [Pimcore Data Importer](https://github.com/pimcore/data-importer) bundle.
 
 ## Path Syntax
 
@@ -46,7 +46,7 @@ Data Interpreters are the supported "File Formats" that the Data Importer bundle
 
 The Advanced XLSX interpreter makes a few improvements over the default XLSX interpreter.
 
-This interpreter uses `box/spout` as the Excel parser. This will soon be changing to `openspout/openspout` as Box is now archived. Box/Open Spout XLSX parsing uses **much** less memory than the default XLSX parses which makes use of `PHPOffice`. We've seen files that required >4GB RAM on PHPOffice use less than 50MB with Box. We've also detected a memory leak in some cases with the PHPOffice implementation where RAM gets allocated on the server and never released.
+This interpreter uses `openspout` as the Excel parser. Open Spout XLSX parsing uses **much** less memory than the default XLSX parses which makes use of `PHPOffice`. We've seen files that required >4GB RAM on PHPOffice use less than 50MB with openspout. We've also detected a memory leak in some cases with the PHPOffice implementation where RAM gets allocated on the server and never released.
 
 
 | Configuration Option   | Description                                    | 
@@ -81,19 +81,32 @@ doctrine:
                     1001: true
 ```
 
+### Bulk CSV Interpreter
+
+The Bulk CSV Interpreter has the same options as the regular CSV interpreter but like the Bulk XLSX Interpreter it uses `LOAD LOCAL INFILE` to queue data rows. 
+Please see the [Bulk XLSX Interpreter Section](#bulk-xlsx-interpreter) for limitions and requirments.
+
+### SQL Interpreter 
+
+This Interpreter is to be used when using the [SQL Data Loader](#sql-data-loader).
+Behind the scenes this uses the Bulk CSV Interpreter as it is very fast. If you run into errors please see the [Bulk XLSX Interpreter Section](#bulk-xlsx-interpreter) for limitions and requirments.
+
+### XML Schema Based Preview Interpreter
+
+This Interpreter is an expansion upon the default XML based interpreter that will load all fields defined by the provided Xsd file for use in the preview screen.
+
 ## Data Loaders
 
 ### SQL Data Loader
 
 The SQL Data Loader uses [DBAL](https://www.doctrine-project.org/projects/dbal.html) to allow data to be loaded from a SQL source. Connections to any database supported by DBAL will work provided they are configured correctly inside of `database.yaml`. (Database configuration can be placed in any valid Symfony config file, provided its in the correct format as can be seen in `database.yaml`). 
 
-To set up a SQL source
+To set up a SQL loader
 
 1. Create a new connection in `database.yaml` or if using the Pimcore database skip this step. ![SQL Loader Configuration](docs/img/sql_loader_config.png)
 2. Select the correct connection from the **Connection Name** dropdown
-3. Paste a valid SQL `SELECT` query into the **SQL** text area.
-4. Ensure to select **JSON** under File Format! This loader produces a JSON file as part of loading the SQL.
-
+3. Provide a valid query using the Select, where, from, Group By, and Limit fields.
+4. Ensure to select **SQL** under File Format! This loader produces a CSV file as part of loading the SQL.
 
 ## Data Targets
 
@@ -129,6 +142,10 @@ This allows two additional pieces of functionality when importing an asset:
 **Path** Uses the **Path Syntax** described above to store the asset in a specified folder.
 
 **URL Property** Specifies the name of the property on the asset to store the source URL the asset was captured from.
+
+### Arithmetic
+
+This allows you to apply addition, subtraction, multiplication, or division with a defined constant and your value.
 
 ## Element Loading
 
