@@ -20,7 +20,7 @@ pimcore.plugin.pimcoreDataImporterBundle.configuration.components.mapping.operat
         return [
             {
                 xtype: 'textfield',
-                fieldLabel: t('plugin_pimcore_datahub_data_importer_configpanel_transformation_pipeline_search'),
+                fieldLabel: t('plugin_pimcore_datahub_data_importer_configpanel_transformation_pipeline_regex_pattern'),
                 value: this.data.settings ? this.data.settings.search : '',
                 name: 'settings.search',
                 listeners: {
@@ -30,7 +30,7 @@ pimcore.plugin.pimcoreDataImporterBundle.configuration.components.mapping.operat
 
             {
                 xtype: 'textfield',
-                fieldLabel: t('plugin_pimcore_datahub_data_importer_configpanel_transformation_pipeline_replace'),
+                fieldLabel: t('plugin_pimcore_datahub_data_importer_configpanel_transformation_pipeline_regex_replace'),
                 value: this.data.settings ? this.data.settings.replace : '',
                 name: 'settings.replace',
                 listeners: {
