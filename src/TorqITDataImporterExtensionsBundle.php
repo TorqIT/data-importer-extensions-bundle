@@ -40,6 +40,7 @@ class TorqITDataImporterExtensionsBundle extends AbstractPimcoreBundle implement
             '/bundles/torqitdataimporterextensions/js/pimcore/interpreter/sql.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/operator/safe-key.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/operator/arithmetic.js',
+            '/bundles/torqitdataimporterextensions/js/pimcore/mapping/operator/regex-replace.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/operator/constant.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/datatarget/property.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/datatarget/advanced-classification-store.js',

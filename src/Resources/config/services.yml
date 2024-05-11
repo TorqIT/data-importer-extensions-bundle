@@ -76,6 +76,10 @@ services:
         tags:
             - { name: "pimcore.datahub.data_importer.operator", type: "arithmetic" }
 
+    TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Simple\RegexReplace:
+        tags:
+            - { name: "pimcore.datahub.data_importer.operator", type: "regexReplace" }
+
     TorqIT\DataImporterExtensionsBundle\Mapping\DataTarget\Property:
         tags:
             - { name: "pimcore.datahub.data_importer.data_target", type: "property" }

@@ -147,6 +147,10 @@ This allows two additional pieces of functionality when importing an asset:
 
 This allows you to apply addition, subtraction, multiplication, or division with a defined constant and your value.
 
+### Regex Replace
+
+This allows you to do string replaces using [preg_replace](https://www.php.net/manual/en/function.preg-replace.php)
+
 ## Element Loading
 
 ### Advanced Path Strategy
