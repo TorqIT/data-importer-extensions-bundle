@@ -6,6 +6,11 @@ title: Data Importer
 
 This extension adds a number of additional features to the [Pimcore Data Importer](https://github.com/pimcore/data-importer) bundle.
 
+## Installation
+```
+composer require torqit/data-importer-extensions-bundle
+```
+
 ## Path Syntax
 
 A number of our extensions make use of the **Path** syntax that allows for Paths to be created based on values in the import. 
