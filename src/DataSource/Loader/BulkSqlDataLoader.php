@@ -27,7 +27,7 @@ use Pimcore\Bundle\DataImporterBundle\DataSource\Loader\DataLoaderInterface;
 use Pimcore\Bundle\DataImporterBundle\Exception\InvalidConfigurationException;
 use Symfony\Component;
 
-class BulkSqlLoader implements DataLoaderInterface
+class BulkSqlDataLoader implements DataLoaderInterface
 {
     private string $connection;
     private string $select;
