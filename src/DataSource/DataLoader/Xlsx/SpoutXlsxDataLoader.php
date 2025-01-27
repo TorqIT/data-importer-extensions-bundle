@@ -2,9 +2,8 @@
 
 namespace TorqIT\DataImporterExtensionsBundle\DataSource\DataLoader\Xlsx;
 
+use OpenSpout\Common\Entity\Cell\FormulaCell;
 use OpenSpout\Reader\XLSX\Reader;
-use PhpOffice\PhpSpreadsheet\IOFactory;
-
 
 /**
  * PHPOffice uses significantly more memory but is faster. Use this implementation when you have lots of memory and want speed.
@@ -34,7 +33,11 @@ class SpoutXlsxDataLoader implements XlsxDataLoaderInterface
                 $cells = $row->getCells();
                 $dataRow = [];
                 foreach ($cells as $cell) {
-                    $dataRow[] = $cell->getValue();
+                    if($cell instanceof FormulaCell){
+                        $dataRow[] = $cell->getComputedValue();
+                    }else{
+                        $dataRow[] = $cell->getValue();
+                    }
                 }
                 $data[]=$dataRow;
             }
