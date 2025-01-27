@@ -37,7 +37,7 @@ class TorqITDataImporterExtensionsBundle extends AbstractPimcoreBundle implement
             '/bundles/torqitdataimporterextensions/js/pimcore/interpreter/bulk-xlsx.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/interpreter/xml-schema-based-preview.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/interpreter/bulk-csv.js',
-            '/bundles/torqitdataimporterextensions/js/pimcore/interpreter/sql.js',
+            '/bundles/torqitdataimporterextensions/js/pimcore/interpreter/bulk-sql.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/operator/safe-key.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/operator/arithmetic.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/operator/regex-replace.js',
@@ -46,7 +46,7 @@ class TorqITDataImporterExtensionsBundle extends AbstractPimcoreBundle implement
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/datatarget/advanced-classification-store.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/operator/import-asset-advanced.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/datatarget/image-gallery-appender.js',
-            '/bundles/torqitdataimporterextensions/js/pimcore/loader/sql.js',
+            '/bundles/torqitdataimporterextensions/js/pimcore/loader/bulk-sql.js',
         ];
     }
 }

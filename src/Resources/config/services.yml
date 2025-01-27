@@ -12,57 +12,71 @@ services:
     # controllers are imported separately to make sure they're public
     # and have a tag that allows actions to type-hint services
     TorqIT\DataImporterExtensionsBundle\Controller\:
-        resource: '../../Controller'
+        resource: "../../Controller"
         public: true
-        tags: ['controller.service_arguments']
-
+        tags: ["controller.service_arguments"]
 
     TorqIT\DataImporterExtensionsBundle\Resolver\Load\AdvancedPathStrategy:
         tags:
-            - { name: "pimcore.datahub.data_importer.resolver.load", type: "advancedPath" }
+            - {
+                    name: "pimcore.datahub.data_importer.resolver.load",
+                    type: "advancedPath",
+                }
 
     TorqIT\DataImporterExtensionsBundle\Resolver\Load\PropertyStrategy:
         tags:
-            - { name: "pimcore.datahub.data_importer.resolver.load", type: "property" }
+            - {
+                    name: "pimcore.datahub.data_importer.resolver.load",
+                    type: "property",
+                }
 
     TorqIT\DataImporterExtensionsBundle\Resolver\Location\AdvancedParentStrategy:
         tags:
-            - { name: "pimcore.datahub.data_importer.resolver.location", type: "advancedParent" }
+            - {
+                    name: "pimcore.datahub.data_importer.resolver.location",
+                    type: "advancedParent",
+                }
 
     TorqIT\DataImporterExtensionsBundle\DataSource\Interpreter\AdvancedXlsxFileInterpreter:
         calls:
-            - [ setLogger, [ '@logger' ] ]
+            - [setLogger, ["@logger"]]
         tags:
-            - { name: monolog.logger, channel: 'DATA-IMPORTER' }
-            - { name: "pimcore.datahub.data_importer.interpreter", type: "advancedXlsx" }
+            - { name: monolog.logger, channel: "DATA-IMPORTER" }
+            - {
+                    name: "pimcore.datahub.data_importer.interpreter",
+                    type: "advancedXlsx",
+                }
 
     TorqIT\DataImporterExtensionsBundle\DataSource\Interpreter\BulkXlsxFileInterpreter:
         calls:
-            - [ setLogger, [ '@logger' ] ]
+            - [setLogger, ["@logger"]]
         tags:
-            - { name: monolog.logger, channel: 'DATA-IMPORTER' }
+            - { name: monolog.logger, channel: "DATA-IMPORTER" }
             - { name: "pimcore.datahub.data_importer.interpreter", type: "bulkXlsx" }
 
     TorqIT\DataImporterExtensionsBundle\DataSource\Interpreter\XMLSchemaBasedPreview:
         calls:
-            - [ setLogger, [ '@logger' ] ]
+            - [setLogger, ["@logger"]]
         tags:
-            - { name: monolog.logger, channel: 'DATA-IMPORTER' }
-            - { name: "pimcore.datahub.data_importer.interpreter", type: "XMLSchemaBasedPreview" }
+            - { name: monolog.logger, channel: "DATA-IMPORTER" }
+            - {
+                    name: "pimcore.datahub.data_importer.interpreter",
+                    type: "XMLSchemaBasedPreview",
+                }
 
     TorqIT\DataImporterExtensionsBundle\DataSource\Interpreter\BulkCsvFileInterpreter:
         calls:
-            - [ setLogger, [ '@logger' ] ]
+            - [setLogger, ["@logger"]]
         tags:
-            - { name: monolog.logger, channel: 'DATA-IMPORTER' }
+            - { name: monolog.logger, channel: "DATA-IMPORTER" }
             - { name: "pimcore.datahub.data_importer.interpreter", type: "bulkCsv" }
 
-    TorqIT\DataImporterExtensionsBundle\DataSource\Interpreter\SqlFileInterpreter:
+    TorqIT\DataImporterExtensionsBundle\DataSource\Interpreter\BulkSqlFileInterpreter:
         calls:
-            - [ setLogger, [ '@logger' ] ]
+            - [setLogger, ["@logger"]]
         tags:
-            - { name: monolog.logger, channel: 'DATA-IMPORTER' }
-            - { name: "pimcore.datahub.data_importer.interpreter", type: "sql" }
+            - { name: monolog.logger, channel: "DATA-IMPORTER" }
+            - { name: "pimcore.datahub.data_importer.interpreter", type: "bulkSql" }
 
     TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Simple\SafeKey:
         tags:
@@ -86,24 +100,31 @@ services:
 
     TorqIT\DataImporterExtensionsBundle\Mapping\DataTarget\AdvancedClassificationStore:
         tags:
-            - { name: "pimcore.datahub.data_importer.data_target", type: "advancedClassificationStore" }
+            - {
+                    name: "pimcore.datahub.data_importer.data_target",
+                    type: "advancedClassificationStore",
+                }
 
     TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Simple\ImportAssetAdvanced:
         tags:
-            - { name: "pimcore.datahub.data_importer.operator", type: "importAssetAdvanced" }
+            - {
+                    name: "pimcore.datahub.data_importer.operator",
+                    type: "importAssetAdvanced",
+                }
 
     TorqIT\DataImporterExtensionsBundle\Mapping\DataTarget\ImageGalleryAppender:
         tags:
-            - { name: "pimcore.datahub.data_importer.data_target", type: "imageGalleryAppender" }
+            - {
+                    name: "pimcore.datahub.data_importer.data_target",
+                    type: "imageGalleryAppender",
+                }
 
-    TorqIT\DataImporterExtensionsBundle\DataSource\Loader\SqlDataLoader:
+    TorqIT\DataImporterExtensionsBundle\DataSource\Loader\BulkSqlDataLoader:
         tags:
-            - { name: "pimcore.datahub.data_importer.loader", type: "sql" }
-
-
+            - { name: "pimcore.datahub.data_importer.loader", type: "bulkSql" }
 # add more services, or override services that need manual wiring
-#    TorqIT\DataImporterExtensionsBundle\ExampleClass:
-#        arguments:
-#            - "@service_id"
-#            - "plain_value"
-#            - "%parameter%"
+#        TorqIT\DataImporterExtensionsBundle\ExampleClass:
+#                arguments:
+#                        - "@service_id"
+#                        - "plain_value"
+#                        - "%parameter%"
