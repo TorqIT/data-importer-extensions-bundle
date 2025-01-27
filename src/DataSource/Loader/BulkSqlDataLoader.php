@@ -23,6 +23,7 @@ use League\Flysystem\Filesystem;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\Local\LocalFilesystemAdapter;
 use Pimcore;
+use Pimcore\Bundle\DataImporterBundle\DataSource\Loader\DataLoaderInterface
 use Pimcore\Bundle\DataImporterBundle\Exception\InvalidConfigurationException;
 use Symfony\Component;
 
