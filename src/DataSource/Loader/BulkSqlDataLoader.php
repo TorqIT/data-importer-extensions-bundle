@@ -15,7 +15,7 @@ declare(strict_types=1);
  *  @license    http://www.pimcore.org/license     GPLv3 and PCL
  */
 
-namespace Pimcore\Bundle\DataImporterBundle\DataSource\Loader;
+namespace TorqIT\DataImporterExtensionsBundle\DataSource\Loader;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
