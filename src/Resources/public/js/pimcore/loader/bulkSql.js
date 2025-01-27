@@ -14,7 +14,7 @@ pimcore.plugin.pimcoreDataImporterBundle.configuration.components.loader.bulkSql
             autoLoad: true,
             proxy: {
               type: "ajax",
-              url: "/admin/pimcoredataimporter/get-connections",
+              url: "/admin/pimcoredataimporter/get-bulk-connections",
               reader: {
                 type: "json",
               },
