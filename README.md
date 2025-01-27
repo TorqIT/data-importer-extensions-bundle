@@ -91,9 +91,9 @@ doctrine:
 The Bulk CSV Interpreter has the same options as the regular CSV interpreter but like the Bulk XLSX Interpreter it uses `LOAD LOCAL INFILE` to queue data rows. 
 Please see the [Bulk XLSX Interpreter Section](#bulk-xlsx-interpreter) for limitions and requirments.
 
-### SQL Interpreter 
+### Bulk SQL Interpreter 
 
-This Interpreter is to be used when using the [SQL Data Loader](#sql-data-loader).
+This Interpreter is to be used when using the [Bulk SQL Data Loader](#bulk-sql-data-loader).
 Behind the scenes this uses the Bulk CSV Interpreter as it is very fast. If you run into errors please see the [Bulk XLSX Interpreter Section](#bulk-xlsx-interpreter) for limitions and requirments.
 
 ### XML Schema Based Preview Interpreter
@@ -102,16 +102,18 @@ This Interpreter is an expansion upon the default XML based interpreter that wil
 
 ## Data Loaders
 
-### SQL Data Loader
+### Bulk SQL Data Loader
+
+As of 4.0 (and pimcore data-importer 1.10) This is an extended version of the default SQL data loader which uses the Bulk CSV implementation rather than the json implementation for better performance. Note that the pimcore JSON implementation will save mapping fields by name, which the Bulk SQL saves them by index so switching back and forth may break mappings.
 
 The SQL Data Loader uses [DBAL](https://www.doctrine-project.org/projects/dbal.html) to allow data to be loaded from a SQL source. Connections to any database supported by DBAL will work provided they are configured correctly inside of `database.yaml`. (Database configuration can be placed in any valid Symfony config file, provided its in the correct format as can be seen in `database.yaml`). 
 
-To set up a SQL loader
+To set up a Bulk SQL loader
 
 1. Create a new connection in `database.yaml` or if using the Pimcore database skip this step. ![SQL Loader Configuration](docs/img/sql_loader_config.png)
 2. Select the correct connection from the **Connection Name** dropdown
 3. Provide a valid query using the Select, where, from, Group By, and Limit fields.
-4. Ensure to select **SQL** under File Format! This loader produces a CSV file as part of loading the SQL.
+4. Ensure to select **Bulk SQL** under File Format! This loader produces a CSV file as part of loading the SQL.
 
 ## Data Targets
 

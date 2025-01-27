@@ -15,7 +15,7 @@ use TorqIT\DataImporterExtensionsBundle\Exception\DoctrineConnectionsNotReturned
 class ConnectionController extends AdminAbstractController
 {
     /**
-     * @Route("get-connections", name="pimcore_dataimporter_connections", methods={"GET"})
+     * @Route("get-bulk-connections", name="pimcore_dataimporter_bulk_connections", methods={"GET"})
      *
      * @throws DoctrineConnectionsNotReturnedAsArrayException
      */
