@@ -98,6 +98,10 @@ services:
         tags:
             - { name: "pimcore.datahub.data_importer.data_target", type: "property" }
 
+    TorqIT\DataImporterExtensionsBundle\Mapping\DataTarget\Tags:
+        tags:
+            - { name: "pimcore.datahub.data_importer.data_target", type: "tags" }
+
     TorqIT\DataImporterExtensionsBundle\Mapping\DataTarget\AdvancedClassificationStore:
         tags:
             - {
