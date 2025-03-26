@@ -127,7 +127,8 @@ services:
         tags:
             - { name: "pimcore.datahub.data_importer.operator", type: "asLink" }
 
-    Pimcore\Bundle\DataImporterBundle\Mapping\Type\TransformationDataTypeService: TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Type\TransformationDataTypeService
+    Pimcore\Bundle\DataImporterBundle\Mapping\Type\TransformationDataTypeService: 
+        class: TorqIT\DataImporterExtensionsBundle\Mapping\Type\TransformationDataTypeService
 
 # add more services, or override services that need manual wiring
 #        TorqIT\DataImporterExtensionsBundle\ExampleClass:
