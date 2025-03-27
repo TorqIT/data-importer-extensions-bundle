@@ -132,8 +132,8 @@ pimcore.plugin.pimcoreDataImporterBundle.configuration.components.mapping.datata
                 items: [
                     attributeSelection,
                     clsKeySelection,
-                    clsGroupName,
                     clsKeyName,
+                    clsGroupName,
                     languageSelection
                 ]
             });
