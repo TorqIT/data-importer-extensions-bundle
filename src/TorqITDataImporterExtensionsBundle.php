@@ -8,9 +8,7 @@ use Pimcore\Extension\Bundle\PimcoreBundleAdminClassicInterface;
 class TorqITDataImporterExtensionsBundle extends AbstractPimcoreBundle implements PimcoreBundleAdminClassicInterface
 {
 
-    public function getAdminIframePath()
-    {
-    }
+    public function getAdminIframePath() {}
 
     public function getCssPaths(): array
     {
@@ -48,6 +46,7 @@ class TorqITDataImporterExtensionsBundle extends AbstractPimcoreBundle implement
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/datatarget/image-gallery-appender.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/loader/bulk-sql.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/operator/asLink.js',
+            '/bundles/torqitdataimporterextensions/js/pimcore/mapping/datatarget/classification-store-by-names.js'
         ];
     }
 }
