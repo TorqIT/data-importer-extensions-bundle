@@ -122,6 +122,14 @@ services:
     TorqIT\DataImporterExtensionsBundle\DataSource\Loader\BulkSqlDataLoader:
         tags:
             - { name: "pimcore.datahub.data_importer.loader", type: "bulkSql" }
+
+    TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Simple\AsLink:
+        tags:
+            - { name: "pimcore.datahub.data_importer.operator", type: "asLink" }
+
+    Pimcore\Bundle\DataImporterBundle\Mapping\Type\TransformationDataTypeService: 
+        class: TorqIT\DataImporterExtensionsBundle\Mapping\Type\TransformationDataTypeService
+
 # add more services, or override services that need manual wiring
 #        TorqIT\DataImporterExtensionsBundle\ExampleClass:
 #                arguments:
