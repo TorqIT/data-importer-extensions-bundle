@@ -130,6 +130,10 @@ services:
     Pimcore\Bundle\DataImporterBundle\Mapping\Type\TransformationDataTypeService: 
         class: TorqIT\DataImporterExtensionsBundle\Mapping\Type\TransformationDataTypeService
 
+    TorqIT\DataImporterExtensionsBundle\Mapping\DataTarget\ClassificationStoreByNames:
+        tags:
+            - { name: "pimcore.datahub.data_importer.data_target", type: "classificationStoreByNames" }
+
 # add more services, or override services that need manual wiring
 #        TorqIT\DataImporterExtensionsBundle\ExampleClass:
 #                arguments:
