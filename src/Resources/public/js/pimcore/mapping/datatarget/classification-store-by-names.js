@@ -28,14 +28,16 @@ pimcore.plugin.pimcoreDataImporterBundle.configuration.components.mapping.datata
                 fieldLabel: 'Group Name',
                 name: this.dataNamePrefix + 'groupName',
                 value: this.data.groupName,
-                editable: false
+                editable: false,
+                disabled: true
             });
 
             const clsKeyName = Ext.create('Ext.form.TextField', {
                 fieldLabel: 'Key Name',
                 name: this.dataNamePrefix + 'keyName',
                 value: this.data.keyName,
-                editable: false
+                editable: false,
+                disabled: true
             });
 
             const clsKeySelection = Ext.create('Ext.form.FieldContainer', {
