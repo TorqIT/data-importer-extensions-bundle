@@ -46,6 +46,8 @@ class BulkSqlDataLoader implements DataLoaderInterface
     {
         $this->setUpConnection();
         $this->setUpImportFilePath();
+
+
         $queryBuilder = $this->databaseConnection->createQueryBuilder();
         $queryBuilder->select($this->select)
             ->from($this->from);
@@ -65,12 +67,21 @@ class BulkSqlDataLoader implements DataLoaderInterface
         $filesystemLocal = new Filesystem(new LocalFilesystemAdapter('/'));
         $stream = fopen('php://temp', 'r+');
         $columnNamesAdded = false;
+
+
+
         while (($result = $results->fetchAssociative()) !== false) {
             if (!$columnNamesAdded) {
                 fputcsv($stream, array_keys($result));
                 $columnNamesAdded = true;
             }
             fputcsv($stream, $result);
+        }
+
+        // if no column names were added, add an empty line
+        if (!$columnNamesAdded) {
+            fputcsv($stream, ['']);
+            Logger::info('No results from query: ' . $queryBuilder->getSQL());
         }
 
         rewind($stream);
