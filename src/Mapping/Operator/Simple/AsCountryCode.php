@@ -12,10 +12,13 @@ class AsCountryCode extends \Pimcore\Bundle\DataImporterBundle\Mapping\Operator\
      * @param bool $dryRun
      *
      * @return array|false|mixed|null
+     *
+     * Given input of 2- or 3- character country code, returns the 2-character country code.
+     * If the input is not a valid country code, returns an empty string.
      */
     public function process($inputData, bool $dryRun = false)
     {
-        $validCountryCode = null;
+        $validCountryCode = '';
         $countryCode = strtoupper($inputData);
 
         if (strlen($countryCode) === 2) {
@@ -26,10 +29,6 @@ class AsCountryCode extends \Pimcore\Bundle\DataImporterBundle\Mapping\Operator\
             if (Countries::alpha3CodeExists($countryCode)) {
                 $validCountryCode = Countries::getAlpha2Code($countryCode);
             }
-        }
-
-        if ($validCountryCode === null) {
-            throw new \Exception('Invalid country code: ' . $countryCode);
         }
 
         return $validCountryCode;
