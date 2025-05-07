@@ -5,15 +5,12 @@ declare(strict_types=1);
 namespace TorqIT\DataImporterExtensionsBundle\DataSource\Loader;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Exception;
 use League\Flysystem\Filesystem;
-use League\Flysystem\FilesystemException;
 use League\Flysystem\Local\LocalFilesystemAdapter;
+use Symfony\Component;
 use Pimcore;
 use Pimcore\Bundle\DataImporterBundle\DataSource\Loader\DataLoaderInterface;
 use Pimcore\Bundle\DataImporterBundle\Exception\InvalidConfigurationException;
-use Pimcore\Logger;
-use Symfony\Component;
 use TorqIT\DataImporterExtensionsBundle\Exception\FetchDatabaseDataException;
 use TorqIT\DataImporterExtensionsBundle\Exception\InvalidConnectionException;
 use TorqIT\DataImporterExtensionsBundle\Exception\NotResourceException;
@@ -76,7 +73,6 @@ class BulkSqlDataLoader implements DataLoaderInterface
         // if no column names were added, add an empty line
         if (!$columnNamesAdded) {
             fputcsv($stream, ['']);
-            Logger::info('No results from query: ' . $queryBuilder->getSQL());
         }
 
         rewind($stream);
