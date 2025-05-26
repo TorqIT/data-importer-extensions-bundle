@@ -39,6 +39,10 @@ class ImageGalleryAppender extends Direct
      */
     public function assignData(ElementInterface $element, $data): void
     {
+        if (empty($data->getItems())) {
+            return;
+        }
+        
         $setterParts = explode('.', $this->fieldName);
         $valueContainer = null;
 
