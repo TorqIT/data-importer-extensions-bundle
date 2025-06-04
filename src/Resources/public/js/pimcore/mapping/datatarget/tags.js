@@ -26,7 +26,7 @@ pimcore.plugin.pimcoreDataImporterBundle.configuration.components.mapping.datata
 
       buildSettingsForm: function () {
         const removeOtherTags = Ext.create("Ext.form.Checkbox", {
-          boxLabel: t("Remove Other Tags"),
+          boxLabel: t('plugin_pimcore_datahub_data_importer_configpanel_dataTarget_tag_remove_other_tags'),
           name: this.dataNamePrefix + "removeOtherTags",
           value: this.data.hasOwnProperty("removeOtherTags")
             ? this.data.removeOtherTags
@@ -35,7 +35,7 @@ pimcore.plugin.pimcoreDataImporterBundle.configuration.components.mapping.datata
           uncheckedValue: false,
         });
         const createTagsIfNotExists = Ext.create("Ext.form.Checkbox", {
-          boxLabel: t("Create Tags If Not Exists"),
+          boxLabel: t('plugin_pimcore_datahub_data_importer_configpanel_dataTarget_tag_create_if_not_exist'),
           name: this.dataNamePrefix + "createTagsIfNotExists",
           value: this.data.hasOwnProperty("createTagsIfNotExists")
             ? this.data.createTagsIfNotExists
