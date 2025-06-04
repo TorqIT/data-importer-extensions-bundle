@@ -131,6 +131,10 @@ This can be used to add an image into an Image Gallery field.
 
 This is used to set a property on a Data Object.
 
+### Tags
+
+This is used to add tags on a Data Object.
+
 
 ## Operators
 
