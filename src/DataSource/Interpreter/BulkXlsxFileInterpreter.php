@@ -103,6 +103,9 @@ class BulkXlsxFileInterpreter extends XlsxFileInterpreterWithColumnNames
 
             // TO use header names as keys, we set the keys for rowData:
             if( !is_null($headerRow) ) {
+                if (count($headerRow) != count($rowData)) {
+                    $rowData = array_pad($rowData, count($headerRow), null);
+                }
                 $rowData = array_combine($headerRow, $rowData);
             }
 
