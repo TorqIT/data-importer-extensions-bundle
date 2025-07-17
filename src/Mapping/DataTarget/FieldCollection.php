@@ -4,10 +4,10 @@ namespace TorqIT\DataImporterExtensionsBundle\Mapping\DataTarget;
 
 use Pimcore\Bundle\DataImporterBundle\Exception\InvalidConfigurationException;
 use Pimcore\Model\Element\ElementInterface;
-use Pimcore\Bundle\DataImporterBundle\Mapping\DataTarget\DataTargetInterface;
-use Pimcore\Model\DataObject;
+use Pimcore\Bundle\DataImporterBundle\Mapping\DataTarget\Direct;
 
-class FieldCollection implements DataTargetInterface
+
+class FieldCollection extends Direct
 {
     /**
      * @param ElementInterface $element
@@ -19,14 +19,7 @@ class FieldCollection implements DataTargetInterface
      */
     public function assignData(ElementInterface $element, $data): void
     {
-        $this->setFieldCollection($element, $data);
-    }
-
-    private function setFieldCollection(DataObject\Product $product, $data)
-    {
-        $fieldCollection = new DataObject\Fieldcollection();
-
-        $dataDecoded = json_decode($data, true);
+        parent::assignData($element, $data);
     }
 
     /**
@@ -34,5 +27,8 @@ class FieldCollection implements DataTargetInterface
      *
      * @throws InvalidConfigurationException
      */
-    public function setSettings(array $settings): void {}
+    public function setSettings(array $settings): void
+    {
+        parent::setSettings($settings);
+    }
 }

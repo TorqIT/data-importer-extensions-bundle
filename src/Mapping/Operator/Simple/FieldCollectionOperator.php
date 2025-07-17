@@ -11,6 +11,7 @@ class FieldCollectionOperator extends AbstractOperator
 {
     protected string $fieldCollectionType;
     protected array $fieldMappings = [];
+    protected array $fieldIndexMappings = [];
 
     public function setSettings(array $settings): void
     {
@@ -20,6 +21,12 @@ class FieldCollectionOperator extends AbstractOperator
 
         $this->fieldCollectionType = $settings['fieldCollectionKey'];
         $this->fieldMappings = $settings['fieldMappings'] ?? [];
+        foreach (($settings['fieldMappings'] ?? []) as $fieldName => $index) {
+            if (!ctype_digit((string)$index)) {
+                throw new InvalidConfigurationException("as Field Collection field mappings need to be indexes of inputted array data.");
+            }
+            $this->fieldIndexMappings[(int)$index] = $fieldName;
+        }
 
         if (!class_exists($this->getFieldCollectionClass())) {
             throw new InvalidConfigurationException("Field collection class '{$this->getFieldCollectionClass()}' does not exist.");
@@ -34,38 +41,67 @@ class FieldCollectionOperator extends AbstractOperator
      */
     public function process($inputData, bool $dryRun = false)
     {
-        $this->generateFieldCollection($inputData);
-    }
-
-    /**
-     * @param mixed $inputData
-     *
-     * @return array|false|mixed|null
-     */
-    private function generateFieldCollection($inputData)
-    {
-        if (!is_array($inputData)) {
-            throw new InvalidConfigurationException("Field Collection expects input data as an array.");
+        $fieldCollection = new Fieldcollection();
+        if ($this->isTwoDeepArray($inputData)) {
+            foreach ($inputData as $fcData) {
+                $fieldCollection->add($this->createFieldCollection($fcData));
+            }
+        } else {
+            foreach ($inputData as $fcData) {
+                $fieldCollection->add($this->createFieldCollection([$fcData]));
+            }
         }
 
+        return $fieldCollection;
+    }
+
+    private function createFieldCollection($inputData): AbstractData
+    {
         $className = $this->getFieldCollectionClass();
         /** @var AbstractData $fcItem */
         $fcItem = new $className();
-
-        $fieldIndex = 0;
-        foreach ($this->fieldMappings as $field => $inputKey) {
-            $setter = 'set' . ucfirst($field);
-            if (method_exists($fcItem, $setter) && $field !== 'Location') {
-                $fcItem->$setter($inputData[$fieldIndex]);
-                $this->fieldMappings[$field] = $inputData[$fieldIndex];
+        foreach ($this->fieldIndexMappings as $index => $fieldName) {
+            $setter = 'set' . ucfirst($fieldName);
+            if (method_exists($fcItem, $setter)) {
+                $fcItem->$setter($inputData[$index]);
             }
-            $fieldIndex++;
+        }
+        return $fcItem;
+    }
+
+    private function isTwoDeepArray($inputData)
+    {
+        if (!is_array($inputData)) {
+            throw new InvalidConfigurationException('Input data must be an array.');
         }
 
-        $collection = new Fieldcollection();
-        $collection->add($fcItem);
+        // Check if it's a flat array (all values are not arrays)
+        $allNotArrays = true;
+        $allArrays = true;
+        foreach ($inputData as $value) {
+            if (is_array($value)) {
+                $allNotArrays = false;
+            } else {
+                $allArrays = false;
+            }
+        }
 
-        return $collection;
+        if ($allNotArrays) {
+            return false; // Flat array
+        }
+        if ($allArrays) {
+            // Check if all sub-arrays are not arrays themselves (i.e., exactly two levels)
+            foreach ($inputData as $subArray) {
+                foreach ($subArray as $subValue) {
+                    if (is_array($subValue)) {
+                        throw new InvalidConfigurationException('Input data is deeper than two levels.');
+                    }
+                }
+            }
+            return true; // Two-deep array
+        }
+
+        throw new InvalidConfigurationException('Input data must be a flat array (one field collection) or a two-deep array(many field collections).');
     }
 
     protected function getFieldCollectionClass(): string
@@ -91,20 +127,27 @@ class FieldCollectionOperator extends AbstractOperator
      *
      * @return mixed
      */
-    public function generateResultPreview($inputData)
+    public function generateResultPreview($fieldCollection)
     {
-        if (!$this->fieldMappings) {
+        if (!$this->fieldIndexMappings) {
             return '';
         }
 
-        $pairs = [];
-
-        foreach ($this->fieldMappings as $field => $value) {
-            $pairs[] = "'{$field}' => {$value}";
+        if (!$fieldCollection instanceof Fieldcollection) {
+            return '';
         }
 
-        $stringResult = '[ ' . implode(' | ', $pairs) . ' ]';
+        $itemsPreview = [];
+        foreach ($fieldCollection as $fcItem) {
+            $fields = [];
+            foreach ($this->fieldMappings as $index => $fieldName) {
+                $getter = 'get' . ucfirst($fieldName);
+                $value = method_exists($fcItem, $getter) ? $fcItem->$getter() : null;
+                $fields[] = $fieldName . ': ' . (is_scalar($value) || $value === null ? var_export($value, true) : '[complex]');
+            }
+            $itemsPreview[] = '{ ' . implode(', ', $fields) . ' }';
+        }
 
-        return $stringResult;
+        return '[ ' . implode(' | ', $itemsPreview) . ' ]';
     }
 }

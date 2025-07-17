@@ -74,7 +74,7 @@ pimcore.plugin.pimcoreDataImporterBundle.configuration.components.mapping.operat
 
                 if (this.data.settings?.fieldCollectionKey) {
                     this.loadFieldCollectionFields(
-                        this.data.settings.fieldCollectionKey
+                        this.data.settings.fieldCollectionKey  ?? ""
                     );
                 }
 
@@ -103,6 +103,7 @@ pimcore.plugin.pimcoreDataImporterBundle.configuration.components.mapping.operat
                                         this
                                     ),
                                 },
+                                value: this.data.settings?.fieldMappings[field.name]
                             };
 
                             let xtypeClass;
