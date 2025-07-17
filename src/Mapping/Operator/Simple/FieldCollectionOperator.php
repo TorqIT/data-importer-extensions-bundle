@@ -140,7 +140,7 @@ class FieldCollectionOperator extends AbstractOperator
         $itemsPreview = [];
         foreach ($fieldCollection as $fcItem) {
             $fields = [];
-            foreach ($this->fieldMappings as $index => $fieldName) {
+            foreach ($this->fieldIndexMappings as $index => $fieldName) {
                 $getter = 'get' . ucfirst($fieldName);
                 $value = method_exists($fcItem, $getter) ? $fcItem->$getter() : null;
                 $fields[] = $fieldName . ': ' . (is_scalar($value) || $value === null ? var_export($value, true) : '[complex]');
