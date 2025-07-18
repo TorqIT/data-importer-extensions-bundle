@@ -94,6 +94,10 @@ services:
         tags:
             - { name: "pimcore.datahub.data_importer.operator", type: "regexReplace" }
 
+    TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Simple\FieldCollectionOperator:
+        tags:
+            - { name: "pimcore.datahub.data_importer.operator", type: "fieldCollectionOperator" }
+
     TorqIT\DataImporterExtensionsBundle\Mapping\DataTarget\Property:
         tags:
             - { name: "pimcore.datahub.data_importer.data_target", type: "property" }
@@ -117,6 +121,13 @@ services:
             - {
                     name: "pimcore.datahub.data_importer.data_target",
                     type: "imageGalleryAppender",
+                }
+
+    TorqIT\DataImporterExtensionsBundle\Mapping\DataTarget\FieldCollection:
+        tags:
+            - {
+                    name: "pimcore.datahub.data_importer.data_target",
+                    type: "fieldCollection",
                 }
 
     TorqIT\DataImporterExtensionsBundle\DataSource\Loader\BulkSqlDataLoader:
