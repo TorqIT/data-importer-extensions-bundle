@@ -16,7 +16,7 @@ class FieldCollectionOperator extends AbstractOperator
     public function setSettings(array $settings): void
     {
         if (empty($settings['fieldCollectionKey'])) {
-            throw new InvalidConfigurationException("Field Collection: 'array' must be provided.");
+            throw new InvalidConfigurationException("Please select a field collection from 'Field Collection:' dropdown.");
         }
 
         $this->fieldCollectionType = $settings['fieldCollectionKey'];
