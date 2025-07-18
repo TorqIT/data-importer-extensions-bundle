@@ -2,9 +2,9 @@
 
 namespace TorqIT\DataImporterExtensionsBundle\Controller;
 
-use App\DataImporter\Mapping\DataTarget\FieldCollection;
 use Pimcore\Bundle\DataImporterBundle\Controller\ConfigDataObjectController;
 use Pimcore\Bundle\DataImporterBundle\Mapping\Type\TransformationDataTypeService;
+use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data\Fieldcollections;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -62,16 +62,9 @@ class FieldCollectionController extends ConfigDataObjectController
         methods: ['GET'],
         options: ['expose' => true]
     )]
-    public function loadFieldCollectionFieldsByClassAction(Request $request, TransformationDataTypeService $transformationDataTypeService): JsonResponse
+    public function loadFieldCollectionFieldsByClassAction(Request $request): JsonResponse
     {
-        $class = 'Pimcore\Model\DataObject\\' . ucfirst($request->query->get('class_id'));
-
-        $product = new $class();
-        $fieldDefinitions = $product->getClass()->getFieldDefinitions();
-
-        $listing = new Definition\Listing();
-        $test = $listing->load();
-
+        $fieldDefinitions = ClassDefinition::getById($request->query->get('class_id'))->getFieldDefinitions();
 
         $attributes = [];
         foreach ($fieldDefinitions as $fieldDefinition) {

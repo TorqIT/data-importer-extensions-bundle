@@ -42,14 +42,15 @@ class FieldCollectionOperator extends AbstractOperator
     public function process($inputData, bool $dryRun = false)
     {
         $fieldCollection = new Fieldcollection();
+        if (!is_array($inputData)) {
+            $inputData = [$inputData];
+        }
         if ($this->isTwoDeepArray($inputData)) {
             foreach ($inputData as $fcData) {
                 $fieldCollection->add($this->createFieldCollection($fcData));
             }
         } else {
-            foreach ($inputData as $fcData) {
-                $fieldCollection->add($this->createFieldCollection([$fcData]));
-            }
+            $fieldCollection->add($this->createFieldCollection($inputData));
         }
 
         return $fieldCollection;
@@ -71,10 +72,6 @@ class FieldCollectionOperator extends AbstractOperator
 
     private function isTwoDeepArray($inputData)
     {
-        if (!is_array($inputData)) {
-            throw new InvalidConfigurationException('Input data must be an array.');
-        }
-
         // Check if it's a flat array (all values are not arrays)
         $allNotArrays = true;
         $allArrays = true;
