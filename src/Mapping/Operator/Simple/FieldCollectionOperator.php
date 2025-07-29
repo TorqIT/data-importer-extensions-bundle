@@ -45,18 +45,23 @@ class FieldCollectionOperator extends AbstractOperator
         if (!is_array($inputData)) {
             $inputData = [$inputData];
         }
+
         if ($this->isTwoDeepArray($inputData)) {
             foreach ($inputData as $fcData) {
-                $fieldCollection->add($this->createFieldCollection($fcData));
+                if (count($fcData) != 0) {
+                    $fieldCollection->add($this->createFieldCollection($fcData));
+                }
             }
         } else {
-            $fieldCollection->add($this->createFieldCollection($inputData));
+            if (count($inputData) != 0) {
+                $fieldCollection->add($this->createFieldCollection($inputData));
+            }
         }
 
         return $fieldCollection;
     }
 
-    private function createFieldCollection($inputData): AbstractData
+    private function createFieldCollection(array $inputData): AbstractData
     {
         $className = $this->getFieldCollectionClass();
         /** @var AbstractData $fcItem */
