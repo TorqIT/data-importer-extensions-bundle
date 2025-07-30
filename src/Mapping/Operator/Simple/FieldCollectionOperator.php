@@ -42,18 +42,21 @@ class FieldCollectionOperator extends AbstractOperator
     public function process($inputData, bool $dryRun = false)
     {
         $fieldCollection = new Fieldcollection();
+        if (empty($inputData)) {
+            return $fieldCollection;
+        }
         if (!is_array($inputData)) {
             $inputData = [$inputData];
         }
 
         if ($this->isTwoDeepArray($inputData)) {
             foreach ($inputData as $fcData) {
-                if (count($fcData) != 0) {
+                if (!empty($fcData)) {
                     $fieldCollection->add($this->createFieldCollection($fcData));
                 }
             }
         } else {
-            if (count($inputData) != 0) {
+            if (!empty($inputData)) {
                 $fieldCollection->add($this->createFieldCollection($inputData));
             }
         }
