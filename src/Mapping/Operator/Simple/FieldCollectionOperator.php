@@ -22,10 +22,10 @@ class FieldCollectionOperator extends AbstractOperator
         $this->fieldCollectionType = $settings['fieldCollectionKey'];
         $this->fieldMappings = $settings['fieldMappings'] ?? [];
         foreach (($settings['fieldMappings'] ?? []) as $fieldName => $index) {
-            if (!ctype_digit((string)$index)) {
+            if (empty($index) && $index !== 0) {
                 throw new InvalidConfigurationException("as Field Collection field mappings need to be indexes of inputted array data.");
             }
-            $this->fieldIndexMappings[(int)$index] = $fieldName;
+            $this->fieldIndexMappings[$index] = $fieldName;
         }
 
         if (!class_exists($this->getFieldCollectionClass())) {
