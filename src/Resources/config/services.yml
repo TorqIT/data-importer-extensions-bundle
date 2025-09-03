@@ -127,13 +127,9 @@ services:
         tags:
             - { name: "pimcore.datahub.data_importer.operator", type: "asLink" }
 
-    TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Simple\BatchClassificationStoreNamesToIds:
+    TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Factory\QuantityValueRangeArray:
         tags:
-            - { name: "pimcore.datahub.data_importer.operator", type: "batchClassificationStoreNamesToIds" }
-
-    TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Simple\QuantityValueArrayAbbrToId:
-        tags:
-            - { name: "pimcore.datahub.data_importer.operator", type: "quantityValueArrayAbbrToId" }
+            - { name: "pimcore.datahub.data_importer.operator", type: "quantityValueRangeArray" }
 
     Pimcore\Bundle\DataImporterBundle\Mapping\Type\TransformationDataTypeService: 
         class: TorqIT\DataImporterExtensionsBundle\Mapping\Type\TransformationDataTypeService
