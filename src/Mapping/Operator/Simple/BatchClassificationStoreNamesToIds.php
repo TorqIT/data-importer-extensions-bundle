@@ -19,10 +19,6 @@ class BatchClassificationStoreNamesToIds extends AbstractOperator
         parent::__construct($applicationLogger);
     }
 
-    public function setSettings(array $settings): void
-    {
-    }
-
     public function process($inputData, bool $dryRun = false)
     {
         if (!is_array($inputData)) {
