@@ -127,6 +127,10 @@ services:
         tags:
             - { name: "pimcore.datahub.data_importer.operator", type: "asLink" }
 
+    TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Factory\QuantityValueRangeArray:
+        tags:
+            - { name: "pimcore.datahub.data_importer.operator", type: "quantityValueRangeArray" }
+
     Pimcore\Bundle\DataImporterBundle\Mapping\Type\TransformationDataTypeService: 
         class: TorqIT\DataImporterExtensionsBundle\Mapping\Type\TransformationDataTypeService
 
