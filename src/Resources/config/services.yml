@@ -127,9 +127,9 @@ services:
         tags:
             - { name: "pimcore.datahub.data_importer.operator", type: "asLink" }
 
-    TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Simple\ClassificationStoreNamesToIds:
+    TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Simple\BatchClassificationStoreNamesToIds:
         tags:
-            - { name: "pimcore.datahub.data_importer.operator", type: "classificationStoreNamesToIds" }
+            - { name: "pimcore.datahub.data_importer.operator", type: "batchClassificationStoreNamesToIds" }
 
     Pimcore\Bundle\DataImporterBundle\Mapping\Type\TransformationDataTypeService: 
         class: TorqIT\DataImporterExtensionsBundle\Mapping\Type\TransformationDataTypeService

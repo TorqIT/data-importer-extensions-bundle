@@ -9,7 +9,7 @@ use Pimcore\Bundle\DataImporterBundle\Mapping\Operator\AbstractOperator;
 use Pimcore\Log\ApplicationLogger;
 use Torq\PimcoreHelpersBundle\Service\Utility\ArrayUtils;
 
-class ClassificationStoreNamesToIds extends AbstractOperator
+class BatchClassificationStoreNamesToIds extends AbstractOperator
 {
     public function __construct(
         ApplicationLogger $applicationLogger,

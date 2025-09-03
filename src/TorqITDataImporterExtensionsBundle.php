@@ -48,7 +48,7 @@ class TorqITDataImporterExtensionsBundle extends AbstractPimcoreBundle implement
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/datatarget/image-gallery-appender.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/loader/bulk-sql.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/operator/asLink.js',
-            '/bundles/torqitdataimporterextensions/js/pimcore/mapping/operator/classificationStoreNamesToIds.js',
+            '/bundles/torqitdataimporterextensions/js/pimcore/mapping/operator/batchClassificationStoreNamesToIds.js',
         ];
     }
 }
