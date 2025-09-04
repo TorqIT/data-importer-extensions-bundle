@@ -123,7 +123,6 @@ pimcore.plugin.pimcoreDataImporterBundle.configuration.components.mapping.datata
             initAttributeStore: function (attributeStore) {
                 const classId = this.dataObjectClassId;
 
-                // Use a dedicated cache to avoid clobbering the classification store cache
                 let fieldCollectionFieldCache =
                     this.configItemRootContainer.fieldCollectionFieldCache || {};
 
