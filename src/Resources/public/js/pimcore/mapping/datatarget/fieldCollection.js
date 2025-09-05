@@ -122,32 +122,29 @@ pimcore.plugin.pimcoreDataImporterBundle.configuration.components.mapping.datata
 
             initAttributeStore: function (attributeStore) {
                 const classId = this.dataObjectClassId;
-                // const transformationResultType = this.transformationResultType;
 
-                let classificationStoreFieldCache =
-                    this.configItemRootContainer
-                        .classificationStoreFieldCache || {};
+                let fieldCollectionFieldCache =
+                    this.configItemRootContainer.fieldCollectionFieldCache || {};
 
-                if (classificationStoreFieldCache[classId]) {
-                    if (classificationStoreFieldCache[classId].loading) {
+                if (fieldCollectionFieldCache[classId]) {
+                    if (fieldCollectionFieldCache[classId].loading) {
                         setTimeout(
                             this.initAttributeStore.bind(this, attributeStore),
                             400
                         );
                     } else {
                         attributeStore.loadData(
-                            classificationStoreFieldCache[classId].data
+                            fieldCollectionFieldCache[classId].data
                         );
                     }
                 } else {
-                    classificationStoreFieldCache =
-                        classificationStoreFieldCache || {};
-                    classificationStoreFieldCache[classId] = {
+                    fieldCollectionFieldCache = fieldCollectionFieldCache || {};
+                    fieldCollectionFieldCache[classId] = {
                         loading: true,
                         data: null,
                     };
-                    this.configItemRootContainer.classificationStoreFieldCache =
-                        classificationStoreFieldCache;
+                    this.configItemRootContainer.fieldCollectionFieldCache =
+                        fieldCollectionFieldCache;
 
                     Ext.Ajax.request({
                         url: Routing.generate(
@@ -160,14 +157,12 @@ pimcore.plugin.pimcoreDataImporterBundle.configuration.components.mapping.datata
                         success: function (response) {
                             let data = Ext.decode(response.responseText);
 
-                            classificationStoreFieldCache[
-                                classId
-                            ].loading = false;
-                            classificationStoreFieldCache[classId].data =
+                            fieldCollectionFieldCache[classId].loading = false;
+                            fieldCollectionFieldCache[classId].data =
                                 data.attributes;
 
                             attributeStore.loadData(
-                                classificationStoreFieldCache[classId].data
+                                fieldCollectionFieldCache[classId].data
                             );
                         }.bind(this),
                     });
