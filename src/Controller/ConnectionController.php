@@ -6,19 +6,14 @@ namespace TorqIT\DataImporterExtensionsBundle\Controller;
 
 use Pimcore\Bundle\AdminBundle\Controller\AdminAbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use TorqIT\DataImporterExtensionsBundle\Exception\DoctrineConnectionsNotReturnedAsArrayException;
 
-/**
- * @Route("/admin/pimcoredataimporter/")
- */
+#[Route("/admin/pimcoredataimporter")]
 class ConnectionController extends AdminAbstractController
 {
-    /**
-     * @Route("get-bulk-connections", name="pimcore_dataimporter_bulk_connections", methods={"GET"})
-     *
-     * @throws DoctrineConnectionsNotReturnedAsArrayException
-     */
+    /** @throws DoctrineConnectionsNotReturnedAsArrayException */
+    #[Route("/get-bulk-connections", name: 'pimcore_dataimporter_bulk_connections', methods: ['GET'])]
     public function getConnectionsAction(): JsonResponse
     {
         $connections = $this->getParameter('doctrine.connections');
