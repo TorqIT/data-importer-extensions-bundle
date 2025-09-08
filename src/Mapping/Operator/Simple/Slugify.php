@@ -23,6 +23,6 @@ class Slugify extends AbstractOperator
 
     public function evaluateReturnType(string $inputType, ?int $index = null): string
     {
-        return 'string';
+        return 'default';
     }
 }
