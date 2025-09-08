@@ -131,6 +131,10 @@ services:
         tags:
             - { name: "pimcore.datahub.data_importer.operator", type: "quantityValueRangeArray" }
 
+    TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Simple\Slugify:
+        tags:
+            - { name: "pimcore.datahub.data_importer.operator", type: "slugify" }
+
     Pimcore\Bundle\DataImporterBundle\Mapping\Type\TransformationDataTypeService: 
         class: TorqIT\DataImporterExtensionsBundle\Mapping\Type\TransformationDataTypeService
 

@@ -49,6 +49,7 @@ class TorqITDataImporterExtensionsBundle extends AbstractPimcoreBundle implement
             '/bundles/torqitdataimporterextensions/js/pimcore/loader/bulk-sql.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/operator/asLink.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/operator/quantityValueRangeArray.js',
+            '/bundles/torqitdataimporterextensions/js/pimcore/mapping/operator/slugify.js',
         ];
     }
 }
