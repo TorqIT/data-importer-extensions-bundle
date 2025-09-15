@@ -19,7 +19,8 @@ class AsVideo extends AbstractOperator
 
     public function setSettings(array $settings): void
     {
-        if ($type = $this->utils->get('videoType', $settings)) {
+        $type = $this->utils->get('videoType', $settings);
+        if ($type === null) {
             throw new InvalidConfigurationException("Please select a video type.");
         }
         $this->videoType = $type;
