@@ -47,13 +47,13 @@ class AsVideo extends AbstractOperator
 
     public function generateResultPreview($inputData)
     {
-        $output = $this->process($inputData);
-        if (is_array($output)) {
-            $output = array_map(fn(Video $v) => "Video (type: {$v->getType()}, data: {$v->getData()})", $output);
+        if (is_array($inputData)) {
+            return array_map(fn(Video $v) => "Video (type: {$v->getType()}, data: {$v->getData()})", $inputData);
+        } else if ($inputData instanceof Video) {
+            return "Video (type: {$inputData->getType()}, data: {$inputData->getData()})";
         } else {
-            $output = "Video (type: {$output->getType()}, data: {$output->getData()})";
+            return $inputData;
         }
-        return $output;
     }
 
     private function createVideo(string $url)
