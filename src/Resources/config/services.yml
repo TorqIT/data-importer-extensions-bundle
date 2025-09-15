@@ -150,6 +150,11 @@ services:
         tags:
             - { name: "pimcore.datahub.data_importer.operator", type: "asVideo" }
 
+    TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Simple\EachAsArray:
+        tags:
+            - { name: "pimcore.datahub.data_importer.operator", type: "eachAsArray" }
+
+
     TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Simple\Slugify:
         tags:
             - { name: "pimcore.datahub.data_importer.operator", type: "slugify" }
