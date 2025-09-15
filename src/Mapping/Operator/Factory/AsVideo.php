@@ -45,6 +45,17 @@ class AsVideo extends AbstractOperator
         return str_contains(mb_strtolower($inputType), 'array') ? 'array' : 'video';
     }
 
+    public function generateResultPreview($inputData)
+    {
+        $output = $this->process($inputData);
+        if (is_array($output)) {
+            $output = array_map(fn(Video $v) => "Video (type: {$v->getType()}, data: {$v->getData()})", $output);
+        } else {
+            $output = "Video (type: {$output->getType()}, data: {$output->getData()})";
+        }
+        return $output;
+    }
+
     private function createVideo(string $url)
     {
         $video = new Video();
