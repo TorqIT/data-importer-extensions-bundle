@@ -51,6 +51,7 @@ class TorqITDataImporterExtensionsBundle extends AbstractPimcoreBundle implement
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/operator/fieldCollectionOperator.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/operator/quantityValueRangeArray.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/operator/slugify.js',
+            '/bundles/torqitdataimporterextensions/js/pimcore/mapping/operator/asVideo.js',
         ];
     }
 }
