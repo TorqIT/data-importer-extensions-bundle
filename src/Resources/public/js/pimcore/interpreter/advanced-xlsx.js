@@ -33,6 +33,12 @@ pimcore.plugin.pimcoreDataImporterBundle.configuration.components.interpreter.ad
                         value: this.data.hasOwnProperty('skipFirstRow') ? this.data.skipFirstRow : false,
                         inputValue: true
                     },{
+                        xtype: 'checkbox',
+                        fieldLabel: t('plugin_pimcore_datahub_data_importer_configpanel_csv_save_row_header'),
+                        name: this.dataNamePrefix + 'saveHeaderName',
+                        value: this.data.hasOwnProperty('saveHeaderName') ? this.data.saveHeaderName : false,
+                        inputValue: true
+                    },{
                         xtype: 'textfield',
                         fieldLabel: t('plugin_pimcore_datahub_data_importer_configpanel_xlsx_sheet'),
                         name: this.dataNamePrefix + 'sheetName',
