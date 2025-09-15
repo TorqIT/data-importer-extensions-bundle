@@ -30,14 +30,13 @@ class AsVideo extends AbstractOperator
     public function process($inputData, bool $dryRun = false)
     {
         if (is_array($inputData)) {
-            $output = [];
-            foreach ($inputData as $datum) {
-                $output[] = $this->createVideo($datum);
-            }
+            // recursive call
+            return array_map(fn($d) => $this->process($d, $dryRun), $inputData);
+        } else if (is_string($inputData)) {
+            return $this->createVideo($inputData);
         } else {
-            $output = $this->createVideo($inputData);
+            return $inputData;
         }
-        return $output;
     }
 
     public function evaluateReturnType(string $inputType, ?int $index = null): string
