@@ -134,6 +134,10 @@ This is used to set a property on a Data Object.
 
 ## Operators
 
+### As Country Code
+
+Operating on an input string that is expected to be either a 2- or 3- character Country Code, filters this input to the valid 2-character Country Code (or blank if none is found).
+
 ### Constants
 
 This operator simply returns a constant string. Useful if wanting to control `OBJECT_TYPE` object or variant.

@@ -15,11 +15,12 @@
 
 namespace TorqIT\DataImporterExtensionsBundle\DataSource\Interpreter;
 
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Pimcore\Bundle\DataImporterBundle\Preview\Model\PreviewData;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use TorqIT\DataImporterExtensionsBundle\DataSource\DataLoader\Xlsx\XlsxDataLoaderFactory;
 
-class AdvancedXlsxFileInterpreter extends \Pimcore\Bundle\DataImporterBundle\DataSource\Interpreter\XlsxFileInterpreter
+class AdvancedXlsxFileInterpreter extends XlsxFileInterpreterWithColumnNames
 {
 
     /**
@@ -37,7 +38,6 @@ class AdvancedXlsxFileInterpreter extends \Pimcore\Bundle\DataImporterBundle\Dat
      */
     protected $rowFilter;
 
-
     protected function doInterpretFileAndCallProcessRow(string $path): void
     {
         $this->uniqueHashes = array();
@@ -45,13 +45,18 @@ class AdvancedXlsxFileInterpreter extends \Pimcore\Bundle\DataImporterBundle\Dat
         $excelLoader = XlsxDataLoaderFactory::getExcelDataLoader();
 
         $data = $excelLoader->getRows($path, $this->sheetName);
+        $headerRow = null;
 
         if ($this->skipFirstRow) {
-            array_shift($data);
+            $firstRow = array_shift($data);
+
+            if ($this->saveHeaderName) {
+                $headerRow = $firstRow;
+            }
         }
 
         foreach ($data as $rowData) {
-            
+
             $hashKey = '';
 
             foreach($this->uniqueColumns as $index){
@@ -73,17 +78,25 @@ class AdvancedXlsxFileInterpreter extends \Pimcore\Bundle\DataImporterBundle\Dat
                 }
             }
 
+            if (!is_null($headerRow)) {
+                if (count($headerRow) > count($rowData)) {
+                    $rowData = array_pad($rowData, count($headerRow), null);
+                } elseif (count($headerRow) < count($rowData)) {
+                    $rowData = array_slice($rowData, 0, count($headerRow));
+                }
+                $rowData = array_combine($headerRow, $rowData);
+            }
+
             $this->processImportRow($rowData);
 
             $this->uniqueHashes[$hashKey]=true;
         }
     }
 
-
     public function setSettings(array $settings): void
     {
         parent::setSettings($settings);
- 
+
         $this->rowFilter = $settings['rowFilter'] ?? '';
 
         if($settings['uniqueColumns'] && strlen($settings['uniqueColumns'] ) > 0){
@@ -91,6 +104,6 @@ class AdvancedXlsxFileInterpreter extends \Pimcore\Bundle\DataImporterBundle\Dat
         }
         else{
             $this->uniqueColumns = array();
-        }        
+        }
     }
 }
