@@ -32,6 +32,7 @@ abstract class XlsxFileInterpreterWithColumnNames extends XlsxFileInterpreter
         if ($this->fileValid($path)) {
             $reader = IOFactory::createReaderForFile($path);
             $reader->setReadDataOnly(true);
+            $reader->setLoadSheetsOnly($this->sheetName);
             $spreadSheet = $reader->load($path);
 
             $spreadSheet->setActiveSheetIndexByName($this->sheetName);
