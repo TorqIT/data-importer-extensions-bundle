@@ -45,30 +45,24 @@ class BulkXlsxFileInterpreter extends XlsxFileInterpreterWithColumnNames
      */
     protected $rowFilter;
 
-    /**
-     *
-     * @var bool
-     *
-     * If true, index columns by the header name in the first row, instead of using numbered index.
-     */
-    protected bool $saveHeaderName;
-
-
     protected function doInterpretFileAndCallProcessRow(string $path): void
     {
         $this->uniqueHashes = array();
 
         $excelLoader = XlsxDataLoaderFactory::getExcelDataLoader();
         $data = $excelLoader->getRows($path, $this->sheetName);
+
+        // Header row is 1-indexed, array is 0-indexed
+        $headerRowIndex = $this->headerRow - 1;
+
+        // Get header row for column names
         $headerRow = null;
-
-        if ($this->skipFirstRow) {
-            $firstRow = array_shift($data);
-
-            if ($this->saveHeaderName) {
-                $headerRow = $firstRow;
-            }
+        if ($this->saveHeaderName && isset($data[$headerRowIndex])) {
+            $headerRow = $data[$headerRowIndex];
         }
+
+        // Skip rows up to and including the header row
+        $data = array_slice($data, $this->headerRow);
 
         $tmpCsv = tempnam(sys_get_temp_dir(), 'pimcore_bulk_load');
         $options = new Options();

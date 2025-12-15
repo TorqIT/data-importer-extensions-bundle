@@ -27,28 +27,34 @@ pimcore.plugin.pimcoreDataImporterBundle.configuration.components.interpreter.ad
                 border: false,
                 items: [
                     {
-                        xtype: 'checkbox',
-                        fieldLabel: t('plugin_pimcore_datahub_data_importer_configpanel_csv_skip_first_row'),
-                        name: this.dataNamePrefix + 'skipFirstRow',
-                        value: this.data.hasOwnProperty('skipFirstRow') ? this.data.skipFirstRow : false,
-                        inputValue: true
-                    },{
+                        xtype: 'textfield',
+                        fieldLabel: t('plugin_pimcore_datahub_data_importer_configpanel_xlsx_sheet'),
+                        name: this.dataNamePrefix + 'sheetName',
+                        value: this.data.sheetName || 'Sheet1'
+                    },
+                    {
+                        xtype: 'numberfield',
+                        fieldLabel: t('plugin_pimcore_datahub_data_importer_configpanel_bulk_xlsx_header_row'),
+                        name: this.dataNamePrefix + 'headerRow',
+                        value: this.data.hasOwnProperty('headerRow') ? this.data.headerRow : 1,
+                        minValue: 1,
+                        allowDecimals: false,
+                        allowBlank: false
+                    },
+                    {
                         xtype: 'checkbox',
                         fieldLabel: t('plugin_pimcore_datahub_data_importer_configpanel_csv_save_row_header'),
                         name: this.dataNamePrefix + 'saveHeaderName',
                         value: this.data.hasOwnProperty('saveHeaderName') ? this.data.saveHeaderName : false,
                         inputValue: true
-                    },{
-                        xtype: 'textfield',
-                        fieldLabel: t('plugin_pimcore_datahub_data_importer_configpanel_xlsx_sheet'),
-                        name: this.dataNamePrefix + 'sheetName',
-                        value: this.data.sheetName || 'Sheet1'
-                    },{
+                    },
+                    {
                         xtype: 'textfield',
                         fieldLabel: t('plugin_pimcore_datahub_data_importer_configpanel_advanced_xlsx_unique_columns'),
                         name: this.dataNamePrefix + 'uniqueColumns',
                         value: this.data.uniqueColumns || ''
-                    },{
+                    },
+                    {
                         xtype: 'textfield',
                         fieldLabel: t('plugin_pimcore_datahub_data_importer_configpanel_advanced_xlsx_row_filter'),
                         name: this.dataNamePrefix + 'rowFilter',
