@@ -41,6 +41,7 @@ class TorqITDataImporterExtensionsBundle extends AbstractPimcoreBundle implement
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/operator/regex-replace.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/operator/constant.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/datatarget/property.js',
+            '/bundles/torqitdataimporterextensions/js/pimcore/mapping/datatarget/tags.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/datatarget/advanced-classification-store.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/operator/import-asset-advanced.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/datatarget/image-gallery-appender.js',
