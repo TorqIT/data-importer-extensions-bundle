@@ -15,17 +15,19 @@
 
 namespace TorqIT\DataImporterExtensionsBundle\DataSource\Interpreter;
 
-use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Carbon\Carbon;
 use OpenSpout\Writer\CSV\Options;
 use OpenSpout\Writer\CSV\Writer;
-use Pimcore\Bundle\DataImporterBundle\Processing\ImportProcessingService;
-use Pimcore\Db;
-use TorqIT\DataImporterExtensionsBundle\DataSource\DataLoader\Xlsx\XlsxDataLoaderFactory;
 use OpenSpout\Common\Entity\Cell;
 use OpenSpout\Common\Entity\Row;
 
-class BulkXlsxFileInterpreter extends \Pimcore\Bundle\DataImporterBundle\DataSource\Interpreter\XlsxFileInterpreter
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
+use Pimcore\Bundle\DataImporterBundle\Processing\ImportProcessingService;
+use Pimcore\Db;
+use TorqIT\DataImporterExtensionsBundle\DataSource\DataLoader\Xlsx\XlsxDataLoaderFactory;
+use Pimcore\Bundle\DataImporterBundle\Preview\Model\PreviewData;
+
+class BulkXlsxFileInterpreter extends XlsxFileInterpreterWithColumnNames
 {
 
     /**
@@ -43,17 +45,24 @@ class BulkXlsxFileInterpreter extends \Pimcore\Bundle\DataImporterBundle\DataSou
      */
     protected $rowFilter;
 
-
     protected function doInterpretFileAndCallProcessRow(string $path): void
     {
         $this->uniqueHashes = array();
-        
+
         $excelLoader = XlsxDataLoaderFactory::getExcelDataLoader();
         $data = $excelLoader->getRows($path, $this->sheetName);
 
-        if ($this->skipFirstRow) {
-            array_shift($data);
+        // Header row is 1-indexed, array is 0-indexed
+        $headerRowIndex = $this->headerRow - 1;
+
+        // Get header row for column names
+        $headerRow = null;
+        if ($this->saveHeaderName && isset($data[$headerRowIndex])) {
+            $headerRow = $data[$headerRowIndex];
         }
+
+        // Skip rows up to and including the header row
+        $data = array_slice($data, $this->headerRow);
 
         $tmpCsv = tempnam(sys_get_temp_dir(), 'pimcore_bulk_load');
         $options = new Options();
@@ -65,7 +74,7 @@ class BulkXlsxFileInterpreter extends \Pimcore\Bundle\DataImporterBundle\DataSou
         $db = Db::get();
 
         foreach ($data as $rowData) {
-            
+
             $hashKey = '';
 
             foreach($this->uniqueColumns as $index){
@@ -84,6 +93,16 @@ class BulkXlsxFileInterpreter extends \Pimcore\Bundle\DataImporterBundle\DataSou
                 if(!$filterResult){
                     continue;
                 }
+            }
+
+            // TO use header names as keys, we set the keys for rowData:
+            if (!is_null($headerRow)) {
+                if (count($headerRow) > count($rowData)) {
+                    $rowData = array_pad($rowData, count($headerRow), null);
+                } elseif (count($headerRow) < count($rowData)) {
+                    $rowData = array_slice($rowData, 0, count($headerRow));
+                }
+                $rowData = array_combine($headerRow, $rowData);
             }
 
             $json =  json_encode($rowData);
@@ -109,7 +128,7 @@ class BulkXlsxFileInterpreter extends \Pimcore\Bundle\DataImporterBundle\DataSou
         $quote = "'";
         $sql = <<<SQL
         LOAD DATA LOCAL INFILE $quote$tmpCsv$quote INTO TABLE bundle_data_hub_data_importer_queue
-            FIELDS 
+            FIELDS
                 TERMINATED BY ','
                 ENCLOSED BY "'"
                 ESCAPED BY ''
@@ -126,7 +145,7 @@ class BulkXlsxFileInterpreter extends \Pimcore\Bundle\DataImporterBundle\DataSou
     public function setSettings(array $settings): void
     {
         parent::setSettings($settings);
- 
+
         $this->rowFilter = $settings['rowFilter'] ?? '';
 
         if($settings['uniqueColumns'] && strlen($settings['uniqueColumns'] ) > 0){
@@ -134,7 +153,7 @@ class BulkXlsxFileInterpreter extends \Pimcore\Bundle\DataImporterBundle\DataSou
         }
         else{
             $this->uniqueColumns = array();
-        }  
-        
+        }
+
     }
 }

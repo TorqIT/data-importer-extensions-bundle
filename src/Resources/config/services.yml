@@ -94,6 +94,10 @@ services:
         tags:
             - { name: "pimcore.datahub.data_importer.operator", type: "regexReplace" }
 
+    TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Simple\FieldCollectionOperator:
+        tags:
+            - { name: "pimcore.datahub.data_importer.operator", type: "fieldCollectionOperator" }
+
     TorqIT\DataImporterExtensionsBundle\Mapping\DataTarget\Property:
         tags:
             - { name: "pimcore.datahub.data_importer.data_target", type: "property" }
@@ -123,9 +127,28 @@ services:
                     type: "imageGalleryAppender",
                 }
 
+    TorqIT\DataImporterExtensionsBundle\Mapping\DataTarget\FieldCollection:
+        tags:
+            - {
+                    name: "pimcore.datahub.data_importer.data_target",
+                    type: "fieldCollection",
+                }
+
     TorqIT\DataImporterExtensionsBundle\DataSource\Loader\BulkSqlDataLoader:
         tags:
             - { name: "pimcore.datahub.data_importer.loader", type: "bulkSql" }
+
+    TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Simple\AsLink:
+        tags:
+            - { name: "pimcore.datahub.data_importer.operator", type: "asLink" }
+
+    TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Simple\AsCountryCode:
+        tags:
+            - { name: "pimcore.datahub.data_importer.operator", type: "asCountryCode" }
+
+    Pimcore\Bundle\DataImporterBundle\Mapping\Type\TransformationDataTypeService: 
+        class: TorqIT\DataImporterExtensionsBundle\Mapping\Type\TransformationDataTypeService
+
 # add more services, or override services that need manual wiring
 #        TorqIT\DataImporterExtensionsBundle\ExampleClass:
 #                arguments:

@@ -14,7 +14,7 @@ class AdvancedPathBuilder{
             
             $matches = array();
 
-            preg_match_all('/\$((\[[0-9A-Za-z]+\])+)/', $part, $matches);
+            preg_match_all('/\$((\[[0-9A-Za-z_\-\ ]+\])+)/', $part, $matches);
 
             if(count($matches) && count($matches[0])){
                 foreach($matches[0] as $mIndex => $m){
