@@ -1,7 +1,7 @@
 {
   "name": "torqit/data-importer-extensions-bundle",
   "type": "pimcore-bundle",
-  "license": "POCL",
+  "license": "proprietary",
   "authors": [
     {
       "name": "Jeremy Noonan",
