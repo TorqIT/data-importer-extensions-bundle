@@ -188,3 +188,11 @@ This allows a data object to be loaded based on the value of a property stored o
 This allows locating objects using the **Path** syntax described earlier in this ReadMe.
 
 Using the example Excel file in the **Path** section you could create a Data Object with parent `/Products/Cars/GMC/Sierra/2015` using Path Syntax `/Products/Cars/$[1]/$[2]/$[0]`. 
+
+
+# License
+
+This bundle is licensed under the Pimcore Open Core License (POCL)
+and is intended for use with Pimcore Platform 2025.1 and newer.
+
+See LICENSE.md for full license text.
