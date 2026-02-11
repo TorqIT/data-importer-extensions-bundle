@@ -190,6 +190,7 @@ This allows locating objects using the **Path** syntax described earlier in this
 Using the example Excel file in the **Path** section you could create a Data Object with parent `/Products/Cars/GMC/Sierra/2015` using Path Syntax `/Products/Cars/$[1]/$[2]/$[0]`. 
 
 
+
 # License
 
 This bundle is licensed under the Pimcore Open Core License (POCL)
