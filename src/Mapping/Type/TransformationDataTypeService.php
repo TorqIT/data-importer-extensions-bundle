@@ -9,5 +9,7 @@ class TransformationDataTypeService extends BaseTransformationDataTypeService
     public function __construct()
     {
         $this->appendTypeMapping('link', 'link');
+        $this->appendTypeMapping('table', 'table');
+        $this->appendTypeMapping('structuredTable', 'table');
     }
 }

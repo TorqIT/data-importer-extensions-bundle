@@ -50,6 +50,8 @@ class TorqITDataImporterExtensionsBundle extends AbstractPimcoreBundle implement
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/operator/asCountryCode.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/datatarget/fieldCollection.js',
             '/bundles/torqitdataimporterextensions/js/pimcore/mapping/operator/fieldCollectionOperator.js',
+            '/bundles/torqitdataimporterextensions/js/pimcore/mapping/datatarget/table.js',
+            '/bundles/torqitdataimporterextensions/js/pimcore/mapping/operator/asTable.js',
         ];
     }
 }
