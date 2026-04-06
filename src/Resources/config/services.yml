@@ -149,6 +149,14 @@ services:
     Pimcore\Bundle\DataImporterBundle\Mapping\Type\TransformationDataTypeService: 
         class: TorqIT\DataImporterExtensionsBundle\Mapping\Type\TransformationDataTypeService
 
+    TorqIT\DataImporterExtensionsBundle\Mapping\DataTarget\Table:
+        tags:
+            - { name: "pimcore.datahub.data_importer.data_target", type: "table" }
+
+    TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Simple\AsTable:
+        tags:
+            - { name: "pimcore.datahub.data_importer.operator", type: "asTable" }
+
 # add more services, or override services that need manual wiring
 #        TorqIT\DataImporterExtensionsBundle\ExampleClass:
 #                arguments:
