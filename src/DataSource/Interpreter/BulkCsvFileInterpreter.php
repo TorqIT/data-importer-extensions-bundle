@@ -24,6 +24,7 @@ class BulkCsvFileInterpreter extends CsvFileInterpreter
         $writeEscape = '';
 
         if (($readHandle = fopen($path, 'r')) !== false && ($writeHandle = fopen($tmpCsv, 'w')) !== false) {
+            $header = null;
             $currentRow = 0;
             while (($row = fgetcsv(
                 $readHandle,
@@ -33,7 +34,13 @@ class BulkCsvFileInterpreter extends CsvFileInterpreter
                 )) !== false) {
                 $currentRow++;
                 if ($currentRow === 1 && $this->skipFirstRow) {
+                    if ($this->saveHeaderName) {
+                        $header = $row;
+                    }
                     continue;
+                }
+                if ($header !== null) {
+                    $row = array_combine($header, $row);
                 }
                 fputcsv(
                     $writeHandle,
