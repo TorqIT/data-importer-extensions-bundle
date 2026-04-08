@@ -43,6 +43,31 @@ For an XML file:
 ```
 the **Path Syntax** would use the Attribute names instead `/Products/Cars/$[Make]/$[Model]/$[Year]`
 
+### Regex Operations
+
+You can apply regex operations to column values by appending one or more `{}` blocks after a column reference. Two types of operations are supported:
+
+#### Regex Extract
+
+Use `{/pattern/flags}` to extract a matching portion of the value. If the pattern contains a capture group, the first capture group is used; otherwise the full match is returned.
+
+For example, given a column containing `Category > Subcategory`:
+- `$[0]{/^([^>]+)/}` extracts everything before the first `>` → `Category`
+
+#### Regex Substitution
+
+Use `{s/pattern/replacement/flags}` to perform a find-and-replace on the value (using [preg_replace](https://www.php.net/manual/en/function.preg-replace.php) syntax). Add the `g` flag to replace all occurrences; without it only the first match is replaced.
+
+For example:
+- `$[0]{s/ /-/g}` replaces all spaces with hyphens
+- `$[0]{s/[^a-zA-Z0-9]//g}` strips all non-alphanumeric characters
+
+#### Chaining Operations
+
+Multiple `{}` blocks can be chained and will be applied in order from left to right:
+
+`$[0]{/^([^>]+)/}{s/ /-/g}` first extracts text before `>`, then replaces spaces with hyphens.
+
 ## Data Interpreters
 
 Data Interpreters are the supported "File Formats" that the Data Importer bundle can use. We've added a few of our own.

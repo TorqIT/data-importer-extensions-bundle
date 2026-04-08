@@ -98,6 +98,10 @@ services:
         tags:
             - { name: "pimcore.datahub.data_importer.operator", type: "fieldCollectionOperator" }
 
+    TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Simple\ArrayVal:
+        tags:
+            - { name: "pimcore.datahub.data_importer.operator", type: "arrayVal" }
+
     TorqIT\DataImporterExtensionsBundle\Mapping\DataTarget\Property:
         tags:
             - { name: "pimcore.datahub.data_importer.data_target", type: "property" }
@@ -156,6 +160,15 @@ services:
     TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Simple\AsTable:
         tags:
             - { name: "pimcore.datahub.data_importer.operator", type: "asTable" }
+
+    TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Simple\LoadOrCreateDataObject:
+        tags:
+            - { name: "pimcore.datahub.data_importer.operator", type: "loadDataObject" }
+
+    Pimcore\Bundle\DataImporterBundle\Mapping\Operator\Simple\LoadDataObject:
+        class: TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Simple\LoadOrCreateDataObject
+        tags:
+            - { name: "pimcore.datahub.data_importer.operator", type: "loadDataObject" }
 
 # add more services, or override services that need manual wiring
 #        TorqIT\DataImporterExtensionsBundle\ExampleClass:
