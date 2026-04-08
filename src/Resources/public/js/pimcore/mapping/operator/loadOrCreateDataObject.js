@@ -1,13 +1,13 @@
 (function () {
-    var originalGetFormItems = pimcore.plugin.pimcoreDataImporterBundle.configuration.components.mapping.operator.loadDataObject.prototype.getFormItems;
+    const originalGetFormItems = pimcore.plugin.pimcoreDataImporterBundle.configuration.components.mapping.operator.loadDataObject.prototype.getFormItems;
 
     pimcore.plugin.pimcoreDataImporterBundle.configuration.components.mapping.operator.loadDataObject.addMethods({
         getFormItems: function () {
-            var parentItems = originalGetFormItems.call(this);
+            const parentItems = originalGetFormItems.call(this);
 
             this.data.settings = this.data.settings || {};
 
-            var createPathField = Ext.create('Ext.form.field.Text', {
+            const createPathField = Ext.create('Ext.form.field.Text', {
                 name: 'settings.createPath',
                 value: this.data.settings.createPath || '/',
                 fieldCls: 'pimcore_droptarget_input',
@@ -32,7 +32,7 @@
                                 if (!pimcore.helpers.dragAndDropValidateSingleItem(data)) {
                                     return false;
                                 }
-                                var record = data.records[0].data;
+                                const record = data.records[0].data;
                                 if (record.elementType === 'object' && record.type === 'folder') {
                                     createPathField.setValue(record.path);
                                     return true;
@@ -45,7 +45,7 @@
                 }
             });
 
-            var createPathContainer = Ext.create('Ext.form.FieldContainer', {
+            const createPathContainer = Ext.create('Ext.form.FieldContainer', {
                 fieldLabel: t('plugin_pimcore_datahub_data_importer_configpanel_create_path'),
                 layout: 'hbox',
                 hidden: !this.data.settings.createIfNotFound,
@@ -80,16 +80,24 @@
                 style: { padding: 0 }
             });
 
+            const publishOnCreate = Ext.create('Ext.form.field.Checkbox', {
+                fieldLabel: t('plugin_pimcore_datahub_data_importer_configpanel_publish_on_create'),
+                name: 'settings.publishOnCreate',
+                allowBlank: true,
+                value: this.data.settings.publishOnCreate || false,
+                hidden: !this.data.settings.createIfNotFound
+            });
+
             // Find the loadUnpublished checkbox from parent items
-            var loadUnpublishedCheckbox = null;
-            for (var i = 0; i < parentItems.length; i++) {
+            let loadUnpublishedCheckbox = null;
+            for (let i = 0; i < parentItems.length; i++) {
                 if (parentItems[i].name === 'settings.loadUnpublished') {
                     loadUnpublishedCheckbox = parentItems[i];
                     break;
                 }
             }
 
-            var createIfNotFound = Ext.create('Ext.form.field.Checkbox', {
+            const createIfNotFound = Ext.create('Ext.form.field.Checkbox', {
                 fieldLabel: t('plugin_pimcore_datahub_data_importer_configpanel_create_if_not_found'),
                 name: 'settings.createIfNotFound',
                 allowBlank: true,
@@ -97,6 +105,7 @@
                 listeners: {
                     change: function (cb, checked) {
                         createPathContainer.setHidden(!checked);
+                        publishOnCreate.setHidden(!checked);
                         if (loadUnpublishedCheckbox) {
                             if (checked) {
                                 loadUnpublishedCheckbox.setValue(true);
@@ -118,6 +127,7 @@
 
             parentItems.push(createIfNotFound);
             parentItems.push(createPathContainer);
+            parentItems.push(publishOnCreate);
 
             return parentItems;
         }

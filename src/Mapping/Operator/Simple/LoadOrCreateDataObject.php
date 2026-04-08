@@ -15,12 +15,15 @@ class LoadOrCreateDataObject extends LoadDataObject
 {
     protected bool $createIfNotFound = false;
 
+    protected bool $publishOnCreate = false;
+
     protected string $createPath = '/';
 
     public function setSettings(array $settings): void
     {
         parent::setSettings($settings);
         $this->createIfNotFound = (bool) ($settings['createIfNotFound'] ?? false);
+        $this->publishOnCreate = (bool) ($settings['publishOnCreate'] ?? false);
         $this->loadUnpublished = $this->loadUnpublished || $this->createIfNotFound;
         $this->createPath = $settings['createPath'] ?? '/';
     }
@@ -58,7 +61,7 @@ class LoadOrCreateDataObject extends LoadDataObject
                 $created = $this->createDataObject(trim((string) $data));
                 $objects[] = $created;
                 $this->applicationLogger->info(
-                    sprintf('Created new data object with key `%s` at path `%s`', $created->getKey(), $this->createPath),
+                    sprintf('Created new data object with key `%s` at `%s`', $created->getKey(), $created->getRealFullPath()),
                     ['component' => PimcoreDataImporterBundle::LOGGER_COMPONENT_PREFIX . $this->configName]
                 );
             } catch (\Throwable $e) {
@@ -91,10 +94,11 @@ class LoadOrCreateDataObject extends LoadDataObject
             );
         }
 
+        $safeKey = Service::getValidKey($keyValue, 'object');
         $className = '\\Pimcore\\Model\\DataObject\\' . ucfirst($class->getName());
         $parentFolder = Service::createFolderByPath($this->createPath);
 
-        $fullPath = rtrim($this->createPath, '/') . '/' . $keyValue;
+        $fullPath = rtrim($this->createPath, '/') . '/' . $safeKey;
         $existing = DataObject::getByPath($fullPath);
         if ($existing instanceof DataObject\Concrete) {
             return $existing;
@@ -102,8 +106,8 @@ class LoadOrCreateDataObject extends LoadDataObject
 
         $object = new $className();
         $object->setParent($parentFolder);
-        $object->setKey($keyValue);
-        $object->setPublished(false);
+        $object->setKey($safeKey);
+        $object->setPublished($this->publishOnCreate);
 
         if ($this->attributeName) {
             $setter = 'set' . ucfirst($this->attributeName);
