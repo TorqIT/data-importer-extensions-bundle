@@ -16,6 +16,10 @@ services:
         public: true
         tags: ["controller.service_arguments"]
 
+    TorqIT\DataImporterExtensionsBundle\Service\:
+      resource: "../../Service"
+      public: true
+
     TorqIT\DataImporterExtensionsBundle\Resolver\Load\AdvancedPathStrategy:
         tags:
             - {
