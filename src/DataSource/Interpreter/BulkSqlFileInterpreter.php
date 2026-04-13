@@ -7,7 +7,7 @@ use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
 #[Autoconfigure(calls: [['setLogger', ['@logger']]])]
 #[AutoconfigureTag(name: 'monolog.logger', attributes: ['channel' => 'DATA-IMPORTER'])]
-#[AutoconfigureTag(name: 'pimcore.datahub.data_importer.operator', attributes: ['type' => 'safeKey'])]
+#[AutoconfigureTag(name: 'pimcore.datahub.data_importer.operator', attributes: ['type' => 'bulkSql'])]
 class BulkSqlFileInterpreter extends BulkCsvFileInterpreter
 {
     public function setSettings(array $settings): void
