@@ -9,8 +9,6 @@ services:
         # if you need to do this, you can override this setting on individual services
         public: false
 
-    # controllers are imported separately to make sure they're public
-    # and have a tag that allows actions to type-hint services
     TorqIT\DataImporterExtensionsBundle\Controller\:
         resource: "../../Controller"
         public: true
@@ -31,6 +29,15 @@ services:
     TorqIT\DataImporterExtensionsBundle\Mapping\:
         resource: "../../Mapping"
         public: true
+
+    ################
+    ### EXTERNAL ###
+    ################
+
+    Pimcore\Bundle\DataImporterBundle\Mapping\Operator\Factory\QuantityValueArray:
+        class: TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Factory\QuantityValueArray
+        tags:
+            - { name: "pimcore.datahub.data_importer.operator", type: "quantityValueArray" }
 
     Pimcore\Bundle\DataImporterBundle\Mapping\Type\TransformationDataTypeService:
         class: TorqIT\DataImporterExtensionsBundle\Mapping\Type\TransformationDataTypeService

@@ -1,16 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Factory;
 
 use Pimcore\Bundle\DataImporterBundle\Exception\InvalidConfigurationException;
-use Pimcore\Bundle\DataImporterBundle\Mapping\Operator\AbstractOperator;
+use Pimcore\Bundle\DataImporterBundle\Mapping\Operator\Factory\QuantityValueArray as BaseQuantityValueArray;
 use Pimcore\Bundle\DataImporterBundle\Mapping\Type\TransformationDataTypeService;
-use Pimcore\Model\DataObject\Data\QuantityValueRange;
+use Pimcore\Model\DataObject\Data\QuantityValue;
 use Pimcore\Model\DataObject\QuantityValue\Unit;
-use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
-#[AutoconfigureTag(name: 'pimcore.datahub.data_importer.operator', attributes: ['type' => 'quantityValueRangeArray'])]
-class QuantityValueRangeArray extends AbstractOperator
+class QuantityValueArray extends BaseQuantityValueArray
 {
     protected string $unitSource = 'id';
     protected ?string $staticUnitId = null;
@@ -32,18 +32,19 @@ class QuantityValueRangeArray extends AbstractOperator
         $result = [];
 
         foreach ($inputData as $key => $data) {
-            $minimum = $data[0] ?? null;
-            $maximum = $data[1] ?? null;
+            $value = null;
             $unitId = null;
 
             switch ($this->unitSource) {
                 case 'id':
-                    $unitId = $data[2] ?? null;
+                    $value = $data[0] ?? null;
+                    $unitId = $data[1] ?? null;
                     break;
 
                 case 'abbr':
-                    if (isset($data[2])) {
-                        $unit = Unit::getByAbbreviation($data[2]);
+                    $value = $data[0] ?? null;
+                    if (isset($data[1])) {
+                        $unit = Unit::getByAbbreviation($data[1]);
                         if ($unit instanceof Unit) {
                             $unitId = $unit->getId();
                         }
@@ -51,17 +52,23 @@ class QuantityValueRangeArray extends AbstractOperator
                     break;
 
                 case 'static':
+                    $value = is_array($data) ? ($data[0] ?? null) : $data;
                     $unitId = $this->staticUnitId;
                     break;
             }
 
-            if (($minimum === null && $maximum === null) && $this->unitNullIfNoValue) {
+            if (($value === null || $value === '') && $this->unitNullIfNoValue) {
                 $unitId = null;
             }
 
-            if ($minimum !== null && $maximum !== null && $unitId !== null) {
-                $result[$key] = new QuantityValueRange(floatval($minimum), floatval($maximum), $unitId);
+            if (($value === null || $value === '') && $unitId === null) {
+                $result[$key] = null;
+                continue;
             }
+
+            $result[$key] = new QuantityValue(
+                $value === null ? null : floatval($value), $unitId
+            );
         }
 
         return $result;
@@ -72,37 +79,13 @@ class QuantityValueRangeArray extends AbstractOperator
         if ($inputType !== TransformationDataTypeService::DEFAULT_ARRAY) {
             throw new InvalidConfigurationException(
                 sprintf(
-                    "Unsupported input type '%s' for quantity value range array operator at transformation position %s",
+                    "Unsupported input type '%s' for quantity value array operator at transformation position %s",
                     $inputType,
                     $index
                 )
             );
         }
 
-        return 'array';
-    }
-
-    public function generateResultPreview($inputData)
-    {
-        if (!is_array($inputData)) {
-            return $inputData;
-        }
-
-        $preview = [];
-
-        foreach ($inputData as $key => $data) {
-            if ($data instanceof QuantityValueRange) {
-                $preview[$key] = 'QuantityValueRange: ' .
-                    $data->getMinimum() .
-                    ' - ' .
-                    $data->getMaximum() .
-                    ' ' .
-                    ($data->getUnit() ? $data->getUnit()->getAbbreviation() : '');
-            } else {
-                $preview[$key] = $data;
-            }
-        }
-
-        return $preview;
+        return TransformationDataTypeService::QUANTITY_VALUE_ARRAY;
     }
 }
