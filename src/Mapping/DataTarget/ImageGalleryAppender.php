@@ -8,22 +8,15 @@ use Pimcore\Bundle\DataImporterBundle\Exception\InvalidConfigurationException;
 use Pimcore\Bundle\DataImporterBundle\Mapping\DataTarget\Direct;
 use Pimcore\Model\DataObject\Data\ImageGallery;
 use Pimcore\Model\Element\ElementInterface;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
+#[AutoconfigureTag(name: 'pimcore.datahub.data_importer.data_target', attributes: ['type' => 'imageGalleryAppender'])]
 class ImageGalleryAppender extends Direct
 {
-    
-    /**
-     * @var bool
-     */
-    protected $includeDuplicates;
-
+    protected bool $includeDuplicates;
 
     /**
-     * @param ElementInterface $element
      * @param ImageGallery $data
-     *
-     * @return void
-     *
      * @throws InvalidConfigurationException
      */
     public function assignData(ElementInterface $element, $data): void
@@ -31,10 +24,8 @@ class ImageGalleryAppender extends Direct
         if (empty($data->getItems())) {
             return;
         }
-        
-        $setterParts = explode('.', $this->fieldName);
-        $valueContainer = null;
 
+        $setterParts = explode('.', $this->fieldName);
         if (count($setterParts) === 1) {
             //direct class attribute
             $getter = 'get' . ucfirst($this->fieldName);
@@ -42,13 +33,10 @@ class ImageGalleryAppender extends Direct
 
         } elseif (count($setterParts) === 3) {
             //brick attribute
-
             $brickContainerGetter = 'get' . ucfirst($setterParts[0]);
             $brickContainer = $element->$brickContainerGetter();
-
             $brickGetter = 'get' . ucfirst($setterParts[1]);
             $brick = $brickContainer->$brickGetter();
-
             if (empty($brick)) {
                 $brickClassName = '\\Pimcore\\Model\\DataObject\\Objectbrick\\Data\\' . ucfirst($setterParts[1]);
                 $brick = new $brickClassName($element);
@@ -65,7 +53,6 @@ class ImageGalleryAppender extends Direct
 
         /** @var ImageGallery $gallery */
         $gallery = $valueContainer->$getter();
-
 
         if (!$gallery) {
             $gallery = $data;
@@ -89,14 +76,9 @@ class ImageGalleryAppender extends Direct
         parent::assignData($element, $gallery);
     }
 
-    /**
-     * @param array $settings
-     *
-     * @throws InvalidConfigurationException
-     */
+    /** @throws InvalidConfigurationException */
     public function setSettings(array $settings): void
     {
         parent::setSettings($settings);
     }
-   
 }

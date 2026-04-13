@@ -2,19 +2,19 @@
 
 namespace TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Simple;
 
-use Pimcore\Bundle\DataImporterBundle\Exception\InvalidConfigurationException;
 use Pimcore\Bundle\DataImporterBundle\Mapping\Operator\AbstractOperator;
-use Pimcore\Log\ApplicationLogger;
-use Pimcore\Model\DataObject\Data\Video;
-use Torq\PimcoreHelpersBundle\Service\Utility\ArrayUtils;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
+#[Autoconfigure(calls: [['setLogger', ['@logger']]])]
+#[AutoconfigureTag(name: 'monolog.logger', attributes: ['channel' => 'DATA-IMPORTER'])]
+#[AutoconfigureTag(name: 'pimcore.datahub.data_importer.operator', attributes: ['type' => 'eachAsArray'])]
 class EachAsArray extends AbstractOperator
 {
-    public function __construct(ApplicationLogger $applicationLogger, private ArrayUtils $utils)
+    public function __construct($applicationLogger)
     {
         parent::__construct($applicationLogger);
     }
-
 
     public function process($inputData, bool $dryRun = false)
     {

@@ -2,8 +2,12 @@
 
 namespace TorqIT\DataImporterExtensionsBundle\DataSource\Interpreter;
 
-use TorqIT\DataImporterExtensionsBundle\DataSource\Interpreter\BulkCsvFileInterpreter;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
+#[Autoconfigure(calls: [['setLogger', ['@logger']]])]
+#[AutoconfigureTag(name: 'monolog.logger', attributes: ['channel' => 'DATA-IMPORTER'])]
+#[AutoconfigureTag(name: 'pimcore.datahub.data_importer.operator', attributes: ['type' => 'safeKey'])]
 class BulkSqlFileInterpreter extends BulkCsvFileInterpreter
 {
     public function setSettings(array $settings): void

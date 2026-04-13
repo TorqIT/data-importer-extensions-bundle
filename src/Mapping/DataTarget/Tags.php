@@ -2,11 +2,12 @@
 
 namespace TorqIT\DataImporterExtensionsBundle\Mapping\DataTarget;
 
-use Pimcore\Model\Element\ElementInterface;
 use Pimcore\Bundle\DataImporterBundle\Mapping\DataTarget\DataTargetInterface;
-use Pimcore\Bundle\DataImporterBundle\Exception\InvalidConfigurationException;
+use Pimcore\Model\Element\ElementInterface;
 use Pimcore\Model\Element\Tag;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
+#[AutoconfigureTag(name: 'pimcore.datahub.data_importer.data_target', attributes: ['type' => 'tags'])]
 class Tags implements DataTargetInterface
 {
     private bool $removeOtherTags;
@@ -37,8 +38,8 @@ class Tags implements DataTargetInterface
 
     public function setSettings(array $settings): void
     {
-        $this->removeOtherTags = isset($settings['removeOtherTags']) ? $settings['removeOtherTags'] : false;
-        $this->createTagsIfNotExists = isset($settings['createTagsIfNotExists']) ? $settings['createTagsIfNotExists'] : true;
+        $this->removeOtherTags = $settings['removeOtherTags'] ?? false;
+        $this->createTagsIfNotExists = $settings['createTagsIfNotExists'] ?? true;
     }
 
     private function buildTags(array $tags): Tag

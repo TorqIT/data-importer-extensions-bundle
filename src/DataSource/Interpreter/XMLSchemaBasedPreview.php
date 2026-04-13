@@ -2,22 +2,20 @@
 
 namespace TorqIT\DataImporterExtensionsBundle\DataSource\Interpreter;
 
-use Pimcore\Bundle\DataImporterBundle\Preview\Model\PreviewData;
-use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
-use TorqIT\DataImporterExtensionsBundle\DataSource\DataLoader\Xlsx\XlsxDataLoaderFactory;
-use DOMXPath;
 use DOMDocument;
 use DOMNodeList;
+use DOMXPath;
+use Pimcore\Bundle\DataImporterBundle\DataSource\Interpreter\XmlFileInterpreter;
+use Pimcore\Bundle\DataImporterBundle\Preview\Model\PreviewData;
 use Symfony\Component\Config\Util\XmlUtils;
-use Pimcore\Bundle\DataImporterBundle\PimcoreDataImporterBundle;
-use Symfony\Component\Config\Util\Exception\XmlParsingException;
-use Pimcore\Bundle\DataImporterBundle\Exception\InvalidInputException;
-use Pimcore\Bundle\DataImporterBundle\Exception\InvalidConfigurationException;
-use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
-class XMLSchemaBasedPreview extends \Pimcore\Bundle\DataImporterBundle\DataSource\Interpreter\XmlFileInterpreter
+#[Autoconfigure(calls: [['setLogger', ['@logger']]])]
+#[AutoconfigureTag(name: 'monolog.logger', attributes: ['channel' => 'DATA-IMPORTER'])]
+#[AutoconfigureTag(name: 'pimcore.datahub.data_importer.interpreter', attributes: ['type' => 'XMLSchemaBasedPreview'])]
+class XMLSchemaBasedPreview extends XmlFileInterpreter
 {
-
     public function previewData(string $path, int $recordNumber = 0, array $mappedColumns = []): PreviewData
     {
         $previewData = [];

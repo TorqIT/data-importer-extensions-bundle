@@ -6,8 +6,10 @@ use Pimcore\Bundle\DataImporterBundle\Exception\InvalidConfigurationException;
 use Pimcore\Bundle\DataImporterBundle\Mapping\Operator\AbstractOperator;
 use Pimcore\Log\ApplicationLogger;
 use Pimcore\Model\DataObject\Data\Video;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 use Torq\PimcoreHelpersBundle\Service\Utility\ArrayUtils;
 
+#[AutoconfigureTag(name: 'pimcore.datahub.data_importer.operator', attributes: ['type' => 'asVideo'])]
 class AsVideo extends AbstractOperator
 {
     protected string $videoType;

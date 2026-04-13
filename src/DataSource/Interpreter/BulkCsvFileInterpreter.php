@@ -7,12 +7,15 @@ use Doctrine\DBAL\Exception;
 use Pimcore\Bundle\DataImporterBundle\DataSource\Interpreter\CsvFileInterpreter;
 use Pimcore\Bundle\DataImporterBundle\Processing\ImportProcessingService;
 use Pimcore\Db;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
+#[Autoconfigure(calls: [['setLogger', ['@logger']]])]
+#[AutoconfigureTag(name: 'monolog.logger', attributes: ['channel' => 'DATA-IMPORTER'])]
+#[AutoconfigureTag(name: 'pimcore.datahub.data_importer.interpreter', attributes: ['type' => 'bulkCsv'])]
 class BulkCsvFileInterpreter extends CsvFileInterpreter
 {
-    /**
-     * @throws Exception
-     */
+    /** @throws Exception */
     protected function doInterpretFileAndCallProcessRow(string $path): void
     {
         $db = Db::get();

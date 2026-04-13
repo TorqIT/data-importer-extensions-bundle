@@ -11,11 +11,13 @@ use Symfony\Component;
 use Pimcore;
 use Pimcore\Bundle\DataImporterBundle\DataSource\Loader\DataLoaderInterface;
 use Pimcore\Bundle\DataImporterBundle\Exception\InvalidConfigurationException;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 use TorqIT\DataImporterExtensionsBundle\Exception\FetchDatabaseDataException;
 use TorqIT\DataImporterExtensionsBundle\Exception\InvalidConnectionException;
 use TorqIT\DataImporterExtensionsBundle\Exception\NotResourceException;
 use TorqIT\DataImporterExtensionsBundle\Exception\ParseArrayToJsonException;
 
+#[AutoconfigureTag(name: 'pimcore.datahub.data_importer.data_target', attributes: ['type' => 'bulkSql'])]
 class BulkSqlDataLoader implements DataLoaderInterface
 {
     private string $connection;
@@ -24,7 +26,6 @@ class BulkSqlDataLoader implements DataLoaderInterface
     private string $where;
     private string $groupBy;
     private ?int $limit;
-
     private string $importFilePath;
     private Connection $databaseConnection;
 
@@ -88,7 +89,6 @@ class BulkSqlDataLoader implements DataLoaderInterface
 
     /**
      * @param array<string, string> $settings
-     *
      * @throws InvalidConfigurationException
      */
     public function setSettings(array $settings): void
@@ -112,9 +112,7 @@ class BulkSqlDataLoader implements DataLoaderInterface
         $this->limit = array_key_exists('limit', $settings) ? intval($settings['limit']) : null;
     }
 
-    /**
-     * @throws InvalidConnectionException
-     */
+    /** @throws InvalidConnectionException */
     private function setUpConnection(): void
     {
         $container = Pimcore::getContainer();

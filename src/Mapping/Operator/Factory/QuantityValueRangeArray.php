@@ -4,7 +4,9 @@ namespace TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Factory;
 
 use Pimcore\Bundle\DataImporterBundle\Mapping\Operator\AbstractOperator;
 use Pimcore\Model\DataObject\Data\QuantityValueRange;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
+#[AutoconfigureTag(name: 'pimcore.datahub.data_importer.operator', attributes: ['type' => 'quantityValueRangeArray'])]
 class QuantityValueRangeArray extends AbstractOperator
 {
     public function process($inputData, bool $dryRun = false)

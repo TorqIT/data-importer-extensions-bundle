@@ -2,19 +2,16 @@
 
 namespace TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Simple;
 
+use Pimcore\Bundle\DataImporterBundle\Mapping\Operator\Simple\StringReplace;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 use Symfony\Component\Intl\Countries;
 
-class AsCountryCode extends \Pimcore\Bundle\DataImporterBundle\Mapping\Operator\Simple\StringReplace
+#[AutoconfigureTag(name: 'pimcore.datahub.data_importer.operator', attributes: ['type' => 'asCountryCode'])]
+class AsCountryCode extends StringReplace
 {
-
     /**
-     * @param mixed $inputData
-     * @param bool $dryRun
-     *
-     * @return array|false|mixed|null
-     *
-     * Given input of 2- or 3- character country code, returns the 2-character country code.
-     * If the input is not a valid country code, returns an empty string.
+     *  Given input of 2- or 3- character country code, returns the 2-character country code.
+     *  If the input is not a valid country code, returns an empty string.
      */
     public function process($inputData, bool $dryRun = false)
     {
@@ -30,8 +27,6 @@ class AsCountryCode extends \Pimcore\Bundle\DataImporterBundle\Mapping\Operator\
                 $validCountryCode = Countries::getAlpha2Code($countryCode);
             }
         }
-
         return $validCountryCode;
     }
-
 }
