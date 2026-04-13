@@ -8,7 +8,7 @@ use Pimcore\Bundle\DataImporterBundle\Mapping\Operator\AbstractOperator;
 use Pimcore\Bundle\DataImporterBundle\Mapping\Type\TransformationDataTypeService;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 use Symfony\Contracts\Service\Attribute\Required;
-use Torq\PimcoreHelpersBundle\Service\Common\DataImporterExpressionLanguage;
+use TorqIT\DataImporterExtensionsBundle\Service\Common\DataImporterExpressionLanguage;
 
 #[AutoconfigureTag(name: 'pimcore.datahub.data_importer.operator', attributes: ['type' => 'symfonyExpression'])]
 class SymfonyExpression extends AbstractOperator
