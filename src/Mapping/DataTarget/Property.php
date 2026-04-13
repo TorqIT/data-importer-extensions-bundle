@@ -5,23 +5,16 @@
 namespace TorqIT\DataImporterExtensionsBundle\Mapping\DataTarget;
 
 use Pimcore\Bundle\DataImporterBundle\Exception\InvalidConfigurationException;
-use Pimcore\Model\DataObject;
-use Pimcore\Model\DataObject\Data\QuantityValue;
-use Pimcore\Model\Element\ElementInterface;
 use Pimcore\Bundle\DataImporterBundle\Mapping\DataTarget\DataTargetInterface;
+use Pimcore\Model\Element\ElementInterface;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
+#[AutoconfigureTag(name: 'pimcore.datahub.data_importer.data_target', attributes: ['type' => 'property'])]
 class Property implements DataTargetInterface
 {
-    /**
-     * @var string
-     */
-    protected $propertyName;
+    protected string $propertyName;
 
-    /**
-     * @param array $settings
-     *
-     * @throws InvalidConfigurationException
-     */
+    /** @throws InvalidConfigurationException */
     public function setSettings(array $settings): void
     {
         if (empty($settings['propertyName'])) {
@@ -31,14 +24,6 @@ class Property implements DataTargetInterface
         $this->propertyName = $settings['propertyName'];
     }
 
-    /**
-     * @param ElementInterface $element
-     * @param mixed $data
-     *
-     * @return void
-     *
-     * @throws InvalidConfigurationException
-     */
     public function assignData(ElementInterface $element, $data): void
     {
         $element->setProperty($this->propertyName, "text", $data);

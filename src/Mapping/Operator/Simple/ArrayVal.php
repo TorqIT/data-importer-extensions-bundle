@@ -6,23 +6,14 @@ namespace TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Simple;
 
 use Pimcore\Bundle\DataImporterBundle\Exception\InvalidConfigurationException;
 use Pimcore\Bundle\DataImporterBundle\Mapping\Operator\AbstractOperator;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
+#[AutoconfigureTag(name: 'pimcore.datahub.data_importer.operator', attributes: ['type' => 'arrayVal'])]
 class ArrayVal extends AbstractOperator
 {
-    /**
-     * @var int|string
-     */
-    protected $index;
-
-    /**
-     * @var bool
-     */
-    protected $recursiveSearch;
-
-    /**
-     * @var bool
-     */
-    protected $returnNullIfNotFound;
+    protected int|string $index;
+    protected bool $recursiveSearch;
+    protected bool $returnNullIfNotFound;
 
     public function setSettings(array $settings): void
     {
@@ -36,23 +27,18 @@ class ArrayVal extends AbstractOperator
         if (!is_array($inputData) && !empty($inputData)) {
             $inputData = [$inputData];
         }
-
         if ($this->recursiveSearch) {
             return $this->recursiveSearchFunc($inputData);
         }
-
         if (array_key_exists($this->index, $inputData)) {
             return $inputData[$this->index];
         }
-
         if (is_array($inputData) && empty($inputData)) {
             return null;
         }
-
         if ($this->returnNullIfNotFound) {
             return null;
         }
-
         throw new InvalidConfigurationException("There is no key $this->index in given array");
     }
 
@@ -69,7 +55,6 @@ class ArrayVal extends AbstractOperator
                 }
             }
         }
-
         return $arr;
     }
 
@@ -79,10 +64,8 @@ class ArrayVal extends AbstractOperator
             if ($this->recursiveSearch) {
                 return 'array';
             }
-
             return 'default';
         }
-
         throw new InvalidConfigurationException('Input must be an array!');
     }
 }

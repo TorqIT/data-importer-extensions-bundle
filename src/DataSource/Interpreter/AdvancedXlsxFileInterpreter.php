@@ -4,28 +4,19 @@
 
 namespace TorqIT\DataImporterExtensionsBundle\DataSource\Interpreter;
 
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use Pimcore\Bundle\DataImporterBundle\Preview\Model\PreviewData;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use TorqIT\DataImporterExtensionsBundle\DataSource\DataLoader\Xlsx\XlsxDataLoaderFactory;
 
+#[Autoconfigure(calls: [['setLogger', ['@logger']]])]
+#[AutoconfigureTag(name: 'monolog.logger', attributes: ['channel' => 'DATA-IMPORTER'])]
+#[AutoconfigureTag(name: 'pimcore.datahub.data_importer.interpreter', attributes: ['type' => 'advancedXlsx'])]
 class AdvancedXlsxFileInterpreter extends XlsxFileInterpreterWithColumnNames
 {
-
-    /**
-     * @var array
-     */
-    protected $uniqueColumns;
-
-    /**
-     * @var array
-     */
-    protected $uniqueHashes;
-
-    /**
-     * @var string
-     */
-    protected $rowFilter;
+    protected array $uniqueColumns;
+    protected array $uniqueHashes;
+    protected string $rowFilter;
 
     protected function doInterpretFileAndCallProcessRow(string $path): void
     {

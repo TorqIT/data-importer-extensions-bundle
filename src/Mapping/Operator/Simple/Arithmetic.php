@@ -3,8 +3,9 @@
 namespace TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Simple;
 
 
-use Pimcore\Bundle\DataImporterBundle\Mapping\Operator\AbstractOperator;
 use Pimcore\Bundle\DataImporterBundle\Exception\InvalidConfigurationException;
+use Pimcore\Bundle\DataImporterBundle\Mapping\Operator\AbstractOperator;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
 enum ArithmeticOperators: string
 {
@@ -14,22 +15,15 @@ enum ArithmeticOperators: string
     case Division = "Division";
 }
 
+#[AutoconfigureTag(name: 'pimcore.datahub.data_importer.operator', attributes: ['type' => 'arithmetic'])]
 class Arithmetic extends AbstractOperator
 {
-    /**
-     * @var string
-     */
-    protected $arithmeticOperator;
-
-    /**
-     * @var numeric
-     */
-    protected $staticNumber;
+    protected string $arithmeticOperator;
+    protected int|float $staticNumber;
 
     public function setSettings(array $settings): void
     {
         $this->arithmeticOperator = $settings['arithmeticOperator'] ?? ArithmeticOperators::Addition->value;
-
         $this->staticNumber = $settings['staticNumber'] ?? ($this->arithmeticOperator == ArithmeticOperators::Division->value ? 1 : 0);
     }
 
@@ -38,18 +32,13 @@ class Arithmetic extends AbstractOperator
         if (!$num = floatval($inputData)) {
             throw new InvalidConfigurationException("Input must be a numeric type!");
         }
-        switch ($this->arithmeticOperator) {
-            case ArithmeticOperators::Addition->value:
-                return $num + $this->staticNumber;
-            case ArithmeticOperators::Subtraction->value:
-                return $num - $this->staticNumber;
-            case ArithmeticOperators::Multiplication->value:
-                return $num * $this->staticNumber;
-            case ArithmeticOperators::Division->value:
-                return $num / $this->staticNumber;
-            default:
-                throw new InvalidConfigurationException("Arithmetic operator not valid");
-        }
+        return match ($this->arithmeticOperator) {
+            ArithmeticOperators::Addition->value => $num + $this->staticNumber,
+            ArithmeticOperators::Subtraction->value => $num - $this->staticNumber,
+            ArithmeticOperators::Multiplication->value => $num * $this->staticNumber,
+            ArithmeticOperators::Division->value => $num / $this->staticNumber,
+            default => throw new InvalidConfigurationException("Arithmetic operator not valid"),
+        };
     }
 
     public function evaluateReturnType(string $inputType, int $index = null): string

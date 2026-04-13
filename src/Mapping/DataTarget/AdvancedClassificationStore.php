@@ -5,52 +5,33 @@
 namespace TorqIT\DataImporterExtensionsBundle\Mapping\DataTarget;
 
 use Pimcore\Bundle\DataImporterBundle\Exception\InvalidConfigurationException;
-use Pimcore\Model\Element\ElementInterface;
 use Pimcore\Bundle\DataImporterBundle\Mapping\DataTarget\Classificationstore as ClassificationStoreDataTarget;
+use Pimcore\Model\DataObject\Classificationstore;
 use Pimcore\Model\DataObject\Data\QuantityValue;
+use Pimcore\Model\Element\ElementInterface;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
-
+#[AutoconfigureTag(name: 'pimcore.datahub.data_importer.data_target', attributes: ['type' => 'advancedClassificationStore'])]
 class AdvancedClassificationStore extends ClassificationStoreDataTarget
 {
-    
-    /**
-     * @var bool
-     */
-    protected $writeIfSourceIsEmpty;
+    protected bool $writeIfSourceIsEmpty;
+    protected bool $writeIfTargetIsNotEmpty;
 
-    /**
-     * @var bool
-     */
-    protected $writeIfTargetIsNotEmpty;
-
-    /**
-     * @param array $settings
-     *
-     * @throws InvalidConfigurationException
-     */
+    /** @throws InvalidConfigurationException */
     public function setSettings(array $settings): void
     {
         parent::setSettings($settings);
-
-        //note - cannot be replaced with ?? as $settings['writeIfSourceIsEmpty'] can be false on purpose
-        $this->writeIfSourceIsEmpty = isset($settings['writeIfSourceIsEmpty']) ? $settings['writeIfSourceIsEmpty'] : true;
-        $this->writeIfTargetIsNotEmpty = isset($settings['writeIfTargetIsNotEmpty']) ? $settings['writeIfTargetIsNotEmpty'] : true;
+        $this->writeIfSourceIsEmpty = $settings['writeIfSourceIsEmpty'] ?? true;
+        $this->writeIfTargetIsNotEmpty = $settings['writeIfTargetIsNotEmpty'] ?? true;
     }
 
-    /**
-     * @param ElementInterface $element
-     * @param mixed $data
-     *
-     * @return void
-     *
-     * @throws InvalidConfigurationException
-     */
+    /** @throws InvalidConfigurationException */
     public function assignData(ElementInterface $element, $data)
     {
         $getter = 'get' . ucfirst($this->fieldName);
         $classificationStore = $element->$getter();
 
-        if (!($classificationStore instanceof \Pimcore\Model\DataObject\Classificationstore)) {
+        if (!($classificationStore instanceof Classificationstore)) {
             throw new InvalidConfigurationException('Field ' . $this->fieldName . ' is not a classification store.');
         }
 
@@ -68,15 +49,12 @@ class AdvancedClassificationStore extends ClassificationStoreDataTarget
         if ($this->writeIfTargetIsNotEmpty === true && $this->writeIfSourceIsEmpty === true) {
             return true;
         }
-
         if (!empty($currentValue) && $this->writeIfTargetIsNotEmpty === false) {
             return false;
         }
-        
         if ($this->writeIfSourceIsEmpty === false && (empty($newValue) || ($newValue instanceof QuantityValue && empty($newValue->getValue())))) {
             return false;
         }
-
         return true;
     }
 }

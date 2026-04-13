@@ -4,36 +4,29 @@
 
 namespace TorqIT\DataImporterExtensionsBundle\Resolver\Location;
 
+use Exception;
 use Pimcore\Bundle\DataImporterBundle\Exception\InvalidConfigurationException;
+use Pimcore\Bundle\DataImporterBundle\Resolver\Location\LocationStrategyInterface;
 use Pimcore\Bundle\DataImporterBundle\Tool\DataObjectLoader;
 use Pimcore\Model\DataObject;
 use Pimcore\Model\DataObject\Service;
 use Pimcore\Model\Element\ElementInterface;
-use Pimcore\Bundle\DataImporterBundle\Resolver\Location\LocationStrategyInterface;
-use Pimcore\Model\Element\Service as ElementService;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 use Symfony\Component\Lock\LockFactory;
-use Symfony\Component\Lock\PersistingStoreInterface;
 use TorqIT\DataImporterExtensionsBundle\Helper\AdvancedPathBuilder;
 
+#[AutoconfigureTag(name: 'pimcore.datahub.data_importer.resolver.location', attributes: ['type' => 'advancedParent'])]
 class AdvancedParentStrategy implements LocationStrategyInterface
 {
-    /**
-     * @var string
-     */
-    protected $advancedParent;
+    private const string LOCK_PREFIX = 'data-importer-extensions-advanced-parent-';
 
-    /**
-     * @var string
-     */
-    protected $fallbackPath;
+    protected string $advancedParent;
+    protected string $fallbackPath;
 
-    private const LOCK_PREFIX = 'data-importer-extensions-advanced-parent-';
-
-
-    /**
-     * @param DataObjectLoader $dataObjectLoader
-     */
-    public function __construct(protected DataObjectLoader $dataObjectLoader, private LockFactory $lockFactory, private PersistingStoreInterface $lockStore)
+    public function __construct(
+        protected DataObjectLoader $dataObjectLoader,
+        private LockFactory $lockFactory
+    )
     {
     }
 
@@ -44,28 +37,22 @@ class AdvancedParentStrategy implements LocationStrategyInterface
         }
 
         $this->advancedParent = $settings['advancedParent'];
-
         $this->fallbackPath = $settings['fallbackPath'] ?? null;
     }
 
     public function updateParent(ElementInterface $element, array $inputData): ElementInterface
     {
-        $newParent = null;
-
         $path = AdvancedPathBuilder::buildPath($inputData, $this->advancedParent);
-
         $newParent = $this->dataObjectLoader->loadByPath($path);
-
         if (!($newParent instanceof DataObject) && $path) {
             $lock = $this->lockFactory->createLock($this::LOCK_PREFIX . $path);
             if($lock->acquire(true)){
                 try{
                     Service::createFolderByPath($path);
+                } catch (Exception) {
                 }
-                catch(\Exception){}
                 $lock->release();
             }
-            
             $newParent = $this->dataObjectLoader->loadByPath($path);
         }
 

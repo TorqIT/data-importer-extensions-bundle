@@ -2,15 +2,13 @@
 
 namespace TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Simple;
 
-class RegexReplace extends \Pimcore\Bundle\DataImporterBundle\Mapping\Operator\Simple\StringReplace
-{
+use Pimcore\Bundle\DataImporterBundle\Mapping\Operator\Simple\StringReplace;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
-    /**
-     * @param mixed $inputData
-     * @param bool $dryRun
-     *
-     * @return array|false|mixed|null
-     */
+#[AutoconfigureTag(name: 'pimcore.datahub.data_importer.operator', attributes: ['type' => 'regexReplace'])]
+class RegexReplace extends StringReplace
+{
+    /** @return array|false|mixed|null */
     public function process($inputData, bool $dryRun = false)
     {
         $returnScalar = false;
@@ -33,5 +31,4 @@ class RegexReplace extends \Pimcore\Bundle\DataImporterBundle\Mapping\Operator\S
             return $inputData;
         }
     }
-
 }

@@ -5,34 +5,25 @@
 namespace TorqIT\DataImporterExtensionsBundle\DataSource\Interpreter;
 
 use Carbon\Carbon;
-use OpenSpout\Writer\CSV\Options;
-use OpenSpout\Writer\CSV\Writer;
 use OpenSpout\Common\Entity\Cell;
 use OpenSpout\Common\Entity\Row;
-
-use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
+use OpenSpout\Writer\CSV\Options;
+use OpenSpout\Writer\CSV\Writer;
 use Pimcore\Bundle\DataImporterBundle\Processing\ImportProcessingService;
 use Pimcore\Db;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use TorqIT\DataImporterExtensionsBundle\DataSource\DataLoader\Xlsx\XlsxDataLoaderFactory;
-use Pimcore\Bundle\DataImporterBundle\Preview\Model\PreviewData;
 
+#[Autoconfigure(calls: [['setLogger', ['@logger']]])]
+#[AutoconfigureTag(name: 'monolog.logger', attributes: ['channel' => 'DATA-IMPORTER'])]
+#[AutoconfigureTag(name: 'pimcore.datahub.data_importer.interpreter', attributes: ['type' => 'bulkXlsx'])]
 class BulkXlsxFileInterpreter extends XlsxFileInterpreterWithColumnNames
 {
-
-    /**
-     * @var array
-     */
-    protected $uniqueColumns;
-
-    /**
-     * @var array
-     */
-    protected $uniqueHashes;
-
-    /**
-     * @var string
-     */
-    protected $rowFilter;
+    protected array $uniqueColumns;
+    protected array $uniqueHashes;
+    protected string $rowFilter;
 
     protected function doInterpretFileAndCallProcessRow(string $path): void
     {

@@ -6,7 +6,9 @@ use Pimcore\Bundle\DataImporterBundle\Mapping\Operator\AbstractOperator;
 use Pimcore\Model\DataObject\Fieldcollection;
 use Pimcore\Model\DataObject\Fieldcollection\Data\AbstractData;
 use Pimcore\Bundle\DataImporterBundle\Exception\InvalidConfigurationException;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
+#[AutoconfigureTag(name: 'pimcore.datahub.data_importer.operator', attributes: ['type' => 'fieldCollectionOperator'])]
 class FieldCollectionOperator extends AbstractOperator
 {
     protected string $fieldCollectionType;
@@ -33,12 +35,7 @@ class FieldCollectionOperator extends AbstractOperator
         }
     }
 
-    /**
-     * @param mixed $inputData
-     * @param bool $dryRun
-     *
-     * @return array|false|mixed|null
-     */
+    /** @return Fieldcollection */
     public function process($inputData, bool $dryRun = false)
     {
         $fieldCollection = new Fieldcollection();
@@ -114,38 +111,25 @@ class FieldCollectionOperator extends AbstractOperator
         return '\\Pimcore\\Model\\DataObject\\Fieldcollection\\Data\\' . ucfirst($this->fieldCollectionType);
     }
 
-    /**
-     * @param string $inputType
-     * @param int|null $index
-     *
-     * @return string
-     *
-     * @throws InvalidConfigurationException
-     */
     public function evaluateReturnType(string $inputType, int $index = null): string
     {
         return "Field Collection";
     }
 
-    /**
-     * @param mixed $inputData
-     *
-     * @return mixed
-     */
-    public function generateResultPreview($fieldCollection)
+    public function generateResultPreview($inputData)
     {
         if (!$this->fieldIndexMappings) {
             return '';
         }
 
-        if (!$fieldCollection instanceof Fieldcollection) {
+        if (!$inputData instanceof Fieldcollection) {
             return '';
         }
 
         $itemsPreview = [];
-        foreach ($fieldCollection as $fcItem) {
+        foreach ($inputData as $fcItem) {
             $fields = [];
-            foreach ($this->fieldIndexMappings as $index => $fieldName) {
+            foreach ($this->fieldIndexMappings as $fieldName) {
                 $getter = 'get' . ucfirst($fieldName);
                 $value = method_exists($fcItem, $getter) ? $fcItem->$getter() : null;
                 $fields[] = $fieldName . ': ' . (is_scalar($value) || $value === null ? var_export($value, true) : '[complex]');
