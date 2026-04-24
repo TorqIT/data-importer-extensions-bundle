@@ -29,9 +29,10 @@ class Arithmetic extends AbstractOperator
 
     public function process($inputData, bool $dryRun = false)
     {
-        if (!$num = floatval($inputData)) {
+        if (!is_numeric($inputData)) {
             throw new InvalidConfigurationException("Input must be a numeric type!");
         }
+        $num = floatval($inputData);
         return match ($this->arithmeticOperator) {
             ArithmeticOperators::Addition->value => $num + $this->staticNumber,
             ArithmeticOperators::Subtraction->value => $num - $this->staticNumber,
