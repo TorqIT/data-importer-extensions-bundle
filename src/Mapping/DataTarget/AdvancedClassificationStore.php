@@ -12,7 +12,8 @@ use Pimcore\Model\Element\ElementInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
 #[AutoconfigureTag(name: 'pimcore.datahub.data_importer.data_target', attributes: ['type' => 'advancedClassificationStore'])]
-class AdvancedClassificationStore extends ClassificationStoreDataTarget
+// FIXME: ClassificationStoreDataTarget is now final, cannot extend
+class AdvancedClassificationStore
 {
     protected bool $writeIfSourceIsEmpty;
     protected bool $writeIfTargetIsNotEmpty;

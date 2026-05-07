@@ -7,7 +7,8 @@ use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 use Symfony\Component\Intl\Countries;
 
 #[AutoconfigureTag(name: 'pimcore.datahub.data_importer.operator', attributes: ['type' => 'asCountryCode'])]
-class AsCountryCode extends StringReplace
+// FIXME: StringReplace is now final, cannot extend
+class AsCountryCode
 {
     /**
      *  Given input of 2- or 3- character country code, returns the 2-character country code.

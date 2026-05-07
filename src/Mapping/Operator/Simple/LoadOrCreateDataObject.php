@@ -11,7 +11,8 @@ use Pimcore\Model\DataObject;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Service;
 
-class LoadOrCreateDataObject extends LoadDataObject
+// FIXME: LoadDataObject is now final, cannot extend
+class LoadOrCreateDataObject
 {
     protected bool $createIfNotFound = false;
 
