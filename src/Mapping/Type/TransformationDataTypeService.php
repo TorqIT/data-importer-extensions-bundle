@@ -4,7 +4,8 @@ namespace TorqIT\DataImporterExtensionsBundle\Mapping\Type;
 
 use Pimcore\Bundle\DataImporterBundle\Mapping\Type\TransformationDataTypeService as BaseTransformationDataTypeService;
 
-class TransformationDataTypeService extends BaseTransformationDataTypeService
+// FIXME: BaseTransformationDataTypeService is now final, cannot extend
+class TransformationDataTypeService
 {
     public function __construct()
     {

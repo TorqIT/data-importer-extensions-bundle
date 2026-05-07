@@ -14,7 +14,8 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Pimcore\Bundle\DataImporterBundle\Preview\Model\PreviewData;
 use Pimcore\Bundle\DataImporterBundle\DataSource\Interpreter\XlsxFileInterpreter;
 
-abstract class XlsxFileInterpreterWithColumnNames extends XlsxFileInterpreter
+// FIXME: XlsxFileInterpreter is now final, cannot extend
+abstract class XlsxFileInterpreterWithColumnNames
 {
     /**
      * @var bool

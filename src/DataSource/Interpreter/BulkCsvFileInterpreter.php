@@ -9,7 +9,8 @@ use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 #[Autoconfigure(calls: [['setLogger', ['@logger']]])]
 #[AutoconfigureTag(name: 'monolog.logger', attributes: ['channel' => 'DATA-IMPORTER'])]
 #[AutoconfigureTag(name: 'pimcore.datahub.data_importer.interpreter', attributes: ['type' => 'bulkCsv'])]
-class BulkCsvFileInterpreter extends CsvFileInterpreter
+// FIXME: CsvFileInterpreter is now final, cannot extend
+class BulkCsvFileInterpreter
 {
     use BulkCsvLoadingTrait;
 }
