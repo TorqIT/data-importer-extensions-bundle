@@ -146,7 +146,8 @@ abstract class XlsxFileInterpreterWithColumnNames
 
     public function setSettings(array $settings): void
     {
-        parent::setSettings($settings);
+        // FIXME: cannot use parent
+//        parent::setSettings($settings);
 
         $this->saveHeaderName = $settings['saveHeaderName'] ?? false;
         $this->headerRow = (int)($settings['headerRow'] ?? 1);

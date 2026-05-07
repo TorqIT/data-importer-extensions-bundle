@@ -21,7 +21,8 @@ class AdvancedClassificationStore
     /** @throws InvalidConfigurationException */
     public function setSettings(array $settings): void
     {
-        parent::setSettings($settings);
+        // FIXME: cannot use parent
+//        parent::setSettings($settings);
         $this->writeIfSourceIsEmpty = $settings['writeIfSourceIsEmpty'] ?? true;
         $this->writeIfTargetIsNotEmpty = $settings['writeIfTargetIsNotEmpty'] ?? true;
     }
@@ -42,7 +43,8 @@ class AdvancedClassificationStore
             return;
         }
 
-        parent::assignData($element, $data);
+        // FIXME: cannot use parent
+//        parent::assignData($element, $data);
     }
 
     protected function shouldAssignData($newValue, $currentValue)

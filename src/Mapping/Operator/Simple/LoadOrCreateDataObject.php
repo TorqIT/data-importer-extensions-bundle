@@ -22,7 +22,8 @@ class LoadOrCreateDataObject
 
     public function setSettings(array $settings): void
     {
-        parent::setSettings($settings);
+        // FIXME: cannot use parent
+//        parent::setSettings($settings);
         $this->createIfNotFound = (bool) ($settings['createIfNotFound'] ?? false);
         $this->publishOnCreate = (bool) ($settings['publishOnCreate'] ?? false);
         $this->loadUnpublished = $this->loadUnpublished || $this->createIfNotFound;
@@ -31,7 +32,9 @@ class LoadOrCreateDataObject
 
     public function process($inputData, bool $dryRun = false)
     {
-        $result = parent::process($inputData, $dryRun);
+        // FIXME: cannot use parent
+//        $result = parent::process($inputData, $dryRun);
+        $result = null;
 
         if (!$this->createIfNotFound) {
             return $result;
