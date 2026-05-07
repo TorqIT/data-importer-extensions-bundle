@@ -3,10 +3,9 @@
 namespace TorqIT\DataImporterExtensionsBundle;
 
 use Pimcore\Extension\Bundle\AbstractPimcoreBundle;
-use Pimcore\Extension\Bundle\PimcoreBundleAdminClassicInterface;
 use Torq\PimcoreHelpersBundle\Service\Common\BundleAssetResolverTrait;
 
-class TorqITDataImporterExtensionsBundle extends AbstractPimcoreBundle implements PimcoreBundleAdminClassicInterface
+class TorqITDataImporterExtensionsBundle extends AbstractPimcoreBundle
 {
     use BundleAssetResolverTrait;
 
