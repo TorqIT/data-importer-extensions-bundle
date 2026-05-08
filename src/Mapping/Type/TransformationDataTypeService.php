@@ -8,10 +8,10 @@ use Pimcore\Bundle\DataImporterBundle\Mapping\Type\TransformationDataTypeService
 class TransformationDataTypeService
 {
       // FIXME: __construct is breaking container creation
-//    public function __construct()
-//    {
+    public function __construct()
+    {
 //        $this->appendTypeMapping('link', 'link');
 //        $this->appendTypeMapping('table', 'table');
 //        $this->appendTypeMapping('structuredTable', 'table');
-//    }
+    }
 }
