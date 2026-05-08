@@ -7,10 +7,11 @@ use Pimcore\Bundle\DataImporterBundle\Mapping\Type\TransformationDataTypeService
 // FIXME: BaseTransformationDataTypeService is now final, cannot extend
 class TransformationDataTypeService
 {
-    public function __construct()
-    {
-        $this->appendTypeMapping('link', 'link');
-        $this->appendTypeMapping('table', 'table');
-        $this->appendTypeMapping('structuredTable', 'table');
-    }
+      // FIXME: __construct is breaking container creation
+//    public function __construct()
+//    {
+//        $this->appendTypeMapping('link', 'link');
+//        $this->appendTypeMapping('table', 'table');
+//        $this->appendTypeMapping('structuredTable', 'table');
+//    }
 }
