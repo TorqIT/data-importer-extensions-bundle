@@ -16,8 +16,7 @@ use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use TorqIT\DataImporterExtensionsBundle\DataSource\DataLoader\Xlsx\XlsxDataLoaderFactory;
 
-// FIXME: setLogger currently broken
-//#[Autoconfigure(calls: [['setLogger', ['@logger']]])]
+#[Autoconfigure(calls: [['setLogger', ['@logger']]])]
 #[AutoconfigureTag(name: 'monolog.logger', attributes: ['channel' => 'DATA-IMPORTER'])]
 #[AutoconfigureTag(name: 'pimcore.datahub.data_importer.interpreter', attributes: ['type' => 'bulkXlsx'])]
 class BulkXlsxFileInterpreter extends XlsxFileInterpreterWithColumnNames

@@ -11,8 +11,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Pimcore\Model\DataObject\Fieldcollection\Definition;
 
-// FIXME: ConfigDataObjectController is now final, cannot extend
-class FieldCollectionController
+class FieldCollectionController extends ConfigDataObjectController
 {
     #[Route(
         path: '/load-class-fieldcollection-attributes',

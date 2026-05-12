@@ -14,8 +14,7 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Pimcore\Bundle\DataImporterBundle\Preview\Model\PreviewData;
 use Pimcore\Bundle\DataImporterBundle\DataSource\Interpreter\XlsxFileInterpreter;
 
-// FIXME: XlsxFileInterpreter is now final, cannot extend
-abstract class XlsxFileInterpreterWithColumnNames
+abstract class XlsxFileInterpreterWithColumnNames extends XlsxFileInterpreter
 {
     /**
      * @var bool
@@ -146,8 +145,7 @@ abstract class XlsxFileInterpreterWithColumnNames
 
     public function setSettings(array $settings): void
     {
-        // FIXME: cannot use parent
-//        parent::setSettings($settings);
+        parent::setSettings($settings);
 
         $this->saveHeaderName = $settings['saveHeaderName'] ?? false;
         $this->headerRow = (int)($settings['headerRow'] ?? 1);

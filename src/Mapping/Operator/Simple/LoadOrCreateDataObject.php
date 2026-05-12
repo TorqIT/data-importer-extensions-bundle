@@ -11,8 +11,7 @@ use Pimcore\Model\DataObject;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Service;
 
-// FIXME: LoadDataObject is now final, cannot extend
-class LoadOrCreateDataObject
+class LoadOrCreateDataObject extends LoadDataObject
 {
     protected bool $createIfNotFound = false;
 
@@ -22,8 +21,7 @@ class LoadOrCreateDataObject
 
     public function setSettings(array $settings): void
     {
-        // FIXME: cannot use parent
-//        parent::setSettings($settings);
+        parent::setSettings($settings);
         $this->createIfNotFound = (bool) ($settings['createIfNotFound'] ?? false);
         $this->publishOnCreate = (bool) ($settings['publishOnCreate'] ?? false);
         $this->loadUnpublished = $this->loadUnpublished || $this->createIfNotFound;
@@ -32,9 +30,7 @@ class LoadOrCreateDataObject
 
     public function process($inputData, bool $dryRun = false)
     {
-        // FIXME: cannot use parent
-//        $result = parent::process($inputData, $dryRun);
-        $result = null;
+        $result = parent::process($inputData, $dryRun);
 
         if (!$this->createIfNotFound) {
             return $result;

@@ -5,9 +5,8 @@ namespace TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Simple;
 use Pimcore\Bundle\DataImporterBundle\Mapping\Operator\Simple\StringReplace;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
-// FIXME: StringReplace is now final, cannot extend
 #[AutoconfigureTag(name: 'pimcore.datahub.data_importer.operator', attributes: ['type' => 'regexReplace'])]
-class RegexReplace
+class RegexReplace extends StringReplace
 {
     /** @return array|false|mixed|null */
     public function process($inputData, bool $dryRun = false)
