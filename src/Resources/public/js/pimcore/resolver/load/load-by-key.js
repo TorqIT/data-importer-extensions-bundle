@@ -6,7 +6,7 @@ pimcore.plugin.pimcoreDataImporterBundle.configuration.components.resolver.load.
     buildSettingsForm: function() {
 
         if (!this.form) {
-            var searchPathField = Ext.create('Ext.form.TextField', {
+            const searchPathField = Ext.create('Ext.form.TextField', {
                 name: this.dataNamePrefix + 'searchPath',
                 value: this.data.searchPath || '',
                 fieldCls: 'pimcore_droptarget_input',
@@ -32,7 +32,7 @@ pimcore.plugin.pimcoreDataImporterBundle.configuration.components.resolver.load.
                                 if (!pimcore.helpers.dragAndDropValidateSingleItem(data)) {
                                     return false;
                                 }
-                                var record = data.records[0].data;
+                                const record = data.records[0].data;
                                 if (record.elementType === 'object' && record.type === 'folder') {
                                     searchPathField.setValue(record.path);
                                     return true;
@@ -42,7 +42,7 @@ pimcore.plugin.pimcoreDataImporterBundle.configuration.components.resolver.load.
                         });
 
                         el.getEl().on('contextmenu', function (e) {
-                            var menu = new Ext.menu.Menu();
+                            const menu = new Ext.menu.Menu();
                             menu.add(new Ext.menu.Item({
                                 text: t('empty'),
                                 iconCls: 'pimcore_icon_delete',
@@ -91,7 +91,7 @@ pimcore.plugin.pimcoreDataImporterBundle.configuration.components.resolver.load.
                     },
                     {
                         xtype: 'fieldcontainer',
-                        fieldLabel: 'Search Path',
+                        fieldLabel: t('plugin_pimcore_datahub_data_importer_configpanel_search_path'),
                         layout: 'hbox',
                         items: [
                             searchPathField,
