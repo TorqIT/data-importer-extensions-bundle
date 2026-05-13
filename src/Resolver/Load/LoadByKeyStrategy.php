@@ -28,20 +28,18 @@ class LoadByKeyStrategy extends AbstractLoad
 
     public function loadElementByIdentifier($identifier): ?ElementInterface
     {
-        $sql = sprintf(
-            'SELECT `id` FROM `objects` WHERE `key` = %s AND `classId` = %s',
-            $this->db->quote($identifier),
-            $this->db->quote($this->dataObjectClassId)
-        );
+        $sql = 'SELECT `id` FROM `objects` WHERE `key` = ? AND `classId` = ?';
+        $params = [$identifier, $this->dataObjectClassId];
 
         if ($this->searchPath !== null) {
             $normalizedPath = rtrim($this->searchPath, '/') . '/';
-            $sql .= sprintf(' AND `path` LIKE %s', $this->db->quote($normalizedPath . '%'));
+            $sql .= ' AND `path` LIKE ?';
+            $params[] = $normalizedPath . '%';
         }
 
         $sql .= ' LIMIT 1';
 
-        $id = $this->db->fetchOne($sql);
+        $id = $this->db->fetchOne($sql, $params);
 
         if (!$id) {
             return null;
@@ -62,13 +60,15 @@ class LoadByKeyStrategy extends AbstractLoad
 
     public function loadFullIdentifierList(): array
     {
-        $sql = sprintf('SELECT `key` FROM `objects` WHERE `classId` = %s', $this->db->quote($this->dataObjectClassId));
+        $sql = 'SELECT `key` FROM `objects` WHERE `classId` = ?';
+        $params = [$this->dataObjectClassId];
 
         if ($this->searchPath !== null) {
             $normalizedPath = rtrim($this->searchPath, '/') . '/';
-            $sql .= sprintf(' AND `path` LIKE %s', $this->db->quote($normalizedPath . '%'));
+            $sql .= ' AND `path` LIKE ?';
+            $params[] = $normalizedPath . '%';
         }
 
-        return $this->db->fetchFirstColumn($sql);
+        return $this->db->fetchFirstColumn($sql, $params);
     }
 }
