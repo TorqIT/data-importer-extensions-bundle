@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\DataImporter\Resolver\Load;
+namespace TorqIT\DataImporterExtensionsBundle\Resolver\Load;
 
 use Pimcore\Bundle\DataImporterBundle\Resolver\Load\AbstractLoad;
 use Pimcore\Model\DataObject;
