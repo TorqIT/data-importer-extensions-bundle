@@ -1,31 +1,92 @@
 ---
-title: Data Importer
+title: Data Importer Extensions
 ---
- 
+
 # Torq IT Data Importer Extensions
 
-This extension adds a number of additional features to the [Pimcore Data Importer](https://github.com/pimcore/data-importer) bundle.
+A Pimcore bundle that extends the official [Pimcore Data Importer](https://github.com/pimcore/data-importer)
+with additional **interpreters, loaders, targets, operators, and resolution strategies** — built for real‑world
+imports that the defaults struggle with (large files, deep object trees, schema‑driven XML, etc.).
+
+If you have ever watched a 100K‑row XLSX import OOM your server, or wished you could build object paths
+directly from column values, this bundle is for you.
+
+## Table of contents
+
+- [Highlights](#highlights)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Path Syntax](#path-syntax)
+  - [Regex operations](#regex-operations)
+- [Data Interpreters](#data-interpreters)
+- [Data Loaders](#data-loaders)
+- [Data Targets](#data-targets)
+- [Operators](#operators)
+- [Element Loading](#element-loading)
+- [Element Creation](#element-creation)
+- [License](#license)
+
+## Highlights
+
+| Capability | What it gives you |
+| --- | --- |
+| **Bulk XLSX / CSV / SQL interpreters** | Queue 200K+ rows in seconds using `LOAD LOCAL INFILE`. |
+| **Advanced XLSX interpreter** | Streams large workbooks via `openspout` — gigabytes down to tens of MB of RAM. |
+| **XML schema-based preview** | Discover all fields from an XSD up‑front, so the preview UI sees everything. |
+| **Path Syntax** | Build object paths from row values (`/Products/Cars/$[Make]/$[Model]/$[Year]`), with inline regex. |
+| **Row Filter** | Skip rows with a Symfony Expression — no preprocessing step required. |
+| **Extra data targets** | Image Gallery appender, Object Property, Tags, and a Classification Store target with overwrite. |
+| **Extra operators** | Arithmetic, regex replace, country‑code normalization, safe key, constants, advanced asset import. |
+| **Advanced resolution** | Load and create objects by path or by property value. |
+
+## Requirements
+
+- PHP and Pimcore versions consistent with `pimcore/pimcore: ^12.0` and `pimcore/data-importer: ^2.0`
+- For the bulk interpreters: MySQL/MariaDB with `LOCAL INFILE` enabled (see [Bulk XLSX Interpreter](#bulk-xlsx-interpreter))
+
+This bundle targets **Pimcore Platform 2025.1 and newer**.
 
 ## Installation
-```
+
+```bash
 composer require torqit/data-importer-extensions-bundle
 ```
 
+Then enable the bundle (Pimcore will normally pick this up automatically because of the `extra.pimcore.bundles`
+entry in `composer.json`; if not, register it in `config/bundles.php`):
+
+```php
+return [
+    // ...
+    TorqIT\DataImporterExtensionsBundle\TorqITDataImporterExtensionsBundle::class => ['all' => true],
+];
+```
+
+Clear caches:
+
+```bash
+bin/console cache:clear
+```
+
+The new interpreters, loaders, targets, operators, and strategies will appear in the Data Importer UI.
+
 ## Path Syntax
 
-A number of our extensions make use of the **Path** syntax that allows for Paths to be created based on values in the import. 
+Several extensions use a shared **Path Syntax** that constructs paths from row values.
 
-Take for example an Excel File:
-| Year | Make | Model | Color |
-| ---  | ---  | ---   | ---   |
-| 2015 | GMC  | Sierra| White |
-| 2001 | Chevrolet | Silverado | Blue |
+Given the spreadsheet:
 
-To build the Path `/Products/Cars/GMC/Sierra/2015` using Path Syntax would be `/Products/Cars/$[1]/$[2]/$[0]`. The numerical values correspond to the indexes of the values in the Excel file (starting at 0).
+| Year | Make      | Model     | Color |
+| ---- | --------- | --------- | ----- |
+| 2015 | GMC       | Sierra    | White |
+| 2001 | Chevrolet | Silverado | Blue  |
 
-For an XML file:
+The Path Syntax `/Products/Cars/$[1]/$[2]/$[0]` resolves to `/Products/Cars/GMC/Sierra/2015`. The numbers are
+zero‑based column indexes.
 
-```
+For XML sources, reference attribute / element names instead of indexes:
+
+```xml
 <Cars>
     <Car>
         <Make>GMC</Make>
@@ -33,69 +94,64 @@ For an XML file:
         <Year>2015</Year>
         <Color>White</Color>
     </Car>
-    <Car>
-        <Make>Chevrolet</Make>
-        <Model>Silverado</Model>
-        <Year>2001</Year>
-        <Color>Blue</Color>
-    </Car>
 </Cars>
 ```
-the **Path Syntax** would use the Attribute names instead `/Products/Cars/$[Make]/$[Model]/$[Year]`
 
-### Regex Operations
+`/Products/Cars/$[Make]/$[Model]/$[Year]` resolves to the same path.
 
-You can apply regex operations to column values by appending one or more `{}` blocks after a column reference. Two types of operations are supported:
+### Regex operations
 
-#### Regex Extract
+Append one or more `{}` blocks to a column reference to transform the value. Blocks are applied left‑to‑right.
 
-Use `{/pattern/flags}` to extract a matching portion of the value. If the pattern contains a capture group, the first capture group is used; otherwise the full match is returned.
+**Regex extract** — `{/pattern/flags}` returns the first capture group, or the full match if none.
 
-For example, given a column containing `Category > Subcategory`:
-- `$[0]{/^([^>]+)/}` extracts everything before the first `>` → `Category`
+```text
+Category > Subcategory
+$[0]{/^([^>]+)/}   →   "Category"
+```
 
-#### Regex Substitution
+**Regex substitute** — `{s/pattern/replacement/flags}` performs a [`preg_replace`](https://www.php.net/manual/en/function.preg-replace.php).
+Add the `g` flag to replace all occurrences.
 
-Use `{s/pattern/replacement/flags}` to perform a find-and-replace on the value (using [preg_replace](https://www.php.net/manual/en/function.preg-replace.php) syntax). Add the `g` flag to replace all occurrences; without it only the first match is replaced.
+```text
+$[0]{s/ /-/g}              # replace all spaces with hyphens
+$[0]{s/[^a-zA-Z0-9]//g}    # strip non‑alphanumerics
+```
 
-For example:
-- `$[0]{s/ /-/g}` replaces all spaces with hyphens
-- `$[0]{s/[^a-zA-Z0-9]//g}` strips all non-alphanumeric characters
+**Chaining** — combine blocks for multi‑step transforms:
 
-#### Chaining Operations
-
-Multiple `{}` blocks can be chained and will be applied in order from left to right:
-
-`$[0]{/^([^>]+)/}{s/ /-/g}` first extracts text before `>`, then replaces spaces with hyphens.
+```text
+$[0]{/^([^>]+)/}{s/ /-/g}  # take text before ">", then hyphenate
+```
 
 ## Data Interpreters
 
-Data Interpreters are the supported "File Formats" that the Data Importer bundle can use. We've added a few of our own.
+Interpreters are the file‑format readers exposed by the Data Importer.
 
 ### Advanced XLSX Interpreter
 
-The Advanced XLSX interpreter makes a few improvements over the default XLSX interpreter.
+A drop‑in replacement for the default XLSX interpreter, backed by [`openspout`](https://github.com/openspout/openspout)
+instead of PHPOffice. In our benchmarks, files that required **>4 GB** of RAM with PHPOffice processed in **<50 MB**
+with openspout — and without the slow memory leak we observed in the default implementation.
 
-This interpreter uses `openspout` as the Excel parser. Open Spout XLSX parsing uses **much** less memory than the default XLSX parses which makes use of `PHPOffice`. We've seen files that required >4GB RAM on PHPOffice use less than 50MB with openspout. We've also detected a memory leak in some cases with the PHPOffice implementation where RAM gets allocated on the server and never released.
-
-
-| Configuration Option   | Description                                    | 
-| ---------------------- | ---------------------------------------------- |
-| Unique Column Indexes  | Accepts a comma separated list of column indexes to treat as unique values. Used to filter the rows in an excel file. For example an excel file with the headers `Brand,Model,SubModel` and you want to import a unique `Brand` object for each new `Brand` you encounter. In this case, use value `0` to only take unique values from the first column in the Excel file. If you want to create a data object for each `Brand` and `Model` use `0,1` as the value.                                           |
-| Row Filter             | This accepts a [Symfony Expression](https://symfony.com/doc/current/reference/formats/expression_language.html) to be applied to the rows of the Excel file. Each row in the Excel file get's handed to the expression evaluator as a variable named `row`. The expression `row[0] == 'Apple'` would only process rows where the value of the first column is Apple.
-
+| Configuration option | Description |
+| --- | --- |
+| **Unique Column Indexes** | Comma‑separated list of column indexes used to deduplicate rows. For headers `Brand,Model,SubModel`, set `0` to import one row per unique `Brand`, or `0,1` to import one row per unique `Brand`+`Model`. |
+| **Row Filter** | A [Symfony Expression](https://symfony.com/doc/current/reference/formats/expression_language.html) evaluated against each row, exposed as the variable `row`. Example: `row[0] == 'Apple'` only processes rows whose first column is `Apple`. |
 
 ### Bulk XLSX Interpreter
 
-This Bulk XLSX Interpreter has the same options as the Advanced XLSX Interpreter. The main difference is that the Excel file gets converted to a CSV and loaded into the Data Importer queue using `LOAD LOCAL INFILE`. This **VERY DRASTICALLY** improves the performance of loading the queue table. We've seen 200K rows loaded in <5s. Our experience with a 16GB RAM server shows that Excel files over 30K rows often are not imported successfully by the default XLSX Interpreter.
+Same options as the Advanced XLSX Interpreter, but the workbook is converted to CSV and loaded into the
+Data Importer queue using `LOAD LOCAL INFILE`. This **drastically** improves queue load performance — we
+routinely see **200K rows loaded in under 5 seconds**. On a 16 GB server, the default XLSX interpreter
+frequently fails on files larger than ~30K rows; the Bulk interpreter does not.
 
-**This Feature Requires the Database Server to be configured to permit local infile / infile permissions!**
+> **Requires `LOCAL INFILE` to be enabled on the database server.**
+> See the [MySQL documentation](https://dev.mysql.com/doc/refman/8.0/en/load-data-local-security.html#load-data-local-configuration).
 
-See [MySQL Documentation](https://dev.mysql.com/doc/refman/8.0/en/load-data-local-security.html#load-data-local-configuration) regarding `LOCAL INFILE`.
+You also need to set the `LOCAL INFILE` driver option (`1001: true`) on your Doctrine connection:
 
-Also in your database connection you'll need to add the Bulk option (1001:true) in example:
-
-```
+```yaml
 doctrine:
     dbal:
         connections:
@@ -113,111 +169,88 @@ doctrine:
 
 ### Bulk CSV Interpreter
 
-The Bulk CSV Interpreter has the same options as the regular CSV interpreter but like the Bulk XLSX Interpreter it uses `LOAD LOCAL INFILE` to queue data rows. 
-Please see the [Bulk XLSX Interpreter Section](#bulk-xlsx-interpreter) for limitions and requirments.
+Same options as the default CSV interpreter, but queues rows via `LOAD LOCAL INFILE`. See the
+[Bulk XLSX Interpreter](#bulk-xlsx-interpreter) section for requirements.
 
-### Bulk SQL Interpreter 
+### Bulk SQL Interpreter
 
-This Interpreter is to be used when using the [Bulk SQL Data Loader](#bulk-sql-data-loader).
-Behind the scenes this uses the Bulk CSV Interpreter as it is very fast. If you run into errors please see the [Bulk XLSX Interpreter Section](#bulk-xlsx-interpreter) for limitions and requirments.
+Pairs with the [Bulk SQL Data Loader](#bulk-sql-data-loader). Internally it uses the Bulk CSV path for
+maximum throughput; same requirements as Bulk XLSX apply.
 
 ### XML Schema Based Preview Interpreter
 
-This Interpreter is an expansion upon the default XML based interpreter that will load all fields defined by the provided Xsd file for use in the preview screen.
+Extends the default XML interpreter so that **every field declared in a provided XSD** is available in the
+preview UI — even if it is missing from the sample file. Makes mapping XML feeds with sparse samples much
+easier.
 
 ## Data Loaders
 
 ### Bulk SQL Data Loader
 
-As of 4.0 (and pimcore data-importer 1.10) This is an extended version of the default SQL data loader which uses the Bulk CSV implementation rather than the json implementation for better performance. Note that the pimcore JSON implementation will save mapping fields by name, which the Bulk SQL saves them by index so switching back and forth may break mappings.
+As of 4.0 (and Pimcore Data Importer 1.10), an extended version of the built‑in SQL Data Loader that uses
+the Bulk CSV implementation instead of the JSON queue. It uses [Doctrine DBAL](https://www.doctrine-project.org/projects/dbal.html),
+so any DBAL‑supported database works as long as it is configured in `database.yaml` (or any valid Symfony
+config file using the same shape).
 
-The SQL Data Loader uses [DBAL](https://www.doctrine-project.org/projects/dbal.html) to allow data to be loaded from a SQL source. Connections to any database supported by DBAL will work provided they are configured correctly inside of `database.yaml`. (Database configuration can be placed in any valid Symfony config file, provided its in the correct format as can be seen in `database.yaml`). 
+> **Mapping compatibility:** The default JSON‑based SQL loader saves mappings **by column name**, while the
+> Bulk SQL loader saves them **by index**. Switching between them on an existing config may break field
+> mappings.
 
-To set up a Bulk SQL loader
+To configure:
 
-1. Create a new connection in `database.yaml` or if using the Pimcore database skip this step. ![SQL Loader Configuration](docs/img/sql_loader_config.png)
-2. Select the correct connection from the **Connection Name** dropdown
-3. Provide a valid query using the Select, where, from, Group By, and Limit fields.
-4. Ensure to select **Bulk SQL** under File Format! This loader produces a CSV file as part of loading the SQL.
+1. Add a new connection to `database.yaml`, or use the existing Pimcore connection.
+   ![SQL Loader Configuration](docs/img/sql_loader_config.png)
+2. Select the connection from the **Connection Name** dropdown.
+3. Provide a valid query via the Select, From, Where, Group By, and Limit fields.
+4. Set **File Format** to **Bulk SQL** — this loader produces a CSV file as part of loading.
 
 ## Data Targets
 
-Data Targets control where data flows as its being mapped to Data Objects.
+Data Targets control where mapped data is written on the target Data Object.
 
-### Advanced Classification Store
-
-This is the same as the [Classification Store](https://pimcore.com/docs/platform/Data_Importer/Configuration/Mapping_Configuration/Data_Target/#classification-store) Data Target except it adds the `Overwrite` options as seen on the `Direct` Data Target. 
-
-### Image Gallery Appender
-
-This can be used to add an image into an Image Gallery field.
-
-### Property
-
-This is used to set a property on a Data Object.
-
-### Tags
-
-This is used to add tags on a Data Object.
-
+| Target | Purpose |
+| --- | --- |
+| **Advanced Classification Store** | Same as the built‑in [Classification Store](https://pimcore.com/docs/platform/Data_Importer/Configuration/Mapping_Configuration/Data_Target/#classification-store) target, plus the **Overwrite** options found on the **Direct** target. |
+| **Image Gallery Appender** | Appends an image into an Image Gallery field. |
+| **Property** | Sets a [property](https://pimcore.com/docs/platform/Pimcore/Objects/Object_Classes/Data_Types/Property_Types) on the Data Object. |
+| **Tags** | Adds tags to the Data Object. |
 
 ## Operators
 
-### As Country Code
-
-Operating on an input string that is expected to be either a 2- or 3- character Country Code, filters this input to the valid 2-character Country Code (or blank if none is found).
-
-### Constants
-
-This operator simply returns a constant string. Useful if wanting to control `OBJECT_TYPE` object or variant.
-
-### SafeKey
-
-This ensure that a value is cleaned to be a valid Key value.
-
-### Import Asset Advanced
-
-This allows two additional pieces of functionality when importing an asset:
-
-**Path** Uses the **Path Syntax** described above to store the asset in a specified folder.
-
-**URL Property** Specifies the name of the property on the asset to store the source URL the asset was captured from.
-
-### Arithmetic
-
-This allows you to apply addition, subtraction, multiplication, or division with a defined constant and your value.
-
-### Regex Replace
-
-This allows you to do string replaces using [preg_replace](https://www.php.net/manual/en/function.preg-replace.php)
+| Operator | Description |
+| --- | --- |
+| **As Country Code** | Given a 2‑ or 3‑character country code, returns the canonical 2‑character code (blank if invalid). |
+| **Constants** | Returns a fixed string — handy for forcing `OBJECT_TYPE` or variant flags. |
+| **SafeKey** | Cleans a string so it is valid as a Pimcore element key. |
+| **Import Asset Advanced** | Like Import Asset, but adds **Path** (uses [Path Syntax](#path-syntax) to choose the storage folder) and **URL Property** (the property name on the asset where the source URL is stored). |
+| **Arithmetic** | Add, subtract, multiply, or divide the value by a configured constant. |
+| **Regex Replace** | String replacement via [`preg_replace`](https://www.php.net/manual/en/function.preg-replace.php). |
 
 ## Element Loading
 
+Strategies for resolving an existing Data Object to update.
+
 ### Advanced Path Strategy
 
-This allows loading objects using the **Path** syntax described earlier in this ReadMe.
-
-Using the example Excel file in the **Path** section you could load the Data Object at `/Products/Cars/GMC/Sierra/2015` using Path Syntax `/Products/Cars/$[1]/$[2]/$[0]`. 
+Loads a Data Object by a path built with [Path Syntax](#path-syntax). For the example sheet above,
+`/Products/Cars/$[1]/$[2]/$[0]` loads `/Products/Cars/GMC/Sierra/2015`.
 
 ### Property
 
-This allows a data object to be loaded based on the value of a property stored on it.
+Loads a Data Object by the value of a property stored on it.
 
-**This assumes that the property value is unique**. If a non-unique value exists, it'll be a random object returned that matches the criteria.
-
+> **The property value is assumed to be unique.** If multiple objects match, an arbitrary one is returned.
 
 ## Element Creation
 
+Strategies for choosing the parent path when a new Data Object must be created.
+
 ### Advanced Parent Strategy
 
-This allows locating objects using the **Path** syntax described earlier in this ReadMe.
+Creates a Data Object under a parent path built with [Path Syntax](#path-syntax) —
+e.g. `/Products/Cars/$[1]/$[2]/$[0]` creates the new object under `/Products/Cars/GMC/Sierra/2015`.
 
-Using the example Excel file in the **Path** section you could create a Data Object with parent `/Products/Cars/GMC/Sierra/2015` using Path Syntax `/Products/Cars/$[1]/$[2]/$[0]`. 
+## License
 
-# License
-
-This bundle is licensed under the Pimcore Open Core License (POCL)
-and is intended for use with Pimcore Platform 2025.1 and newer.
-
-See LICENSE.md for full license text.
-
+This bundle is licensed under the **Pimcore Open Core License (POCL)** and is intended for use with
+**Pimcore Platform 2025.1 and newer**. See [LICENSE.md](LICENSE.md) for the full text.
