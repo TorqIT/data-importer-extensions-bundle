@@ -30,6 +30,10 @@ services:
         resource: "../../Mapping"
         public: true
 
+    TorqIT\DataImporterExtensionsBundle\Webpack\:
+        resource: "../../Webpack"
+        public: true
+
     ################
     ### EXTERNAL ###
     ################
