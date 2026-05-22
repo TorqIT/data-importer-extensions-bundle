@@ -57,6 +57,7 @@ services:
         public: true
         tags:
             - { name: "pimcore.datahub.data_importer.interpreter", type: "bulkSql" }
-            - { name: "monolog.logger", channel: "DATA-IMPORTER" }
-        calls:
-            - [setLogger, ['@logger']]
+#       FIXME: setLogger is broken currently
+#            - { name: "monolog.logger", channel: "DATA-IMPORTER" }
+#        calls:
+#            - [setLogger, ['@logger']]
