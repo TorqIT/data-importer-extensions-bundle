@@ -47,3 +47,16 @@ services:
         class: TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Simple\LoadOrCreateDataObject
         tags:
             - { name: "pimcore.datahub.data_importer.operator", type: "loadDataObject" }
+
+    # Disable autoconfigure so BulkSqlFileInterpreter does NOT inherit
+    # the parent BulkCsvFileInterpreter's #[AutoconfigureTag(interpreter, type=bulkCsv)].
+    # All required tags and the setLogger call are restated here explicitly.
+    TorqIT\DataImporterExtensionsBundle\DataSource\Interpreter\BulkSqlFileInterpreter:
+        autoconfigure: false
+        autowire: true
+        public: true
+        tags:
+            - { name: "pimcore.datahub.data_importer.interpreter", type: "bulkSql" }
+            - { name: "monolog.logger", channel: "DATA-IMPORTER" }
+        calls:
+            - [setLogger, ['@logger']]

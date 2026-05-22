@@ -2,15 +2,12 @@
 
 namespace TorqIT\DataImporterExtensionsBundle\DataSource\Interpreter;
 
-use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
-use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
-
-// FIXME: setLogger currently broken
-//#[Autoconfigure(calls: [['setLogger', ['@logger']]])]
-#[AutoconfigureTag(name: 'monolog.logger', attributes: ['channel' => 'DATA-IMPORTER'])]
-#[AutoconfigureTag(name: 'pimcore.datahub.data_importer.operator', attributes: ['type' => 'bulkSql'])]
+// Tagging happens in Resources/config/services.yml with autoconfigure: false so this
+// class does not inherit the parent's `bulkCsv` interpreter tag.
 class BulkSqlFileInterpreter extends BulkCsvFileInterpreter
 {
+    use BulkCsvLoadingTrait;
+
     public function setSettings(array $settings): void
     {
         $this->skipFirstRow = true;
