@@ -1,18 +1,14 @@
 <?php
 
-
 /*
  * This class allows one definition of previewData() to be shared by all extending XLS Interpreters.
  */
 
 namespace TorqIT\DataImporterExtensionsBundle\DataSource\Interpreter;
 
-use PhpOffice\PhpSpreadsheet\Cell\Cell;
-use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Pimcore\Bundle\DataImporterBundle\Preview\Model\PreviewData;
 use Pimcore\Bundle\DataImporterBundle\DataSource\Interpreter\XlsxFileInterpreter;
+use TorqIT\DataImporterExtensionsBundle\DataSource\DataLoader\Xlsx\XlsxDataLoaderFactory;
 
 abstract class XlsxFileInterpreterWithColumnNames extends XlsxFileInterpreter
 {
@@ -31,71 +27,25 @@ abstract class XlsxFileInterpreterWithColumnNames extends XlsxFileInterpreter
      */
     protected int $headerRow = 1;
 
-    /**
-     * Get cell value with graceful formula error handling.
-     *
-     * For cells with formulas that can't be calculated (e.g., Excel-specific functions
-     * like _xlfn._LONGTEXT), this will return the cached value if available,
-     * or null if no cached value exists.
-     */
-    private function getCellValueSafe(Cell $cell): mixed
-    {
-        try {
-            return $cell->getCalculatedValue();
-        } catch (\Throwable $e) {
-            // Formula calculation failed - try to get the cached value
-            // This is the value that Excel calculated and stored in the file
-            $oldValue = $cell->getOldCalculatedValue();
-            if ($oldValue !== null) {
-                return $oldValue;
-            }
-
-            // No cached value available, return null
-            return null;
-        }
-    }
-
-    /**
-     * Read a row from the worksheet with safe formula handling.
-     */
-    private function readRowSafe(Worksheet $sheet, int $rowNumber): array
-    {
-        $rowData = [];
-        $highestColumn = $sheet->getHighestColumn($rowNumber);
-        $highestColumnIndex = Coordinate::columnIndexFromString($highestColumn);
-
-        for ($col = 1; $col <= $highestColumnIndex; $col++) {
-            $columnLetter = Coordinate::stringFromColumnIndex($col);
-            $cell = $sheet->getCell($columnLetter . $rowNumber);
-            $rowData[] = $this->getCellValueSafe($cell);
-        }
-
-        return $rowData;
-    }
-
-    /* Overriding parent method to allow for using column header names as keys and configurable header row */
+    /* Overriding parent method to allow for using column header names as keys and configurable header row.
+     * Uses the same OpenSpout loader as doInterpretFileAndCallProcessRow to ensure consistent empty-row handling. */
     public function previewData(string $path, int $recordNumber = 0, array $mappedColumns = []): PreviewData
     {
         $previewData = [];
         $columns = [];
         $readRecordNumber = 0;
-        $headerRowData = null;
 
         if ($this->fileValid($path)) {
-            $reader = IOFactory::createReaderForFile($path);
-            $spreadSheet = $reader->load($path);
-            $spreadSheet->setActiveSheetIndexByName($this->sheetName);
-            $sheet = $spreadSheet->getActiveSheet();
+            $excelLoader = XlsxDataLoaderFactory::getExcelDataLoader();
+            $data = $excelLoader->getRows($path, $this->sheetName);
 
-            // Get total row count
-            $highestRow = $sheet->getHighestRow();
-
-            // Read header row with safe formula handling
-            $headerRowData = $this->readRowSafe($sheet, $this->headerRow);
+            // Header row is 1-indexed; array is 0-indexed
+            $headerRowIndex = $this->headerRow - 1;
+            $headerRowData = $data[$headerRowIndex] ?? [];
 
             // Build column names from header row
             if ($this->saveHeaderName) {
-                foreach ($headerRowData as $index => $columnHeader) {
+                foreach ($headerRowData as $columnHeader) {
                     $columns[$columnHeader] = trim((string)$columnHeader);
                 }
             } else {
@@ -104,35 +54,31 @@ abstract class XlsxFileInterpreterWithColumnNames extends XlsxFileInterpreter
                 }
             }
 
-            // Calculate which row to preview (data starts after header row)
-            $dataStartRow = $this->headerRow + 1;
-            $totalDataRows = $highestRow - $this->headerRow;
+            // Data rows start after the header row (same slice as doInterpretFileAndCallProcessRow)
+            $dataRows = array_slice($data, $this->headerRow);
+            $totalDataRows = count($dataRows);
 
-            // Determine the actual row number to read
-            $targetRow = $dataStartRow + $recordNumber;
-            if ($targetRow > $highestRow) {
-                $targetRow = $highestRow;
-                $readRecordNumber = max(0, $totalDataRows - 1);
-            } else {
-                $readRecordNumber = $recordNumber;
-            }
-
-            // Read the preview row with safe formula handling
-            $previewDataRow = $this->readRowSafe($sheet, $targetRow);
-
-            // Combine header names with data values if using header names
-            if ($this->saveHeaderName && !empty($headerRowData)) {
-                // Ensure arrays are same length
-                if (count($headerRowData) > count($previewDataRow)) {
-                    $previewDataRow = array_pad($previewDataRow, count($headerRowData), null);
-                } elseif (count($headerRowData) < count($previewDataRow)) {
-                    $previewDataRow = array_slice($previewDataRow, 0, count($headerRowData));
+            if ($totalDataRows > 0) {
+                if ($recordNumber >= $totalDataRows) {
+                    $recordNumber = $totalDataRows - 1;
                 }
-                $previewDataRow = array_combine($headerRowData, $previewDataRow);
-            }
+                $readRecordNumber = $recordNumber;
 
-            foreach ($previewDataRow as $index => $columnData) {
-                $previewData[$index] = $columnData;
+                $previewDataRow = $dataRows[$recordNumber];
+
+                // Combine header names with data values if using header names
+                if ($this->saveHeaderName && !empty($headerRowData)) {
+                    if (count($headerRowData) > count($previewDataRow)) {
+                        $previewDataRow = array_pad($previewDataRow, count($headerRowData), null);
+                    } elseif (count($headerRowData) < count($previewDataRow)) {
+                        $previewDataRow = array_slice($previewDataRow, 0, count($headerRowData));
+                    }
+                    $previewDataRow = array_combine($headerRowData, $previewDataRow);
+                }
+
+                foreach ($previewDataRow as $index => $columnData) {
+                    $previewData[$index] = $columnData;
+                }
             }
 
             if (empty($columns)) {
