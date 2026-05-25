@@ -76,9 +76,7 @@ abstract class XlsxFileInterpreterWithColumnNames extends XlsxFileInterpreter
                     $previewDataRow = array_combine($headerRowData, $previewDataRow);
                 }
 
-                foreach ($previewDataRow as $index => $columnData) {
-                    $previewData[$index] = $columnData;
-                }
+                $previewData = $previewDataRow;
             }
 
             if (empty($columns)) {
