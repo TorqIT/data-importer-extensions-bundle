@@ -1,0 +1,44 @@
+{
+  "name": "torqit-data-importer-extensions-bundle",
+  "type": "module",
+  "scripts": {
+    "dev-server": "NODE_ENV=development rsbuild dev",
+    "build": "NODE_ENV=production rsbuild build",
+    "lint": "eslint ./src",
+    "lint-fix": "eslint ./src --fix",
+    "lint-fix-watch": "nodemon --watch './src/**/*' --exec \"eslint ./src --fix --cache\" -e js,jsx,ts,tsx",
+    "check-types": "tsc --noEmit",
+    "check-types-watch": "tsc --noEmit --watch"
+  },
+  "license": "proprietary",
+  "private": true,
+  "devDependencies": {
+    "@babel/preset-react": "^7.23.3",
+    "@module-federation/rsbuild-plugin": "^2.1.0",
+    "@rsbuild/core": "^1.3.16",
+    "@rsbuild/plugin-react": "^1.3.1",
+    "@types/react-dom": "18.3.x",
+    "@types/webpack-env": "^1.18.4",
+    "eslint": "^9.39.4",
+    "eslint-plugin-react": "^7.37.5",
+    "globals": "^15.x",
+    "ts-loader": "^9.5.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3",
+    "typescript-eslint": "^8.x"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^6.2.2",
+    "@pimcore/studio-ui-bundle": "^0.15.17",
+    "antd": "5.22.x",
+    "nodemon": "^3.1.14",
+    "react": "18.3.x",
+    "react-dom": "18.3.x"
+  },
+  "overrides": {
+    "koa": ">=2.16.4"
+  },
+  "prettier": {
+    "printWidth": 120
+  }
+}
