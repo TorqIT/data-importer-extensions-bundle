@@ -11,6 +11,20 @@ This extension adds a number of additional features to the [Pimcore Data Importe
 composer require torqit/data-importer-extensions-bundle
 ```
 
+Update `bundles.php`
+```
+return [
+    //...
+    Torq\PimcoreHelpersBundle\TorqPimcoreHelpersBundle::class => ['all' => true],
+    TorqIT\DataImporterExtensionsBundle\TorqITDataImporterExtensionsBundle::class => ['all' => true],
+];
+```
+
+Install assets
+```
+bin/console assets:install
+```
+
 ## Path Syntax
 
 A number of our extensions make use of the **Path** syntax that allows for Paths to be created based on values in the import. 
