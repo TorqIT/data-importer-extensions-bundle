@@ -4,7 +4,7 @@ namespace TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Factory;
 
 use Pimcore\Bundle\DataImporterBundle\Exception\InvalidConfigurationException;
 use Pimcore\Bundle\DataImporterBundle\Mapping\Operator\AbstractOperator;
-use Pimcore\Log\ApplicationLogger;
+use Pimcore\Bundle\ApplicationLoggerBundle\ApplicationLogger;
 use Pimcore\Model\DataObject\Data\Video;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 use Torq\PimcoreHelpersBundle\Service\Utility\ArrayUtils;
