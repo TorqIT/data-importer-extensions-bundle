@@ -50,30 +50,23 @@ export const DataImporterExtensionsModule: AbstractModule = {
         // Register all into the core transformer registry (runs after core module, so overrides win)
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const transformerRegistry = container.get<any>(coreServiceIds['DataImporter/DynamicTypes/Transformer/Registry'])
-
-        const allServiceIds = [
-            bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/EachAsArray'],
-            bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/SafeKey'],
-            bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/Slugify'],
-            bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/AsCountryCode'],
-            bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/AsLink'],
-            bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/Arithmetic'],
-            bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/ArrayVal'],
-            bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/AsTable'],
-            bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/AsVideo'],
-            bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/Constant'],
-            bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/FieldCollectionOperator'],
-            bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/ImportAssetAdvanced'],
-            bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/RegexReplace'],
-            bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/SymfonyExpression'],
-            bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/ToClassificationStoreKeyValuePair'],
-            bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/LoadOrCreateDataObject'],
-            bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/QuantityValueArray'],
-            bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/QuantityValueRangeArray'],
-        ] as const
-
-        for (const serviceId of allServiceIds) {
-            transformerRegistry.registerDynamicType(container.get(serviceId))
-        }
+        transformerRegistry.registerDynamicType(container.get(bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/EachAsArray']))
+        transformerRegistry.registerDynamicType(container.get(bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/SafeKey']))
+        transformerRegistry.registerDynamicType(container.get(bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/Slugify']))
+        transformerRegistry.registerDynamicType(container.get(bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/AsCountryCode']))
+        transformerRegistry.registerDynamicType(container.get(bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/AsLink']))
+        transformerRegistry.registerDynamicType(container.get(bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/Arithmetic']))
+        transformerRegistry.registerDynamicType(container.get(bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/ArrayVal']))
+        transformerRegistry.registerDynamicType(container.get(bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/AsTable']))
+        transformerRegistry.registerDynamicType(container.get(bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/AsVideo']))
+        transformerRegistry.registerDynamicType(container.get(bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/Constant']))
+        transformerRegistry.registerDynamicType(container.get(bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/FieldCollectionOperator']))
+        transformerRegistry.registerDynamicType(container.get(bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/ImportAssetAdvanced']))
+        transformerRegistry.registerDynamicType(container.get(bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/RegexReplace']))
+        transformerRegistry.registerDynamicType(container.get(bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/SymfonyExpression']))
+        transformerRegistry.registerDynamicType(container.get(bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/ToClassificationStoreKeyValuePair']))
+        transformerRegistry.overrideDynamicType(container.get(bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/LoadOrCreateDataObject']))
+        transformerRegistry.registerDynamicType(container.get(bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/QuantityValueArray']))
+        transformerRegistry.registerDynamicType(container.get(bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/QuantityValueRangeArray']))
     },
 }
