@@ -66,7 +66,7 @@ export const DataImporterExtensionsModule: AbstractModule = {
         transformerRegistry.registerDynamicType(container.get(bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/SymfonyExpression']))
         transformerRegistry.registerDynamicType(container.get(bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/ToClassificationStoreKeyValuePair']))
         transformerRegistry.overrideDynamicType(container.get(bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/LoadOrCreateDataObject']))
-        transformerRegistry.registerDynamicType(container.get(bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/QuantityValueArray']))
+        transformerRegistry.overrideDynamicType(container.get(bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/QuantityValueArray']))
         transformerRegistry.registerDynamicType(container.get(bundleServiceIds['DataImporterExtensions/DynamicTypes/Transformer/QuantityValueRangeArray']))
     },
 }
