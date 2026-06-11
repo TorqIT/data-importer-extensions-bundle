@@ -7,6 +7,7 @@ studio/node_modules/
 studio/@mf-types/
 studio/.rsbuild/
 studio/dist/
+src/Resources/public/build/development
 
 # PHP-CS-Fixer
 /.php_cs
