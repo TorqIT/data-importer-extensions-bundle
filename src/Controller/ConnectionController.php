@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace TorqIT\DataImporterExtensionsBundle\Controller;
 
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use TorqIT\DataImporterExtensionsBundle\Exception\DoctrineConnectionsNotReturnedAsArrayException;
 
-// FIXME: Change to studio path and extend correct controller
-#[Route("/admin/pimcoredataimporter")]
-class ConnectionController
+#[Route("/pimcore-studio/pimcoredataimporter")]
+class ConnectionController extends AbstractController
 {
     /** @throws DoctrineConnectionsNotReturnedAsArrayException */
     #[Route("/get-bulk-connections", name: 'pimcore_dataimporter_bulk_connections', methods: ['GET'])]

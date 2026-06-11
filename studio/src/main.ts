@@ -1,4 +1,5 @@
 import { type IAbstractPlugin } from "@pimcore/studio-ui-bundle";
+import { BulkSqlLoaderModule } from "./loaders/bulk-sql/bulk-sql-loader-module";
 import { ArithmeticTransformerModule } from "./transformers/arithmetic/arithmetic-transformer-module";
 import { ArrayValTransformerModule } from "./transformers/array-val/array-val-transformer-module";
 import { AsCountryCodeTransformerModule } from "./transformers/as-country-code/as-country-code-transformer-module";
@@ -22,6 +23,7 @@ export default {
     name: "data-importer-extensions-plugin",
 
     onStartup: ({ moduleSystem }): void => {
+        // transformers
         moduleSystem.registerModule(ArithmeticTransformerModule);
         moduleSystem.registerModule(ArrayValTransformerModule);
         moduleSystem.registerModule(AsCountryCodeTransformerModule);
@@ -40,5 +42,8 @@ export default {
         moduleSystem.registerModule(SlugifyTransformerModule);
         moduleSystem.registerModule(SymfonyExpressionTransformerModule);
         moduleSystem.registerModule(ToClassificationStoreKvPairTransformerModule);
+
+        // loaders
+        moduleSystem.registerModule(BulkSqlLoaderModule);
     },
 } as IAbstractPlugin;
