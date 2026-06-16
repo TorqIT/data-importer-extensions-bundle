@@ -1,9 +1,9 @@
-import { AbstractModule } from "@pimcore/studio-ui-bundle";
-import { transformerRegistry } from "../../common/consts/registries";
+import { AbstractModule, container } from "@pimcore/studio-ui-bundle";
+import { getTransformerRegistry } from "../../common/consts/registries";
 
 export const SafeKeyTransformerModule: AbstractModule = {
     onInit() {
-        transformerRegistry.registerDynamicType({
+        getTransformerRegistry(container).registerDynamicType({
             id: "safeKey",
             label: "Safe Key",
             group: "dataManipulation",

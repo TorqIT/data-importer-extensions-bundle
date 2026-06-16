@@ -1,11 +1,11 @@
 import React from "react";
 import { LoadOrCreateDataObjectTransformerForm } from "./load-or-create-data-object-transformer-form";
-import { AbstractModule } from "@pimcore/studio-ui-bundle";
-import { transformerRegistry } from "../../common/consts/registries";
+import { AbstractModule, container } from "@pimcore/studio-ui-bundle";
+import { getTransformerRegistry } from "../../common/consts/registries";
 
 export const LoadOrCreateDataObjectTransformerModule: AbstractModule = {
     onInit() {
-        transformerRegistry.registerDynamicType({
+        getTransformerRegistry(container).overrideDynamicType({
             id: "loadDataObject",
             label: "Load or Create Data Object",
             group: "loadImport",

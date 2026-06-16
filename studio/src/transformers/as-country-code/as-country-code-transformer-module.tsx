@@ -1,9 +1,9 @@
-import { AbstractModule } from "@pimcore/studio-ui-bundle";
-import { transformerRegistry } from "../../common/consts/registries";
+import { AbstractModule, container } from "@pimcore/studio-ui-bundle";
+import { getTransformerRegistry } from "../../common/consts/registries";
 
 export const AsCountryCodeTransformerModule: AbstractModule = {
     onInit() {
-        transformerRegistry.registerDynamicType({
+        getTransformerRegistry(container).registerDynamicType({
             id: "asCountryCode",
             label: "As Country Code",
             group: "dataTypes",

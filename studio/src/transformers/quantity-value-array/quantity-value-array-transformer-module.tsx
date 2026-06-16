@@ -1,11 +1,11 @@
 import React from "react";
 import { QuantityValueArrayTransformerForm } from "./quantity-value-array-transformer-form";
-import { AbstractModule } from "@pimcore/studio-ui-bundle";
-import { transformerRegistry } from "../../common/consts/registries";
+import { AbstractModule, container } from "@pimcore/studio-ui-bundle";
+import { getTransformerRegistry } from "../../common/consts/registries";
 
 export const QuantityValueArrayTransformerModule: AbstractModule = {
     onInit() {
-        transformerRegistry.registerDynamicType({
+        getTransformerRegistry(container).overrideDynamicType({
             id: "quantityValueArray",
             label: "Quantity Value Array",
             group: "dataTypes",

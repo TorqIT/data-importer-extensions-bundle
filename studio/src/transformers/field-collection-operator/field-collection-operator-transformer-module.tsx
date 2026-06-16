@@ -1,11 +1,11 @@
 import React from "react";
 import { FieldCollectionOperatorTransformerForm } from "./field-collection-operator-transformer-form";
-import { AbstractModule } from "@pimcore/studio-ui-bundle";
-import { transformerRegistry } from "../../common/consts/registries";
+import { AbstractModule, container } from "@pimcore/studio-ui-bundle";
+import { getTransformerRegistry } from "../../common/consts/registries";
 
 export const FieldCollectionOperatorTransformerModule: AbstractModule = {
     onInit() {
-        transformerRegistry.registerDynamicType({
+        getTransformerRegistry(container).registerDynamicType({
             id: "fieldCollectionOperator",
             label: "Field Collection Operator",
             group: "dataTypes",
