@@ -37,7 +37,7 @@
         "js": {
           "async": [],
           "sync": [
-            "static/js/async/538.0ae7da53.js"
+            "static/js/async/538.48ecced4.js"
           ]
         },
         "css": {
@@ -61,8 +61,8 @@
         "js": {
           "async": [],
           "sync": [
-            "static/js/588.0650214a.js",
-            "static/js/remoteEntry.js"
+            "static/js/remoteEntry.js",
+            "static/js/918.0e22b2c1.js"
           ]
         },
         "css": {
@@ -88,8 +88,8 @@
         "js": {
           "async": [],
           "sync": [
-            "static/js/588.0650214a.js",
-            "static/js/remoteEntry.js"
+            "static/js/remoteEntry.js",
+            "static/js/918.0e22b2c1.js"
           ]
         },
         "css": {
@@ -113,8 +113,8 @@
         "js": {
           "async": [],
           "sync": [
-            "static/js/588.0650214a.js",
-            "static/js/remoteEntry.js"
+            "static/js/remoteEntry.js",
+            "static/js/918.0e22b2c1.js"
           ]
         },
         "css": {
@@ -136,17 +136,7 @@
       "federationContainerName": "promise new Promise(resolve => {\n    const remoteUrl = window.StudioUIBundleRemoteUrl\n    \n    // Check if the container is already available\n    if (window['pimcore_studio_ui_bundle']) {\n      resolve({\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      })\n      return\n    }\n\n    const script = document.createElement('script')\n    script.src = remoteUrl\n    script.onload = () => {\n      const proxy = {\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      }\n      resolve(proxy)\n    }\n    document.head.appendChild(script);\n  })\n  ",
       "moduleName": ".",
       "usedIn": [
-        "src/main.ts + 31 modules"
-      ],
-      "version": "*"
-    },
-    {
-      "alias": "@pimcore/studio-ui-bundle",
-      "consumingFederationContainerName": "torqit_data_importer_extensions_bundle",
-      "federationContainerName": "promise new Promise(resolve => {\n    const remoteUrl = window.StudioUIBundleRemoteUrl\n    \n    // Check if the container is already available\n    if (window['pimcore_studio_ui_bundle']) {\n      resolve({\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      })\n      return\n    }\n\n    const script = document.createElement('script')\n    script.src = remoteUrl\n    script.onload = () => {\n      const proxy = {\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      }\n      resolve(proxy)\n    }\n    document.head.appendChild(script);\n  })\n  ",
-      "moduleName": "app",
-      "usedIn": [
-        "src/main.ts + 31 modules"
+        "src/main.ts + 66 modules"
       ],
       "version": "*"
     },
@@ -156,7 +146,7 @@
       "federationContainerName": "promise new Promise(resolve => {\n    const remoteUrl = window.StudioUIBundleRemoteUrl\n    \n    // Check if the container is already available\n    if (window['pimcore_studio_ui_bundle']) {\n      resolve({\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      })\n      return\n    }\n\n    const script = document.createElement('script')\n    script.src = remoteUrl\n    script.onload = () => {\n      const proxy = {\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      }\n      resolve(proxy)\n    }\n    document.head.appendChild(script);\n  })\n  ",
       "moduleName": "components",
       "usedIn": [
-        "src/main.ts + 31 modules"
+        "src/main.ts + 66 modules"
       ],
       "version": "*"
     },
@@ -166,7 +156,7 @@
       "federationContainerName": "promise new Promise(resolve => {\n    const remoteUrl = window.StudioUIBundleRemoteUrl\n    \n    // Check if the container is already available\n    if (window['pimcore_studio_ui_bundle']) {\n      resolve({\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      })\n      return\n    }\n\n    const script = document.createElement('script')\n    script.src = remoteUrl\n    script.onload = () => {\n      const proxy = {\n        get: (request) => window['pimcore_studio_ui_bundle'].get(request),\n        init: (...arg) => {\n          try {\n            return window['pimcore_studio_ui_bundle'].init(...arg)\n          } catch(e) {\n            console.log('remote container already initialized')\n          }\n        }\n      }\n      resolve(proxy)\n    }\n    document.head.appendChild(script);\n  })\n  ",
       "moduleName": "modules/element",
       "usedIn": [
-        "src/main.ts + 31 modules"
+        "src/main.ts + 66 modules"
       ],
       "version": "*"
     },
@@ -194,7 +184,8 @@
       "assets": {
         "js": {
           "sync": [
-            "static/js/async/__federation_expose_default_export.8351672a.js"
+            "static/js/async/lib-axios.2c43cf35.js",
+            "static/js/async/__federation_expose_default_export.85dbbba4.js"
           ],
           "async": []
         },

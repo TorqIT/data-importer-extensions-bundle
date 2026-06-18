@@ -2,16 +2,17 @@
   "entrypoints": {
     "main": {
       "js": [
-        "/bundles/torqitdataimporterextensions/build/production/static/js/async/538.0ae7da53.js",
-        "/bundles/torqitdataimporterextensions/build/production/static/js/588.0650214a.js",
-        "/bundles/torqitdataimporterextensions/build/production/static/js/main.9cbaae7e.js"
+        "/bundles/torqitdataimporterextensions/build/production/static/js/async/538.48ecced4.js",
+        "/bundles/torqitdataimporterextensions/build/production/static/js/918.0e22b2c1.js",
+        "/bundles/torqitdataimporterextensions/build/production/static/js/main.9ffb01cb.js"
       ],
       "css": []
     },
     "torqit_data_importer_extensions_bundle": {
       "js": [
-        "/bundles/torqitdataimporterextensions/build/production/static/js/async/__federation_expose_default_export.8351672a.js",
-        "/bundles/torqitdataimporterextensions/build/production/static/js/async/538.0ae7da53.js",
+        "/bundles/torqitdataimporterextensions/build/production/static/js/async/lib-axios.2c43cf35.js",
+        "/bundles/torqitdataimporterextensions/build/production/static/js/async/__federation_expose_default_export.85dbbba4.js",
+        "/bundles/torqitdataimporterextensions/build/production/static/js/async/538.48ecced4.js",
         "/bundles/torqitdataimporterextensions/build/production/static/js/remoteEntry.js"
       ],
       "css": []
