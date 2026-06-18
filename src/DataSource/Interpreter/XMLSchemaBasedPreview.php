@@ -3,20 +3,19 @@
 namespace TorqIT\DataImporterExtensionsBundle\DataSource\Interpreter;
 
 use DOMDocument;
+use DOMElement;
 use DOMNodeList;
 use DOMXPath;
-use Pimcore\Bundle\DataImporterBundle\DataSource\Interpreter\XmlFileInterpreter;
 use Pimcore\Bundle\DataImporterBundle\Preview\Model\PreviewData;
 use Symfony\Component\Config\Util\XmlUtils;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
-use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
+use TorqIT\DataImporterExtensionsBundle\Override\CustomXmlFileInterpreter;
 
-// FIXME: setLogger currently broken
-//#[Autoconfigure(calls: [['setLogger', ['@logger']]])]
-#[AutoconfigureTag(name: 'monolog.logger', attributes: ['channel' => 'DATA-IMPORTER'])]
-#[AutoconfigureTag(name: 'pimcore.datahub.data_importer.interpreter', attributes: ['type' => 'XMLSchemaBasedPreview'])]
-// FIXME: XmlFileInterpreter is now final, cannot extend
-class XMLSchemaBasedPreview
+#[Autoconfigure(tags: [
+    ['name' => 'monolog.logger', 'attributes' => ['channel' => 'DATA-IMPORTER']],
+    ['name' => 'pimcore.datahub.data_importer.interpreter', 'attributes' => ['type' => 'XMLSchemaBasedPreview']],
+])]
+class XMLSchemaBasedPreview extends CustomXmlFileInterpreter
 {
     public function previewData(string $path, int $recordNumber = 0, array $mappedColumns = []): PreviewData
     {
@@ -35,7 +34,7 @@ class XMLSchemaBasedPreview
                 $readRecordNumber = $recordNumber;
             }
 
-            if (!empty($previewDataItem) && $previewDataItem instanceof \DOMElement) {
+            if (!empty($previewDataItem) && $previewDataItem instanceof DOMElement) {
                 $previewData = XmlUtils::convertDomElementToArray($previewDataItem);
 
                 $keys = array_keys($previewData);
