@@ -8,6 +8,7 @@ export const PropertyLoadResolverModule: AbstractModule = {
     onInit() {
         getResolverRegistry(container).registerDynamicType({
             id: "loading.property",
+            type: "property",
             label: "Property",
             group: "loading",
             renderSettings(props: DynamicTypeResolverRenderProps) {

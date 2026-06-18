@@ -8,6 +8,7 @@ export const AdvancedParentCreateResolverModule: AbstractModule = {
     onInit() {
         getResolverRegistry(container).registerDynamicType({
             id: "createLocation.advancedParent",
+            type: "advancedParent",
             label: "Advanced Parent",
             group: "createLocation",
             renderSettings(props: DynamicTypeResolverRenderProps) {

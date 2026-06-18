@@ -8,6 +8,7 @@ export const AdvancedPathLoadResolverModule: AbstractModule = {
     onInit() {
         getResolverRegistry(container).registerDynamicType({
             id: "loading.advancedPath",
+            type: "advancedPath",
             label: "Advanced Path",
             group: "loading",
             renderSettings(props: DynamicTypeResolverRenderProps) {

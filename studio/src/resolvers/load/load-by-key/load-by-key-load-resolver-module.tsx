@@ -7,7 +7,8 @@ import { LoadByKeyLoadResolverSettings } from "./load-by-key-load-resolver-setti
 export const LoadByKeyLoadResolverModule: AbstractModule = {
     onInit() {
         getResolverRegistry(container).registerDynamicType({
-            id: "loading.load_by_key",
+            id: "loading.loadByKey",
+            type: "loadByKey",
             label: "Load by Key",
             group: "loading",
             renderSettings(props: DynamicTypeResolverRenderProps) {
