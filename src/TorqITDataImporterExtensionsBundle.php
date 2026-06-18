@@ -3,11 +3,19 @@
 namespace TorqIT\DataImporterExtensionsBundle;
 
 use Pimcore\Extension\Bundle\AbstractPimcoreBundle;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Torq\PimcoreHelpersBundle\Service\Common\BundleAssetResolverTrait;
+use TorqIT\DataImporterExtensionsBundle\DependencyInjection\Compiler\TransformationDataTypeMappingPass;
 
 class TorqITDataImporterExtensionsBundle extends AbstractPimcoreBundle
 {
     use BundleAssetResolverTrait;
+
+    public function build(ContainerBuilder $container): void
+    {
+        parent::build($container);
+        $container->addCompilerPass(new TransformationDataTypeMappingPass());
+    }
 
     public function getCssPaths(): array
     {
