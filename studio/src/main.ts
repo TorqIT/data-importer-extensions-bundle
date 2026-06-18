@@ -1,5 +1,22 @@
 import { type IAbstractPlugin } from "@pimcore/studio-ui-bundle";
 import { BulkSqlLoaderModule } from "./loaders/bulk-sql/bulk-sql-loader-module";
+import { AdvancedXlsxInterpreterModule } from "./interpreters/advanced-xlsx/advanced-xlsx-interpreter-module";
+import { BulkCsvInterpreterModule } from "./interpreters/bulk-csv/bulk-csv-interpreter-module";
+import { BulkSqlInterpreterModule } from "./interpreters/bulk-sql/bulk-sql-interpreter-module";
+import { BulkXlsxInterpreterModule } from "./interpreters/bulk-xlsx/bulk-xlsx-interpreter-module";
+import { XmlSchemaBasedPreviewInterpreterModule } from "./interpreters/xml-schema-based-preview/xml-schema-based-preview-interpreter-module";
+import { AdvancedClassificationStoreDataTargetModule } from "./data-targets/advanced-classification-store/advanced-classification-store-data-target-module";
+import { DynamicLocalizedFieldDataTargetModule } from "./data-targets/dynamic-localized-field/dynamic-localized-field-data-target-module";
+import { FieldCollectionDataTargetModule } from "./data-targets/field-collection/field-collection-data-target-module";
+import { ImageGalleryAppenderDataTargetModule } from "./data-targets/image-gallery-appender/image-gallery-appender-data-target-module";
+import { PropertyDataTargetModule } from "./data-targets/property/property-data-target-module";
+import { TableDataTargetModule } from "./data-targets/table/table-data-target-module";
+import { TagsDataTargetModule } from "./data-targets/tags/tags-data-target-module";
+import { AdvancedPathLoadResolverModule } from "./resolvers/load/advanced-path/advanced-path-load-resolver-module";
+import { LoadByKeyLoadResolverModule } from "./resolvers/load/load-by-key/load-by-key-load-resolver-module";
+import { PropertyLoadResolverModule } from "./resolvers/load/property/property-load-resolver-module";
+import { AdvancedParentCreateResolverModule } from "./resolvers/location/advanced-parent/advanced-parent-create-resolver-module";
+import { AdvancedParentUpdateResolverModule } from "./resolvers/location/advanced-parent/advanced-parent-update-resolver-module";
 import { ArithmeticTransformerModule } from "./transformers/arithmetic/arithmetic-transformer-module";
 import { ArrayValTransformerModule } from "./transformers/array-val/array-val-transformer-module";
 import { AsCountryCodeTransformerModule } from "./transformers/as-country-code/as-country-code-transformer-module";
@@ -23,6 +40,32 @@ export default {
     name: "data-importer-extensions-plugin",
 
     onStartup: ({ moduleSystem }): void => {
+        // interpreters
+        moduleSystem.registerModule(AdvancedXlsxInterpreterModule);
+        moduleSystem.registerModule(BulkCsvInterpreterModule);
+        moduleSystem.registerModule(BulkSqlInterpreterModule);
+        moduleSystem.registerModule(BulkXlsxInterpreterModule);
+        moduleSystem.registerModule(XmlSchemaBasedPreviewInterpreterModule);
+
+        // loaders
+        moduleSystem.registerModule(BulkSqlLoaderModule);
+
+        // data targets
+        moduleSystem.registerModule(AdvancedClassificationStoreDataTargetModule);
+        moduleSystem.registerModule(DynamicLocalizedFieldDataTargetModule);
+        moduleSystem.registerModule(FieldCollectionDataTargetModule);
+        moduleSystem.registerModule(ImageGalleryAppenderDataTargetModule);
+        moduleSystem.registerModule(PropertyDataTargetModule);
+        moduleSystem.registerModule(TableDataTargetModule);
+        moduleSystem.registerModule(TagsDataTargetModule);
+
+        // resolvers
+        moduleSystem.registerModule(AdvancedPathLoadResolverModule);
+        moduleSystem.registerModule(LoadByKeyLoadResolverModule);
+        moduleSystem.registerModule(PropertyLoadResolverModule);
+        moduleSystem.registerModule(AdvancedParentCreateResolverModule);
+        moduleSystem.registerModule(AdvancedParentUpdateResolverModule);
+
         // transformers
         moduleSystem.registerModule(ArithmeticTransformerModule);
         moduleSystem.registerModule(ArrayValTransformerModule);
@@ -42,8 +85,5 @@ export default {
         moduleSystem.registerModule(SlugifyTransformerModule);
         moduleSystem.registerModule(SymfonyExpressionTransformerModule);
         moduleSystem.registerModule(ToClassificationStoreKvPairTransformerModule);
-
-        // loaders
-        moduleSystem.registerModule(BulkSqlLoaderModule);
     },
 } as IAbstractPlugin;

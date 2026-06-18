@@ -23,7 +23,8 @@ export interface DynamicTypeDataTargetRenderProps {
 
 export interface DynamicTypeDataTarget extends DynamicTypeAbstract {
     readonly label: string;
-    renderSettings(configName: string): React.JSX.Element | null;
+    supportsType(type?: string): boolean;
+    renderSettings(props: DynamicTypeDataTargetRenderProps): React.JSX.Element | null;
 }
 
 /** Facade to match the registry from data-importer until they provide an npm package with types */
