@@ -5,14 +5,13 @@
 namespace TorqIT\DataImporterExtensionsBundle\DataSource\Interpreter;
 
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
-use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use TorqIT\DataImporterExtensionsBundle\DataSource\DataLoader\Xlsx\XlsxDataLoaderFactory;
 
-// FIXME: setLogger currently broken
-//#[Autoconfigure(calls: [['setLogger', ['@logger']]])]
-#[AutoconfigureTag(name: 'monolog.logger', attributes: ['channel' => 'DATA-IMPORTER'])]
-#[AutoconfigureTag(name: 'pimcore.datahub.data_importer.interpreter', attributes: ['type' => 'advancedXlsx'])]
+#[Autoconfigure(tags: [
+    ['name' => 'monolog.logger', 'attributes' => ['channel' => 'DATA-IMPORTER']],
+    ['name' => 'pimcore.datahub.data_importer.interpreter', 'attributes' => ['type' => 'advancedXlsx']],
+])]
 class AdvancedXlsxFileInterpreter extends XlsxFileInterpreterWithColumnNames
 {
     protected array $uniqueColumns;
