@@ -8,13 +8,11 @@ use DOMNodeList;
 use DOMXPath;
 use Pimcore\Bundle\DataImporterBundle\Preview\Model\PreviewData;
 use Symfony\Component\Config\Util\XmlUtils;
-use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 use TorqIT\DataImporterExtensionsBundle\Override\CustomXmlFileInterpreter;
 
-#[Autoconfigure(tags: [
-    ['name' => 'monolog.logger', 'attributes' => ['channel' => 'DATA-IMPORTER']],
-    ['name' => 'pimcore.datahub.data_importer.interpreter', 'attributes' => ['type' => 'XMLSchemaBasedPreview']],
-])]
+#[AutoconfigureTag('monolog.logger', ['channel' => 'DATA-IMPORTER'])]
+#[AutoconfigureTag('pimcore.datahub.data_importer.interpreter', ['type' => 'XMLSchemaBasedPreview'])]
 class XMLSchemaBasedPreview extends CustomXmlFileInterpreter
 {
     public function previewData(string $path, int $recordNumber = 0, array $mappedColumns = []): PreviewData
