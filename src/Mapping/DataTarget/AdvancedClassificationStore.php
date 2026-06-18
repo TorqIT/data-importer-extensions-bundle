@@ -5,15 +5,14 @@
 namespace TorqIT\DataImporterExtensionsBundle\Mapping\DataTarget;
 
 use Pimcore\Bundle\DataImporterBundle\Exception\InvalidConfigurationException;
-use Pimcore\Bundle\DataImporterBundle\Mapping\DataTarget\Classificationstore as ClassificationStoreDataTarget;
 use Pimcore\Model\DataObject\Classificationstore;
 use Pimcore\Model\DataObject\Data\QuantityValue;
 use Pimcore\Model\Element\ElementInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
+use TorqIT\DataImporterExtensionsBundle\Override\CustomClassificationstore;
 
 #[AutoconfigureTag(name: 'pimcore.datahub.data_importer.data_target', attributes: ['type' => 'advancedClassificationStore'])]
-// FIXME: ClassificationStoreDataTarget is now final, cannot extend
-class AdvancedClassificationStore
+class AdvancedClassificationStore extends CustomClassificationstore
 {
     protected bool $writeIfSourceIsEmpty;
     protected bool $writeIfTargetIsNotEmpty;
@@ -21,8 +20,7 @@ class AdvancedClassificationStore
     /** @throws InvalidConfigurationException */
     public function setSettings(array $settings): void
     {
-        // FIXME: cannot use parent
-//        parent::setSettings($settings);
+        parent::setSettings($settings);
         $this->writeIfSourceIsEmpty = $settings['writeIfSourceIsEmpty'] ?? true;
         $this->writeIfTargetIsNotEmpty = $settings['writeIfTargetIsNotEmpty'] ?? true;
     }
@@ -43,8 +41,7 @@ class AdvancedClassificationStore
             return;
         }
 
-        // FIXME: cannot use parent
-//        parent::assignData($element, $data);
+        parent::assignData($element, $data);
     }
 
     protected function shouldAssignData($newValue, $currentValue)
