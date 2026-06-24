@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use TorqIT\DataImporterExtensionsBundle\Exception\DoctrineConnectionsNotReturnedAsArrayException;
 
-#[Route("/pimcore-studio/pimcoredataimporter")]
+#[Route("/admin/pimcoredataimporter")]
 class ConnectionController extends AbstractController
 {
     /** @throws DoctrineConnectionsNotReturnedAsArrayException */
