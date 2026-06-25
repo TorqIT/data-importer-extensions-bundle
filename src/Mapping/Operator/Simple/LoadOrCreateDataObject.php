@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Simple;
 
 use Pimcore\Bundle\DataImporterBundle\Exception\InvalidConfigurationException;
-use Pimcore\Bundle\DataImporterBundle\Mapping\Operator\Simple\LoadDataObject;
 use Pimcore\Bundle\DataImporterBundle\PimcoreDataImporterBundle;
 use Pimcore\Model\DataObject;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Service;
+use Throwable;
+use TorqIT\DataImporterExtensionsBundle\Override\CustomLoadDataObject;
 
-// FIXME: LoadDataObject is now final, cannot extend
-class LoadOrCreateDataObject
+class LoadOrCreateDataObject extends CustomLoadDataObject
 {
     protected bool $createIfNotFound = false;
 
@@ -22,8 +22,7 @@ class LoadOrCreateDataObject
 
     public function setSettings(array $settings): void
     {
-        // FIXME: cannot use parent
-//        parent::setSettings($settings);
+        parent::setSettings($settings);
         $this->createIfNotFound = (bool) ($settings['createIfNotFound'] ?? false);
         $this->publishOnCreate = (bool) ($settings['publishOnCreate'] ?? false);
         $this->loadUnpublished = $this->loadUnpublished || $this->createIfNotFound;
@@ -32,9 +31,7 @@ class LoadOrCreateDataObject
 
     public function process($inputData, bool $dryRun = false)
     {
-        // FIXME: cannot use parent
-//        $result = parent::process($inputData, $dryRun);
-        $result = null;
+        $result = parent::process($inputData, $dryRun);
 
         if (!$this->createIfNotFound) {
             return $result;
@@ -68,7 +65,7 @@ class LoadOrCreateDataObject
                     sprintf('Created new data object with key `%s` at `%s`', $created->getKey(), $created->getRealFullPath()),
                     ['component' => PimcoreDataImporterBundle::LOGGER_COMPONENT_PREFIX . $this->configName]
                 );
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 $this->applicationLogger->error(
                     sprintf('Failed to create data object from `%s`: %s', $data, $e->getMessage()),
                     ['component' => PimcoreDataImporterBundle::LOGGER_COMPONENT_PREFIX . $this->configName]
