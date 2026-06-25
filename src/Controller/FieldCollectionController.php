@@ -8,11 +8,18 @@ use Pimcore\Model\DataObject\Fieldcollection\Definition;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/pimcoredataimporter/dataobject/config')]
+#[IsGranted('plugin_datahub_adapter_dataImporterDataObject')]
 class FieldCollectionController
 {
-    #[Route('/load-class-fieldcollection-attributes', options: ['expose' => true], methods: ['GET'])]
+    #[Route(
+        '/load-class-fieldcollection-attributes',
+        'pimcore_dataimporter_configdataobject_loaddataobjectfieldcollectionattributes',
+        options: ['expose' => true],
+        methods: ['GET'],
+    )]
     public function loadDataObjectFieldCollectionAttributesAction(): JsonResponse
     {
         $definitions = new Definition\Listing();
@@ -30,7 +37,12 @@ class FieldCollectionController
         return new JsonResponse(['attributes' => $attributes]);
     }
 
-    #[Route('/load-class-fieldcollection-fields', options: ['expose' => true], methods: ['GET'])]
+    #[Route(
+        '/load-class-fieldcollection-fields',
+        'pimcore_dataimporter_configdataobject_loaddataobjectfieldcollectionfields',
+        options: ['expose' => true],
+        methods: ['GET'],
+    )]
     public function loadDataObjectFieldCollectionFieldsAction(Request $request): JsonResponse
     {
         $key = $request->query->get('key_id');
@@ -45,7 +57,12 @@ class FieldCollectionController
         return new JsonResponse(['fields' => $fields]);
     }
 
-    #[Route('/load-class-fieldcollection-fields-by-product', options: ['expose' => true], methods: ['GET'])]
+    #[Route(
+        '/load-class-fieldcollection-fields-by-product',
+        'pimcore_dataimporter_configdataobject_loadfieldcollectionfieldsbyclass',
+        options: ['expose' => true],
+        methods: ['GET'],
+    )]
     public function loadFieldCollectionFieldsByClassAction(Request $request): JsonResponse
     {
         $fieldDefinitions = ClassDefinition::getById($request->query->get('class_id'))->getFieldDefinitions();
