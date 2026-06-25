@@ -44,22 +44,23 @@ class Tags implements DataTargetInterface
 
     private function buildTags(array $tags): Tag
     {
-        // Loop through each part of the path and create tags if they don't exist
         $currentPath = '';
         $currentParentTag = null;
         foreach ($tags as $tagName) {
             $currentPath .= '/' . $tagName;
-            // Check if the tag already exists
             if (!$tag = Tag::getByPath($currentPath)) {
-                // Create the tag
                 $tag = new Tag();
                 $tag->setName($tagName);
                 if ($currentParentTag) {
                     $tag->setParentId($currentParentTag->getId());
                 }
-                $tag->save();
-                $currentParentTag = $tag;
+                try {
+                    $tag->save();
+                } catch (\Exception) {
+                    $tag = Tag::getByPath($currentPath);
+                }
             }
+            $currentParentTag = $tag;
         }
         return $currentParentTag;
     }
