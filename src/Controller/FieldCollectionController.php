@@ -2,25 +2,18 @@
 
 namespace TorqIT\DataImporterExtensionsBundle\Controller;
 
-use Pimcore\Bundle\DataImporterBundle\Controller\ConfigDataObjectController;
-use Pimcore\Bundle\DataImporterBundle\Mapping\Type\TransformationDataTypeService;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\ClassDefinition\Data\Fieldcollections;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Request;
 use Pimcore\Model\DataObject\Fieldcollection\Definition;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Attribute\Route;
 
-// FIXME: ConfigDataObjectController is now final, cannot extend
+#[Route('/admin/pimcoredataimporter/dataobject/config')]
 class FieldCollectionController
 {
-    #[Route(
-        path: '/load-class-fieldcollection-attributes',
-        name: 'pimcore_dataimporter_configdataobject_loaddataobjectfieldcollectionattributes',
-        methods: ['GET'],
-        options: ['expose' => true]
-    )]
-    public function loadDataObjectFieldCollectionAttributesAction(Request $request, TransformationDataTypeService $transformationDataTypeService): JsonResponse
+    #[Route('/load-class-fieldcollection-attributes', options: ['expose' => true], methods: ['GET'])]
+    public function loadDataObjectFieldCollectionAttributesAction(): JsonResponse
     {
         $definitions = new Definition\Listing();
         $definitionNames = $definitions->loadNames();
@@ -37,13 +30,8 @@ class FieldCollectionController
         return new JsonResponse(['attributes' => $attributes]);
     }
 
-    #[Route(
-        path: '/load-class-fieldcollection-fields',
-        name: 'pimcore_dataimporter_configdataobject_loaddataobjectfieldcollectionfields',
-        methods: ['GET'],
-        options: ['expose' => true]
-    )]
-    public function loadDataObjectFieldCollectionFieldsAction(Request $request, TransformationDataTypeService $transformationDataTypeService): JsonResponse
+    #[Route('/load-class-fieldcollection-fields', options: ['expose' => true], methods: ['GET'])]
+    public function loadDataObjectFieldCollectionFieldsAction(Request $request): JsonResponse
     {
         $key = $request->query->get('key_id');
 
@@ -57,12 +45,7 @@ class FieldCollectionController
         return new JsonResponse(['fields' => $fields]);
     }
 
-    #[Route(
-        path: '/load-class-fieldcollection-fields-by-product',
-        name: 'pimcore_dataimporter_configdataobject_loadfieldcollectionfieldsbyclass',
-        methods: ['GET'],
-        options: ['expose' => true]
-    )]
+    #[Route('/load-class-fieldcollection-fields-by-product', options: ['expose' => true], methods: ['GET'])]
     public function loadFieldCollectionFieldsByClassAction(Request $request): JsonResponse
     {
         $fieldDefinitions = ClassDefinition::getById($request->query->get('class_id'))->getFieldDefinitions();
