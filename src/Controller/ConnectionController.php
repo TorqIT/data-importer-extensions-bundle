@@ -10,7 +10,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use TorqIT\DataImporterExtensionsBundle\Exception\DoctrineConnectionsNotReturnedAsArrayException;
 
-#[Route("/admin/pimcoredataimporter")]
+#[Route("/pimcoredataimporter")]
 #[IsGranted('plugin_datahub_adapter_dataImporterDataObject')]
 class ConnectionController extends AbstractController
 {

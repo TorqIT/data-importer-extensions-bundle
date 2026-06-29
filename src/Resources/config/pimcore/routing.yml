@@ -1,5 +1,3 @@
 torq_it_data_importer_extensions:
-    resource: "../../../Controller/"
-    type:     attribute
-    prefix:   /
-
+    resource: routes.php
+    type: php

@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/admin/pimcoredataimporter/dataobject/config')]
+#[Route('/pimcoredataimporter/dataobject/config')]
 #[IsGranted('plugin_datahub_adapter_dataImporterDataObject')]
 class FieldCollectionController
 {
