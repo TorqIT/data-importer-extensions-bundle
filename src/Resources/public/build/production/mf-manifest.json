@@ -142,7 +142,7 @@
         "js": {
           "sync": [
             "static/js/async/lib-axios.2c43cf35.js",
-            "static/js/async/__federation_expose_default_export.85dbbba4.js"
+            "static/js/async/__federation_expose_default_export.d2e6b7db.js"
           ],
           "async": []
         },

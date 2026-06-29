@@ -10,7 +10,7 @@ export function BulkSqlLoaderSettings(): React.JSX.Element {
     const fetchConnections = useCallback(async (controller?: AbortController) => {
         setIsLoading(true);
         try {
-            const res = await axios.get("/pimcore-studio/pimcoredataimporter/get-bulk-connections", {
+            const res = await axios.get("/pimcore-studio/api/pimcoredataimporter/get-bulk-connections", {
                 signal: controller?.signal,
             });
             setConnectionOptions(
