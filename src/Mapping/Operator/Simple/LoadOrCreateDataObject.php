@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Simple;
 
 use Pimcore\Bundle\DataImporterBundle\Exception\InvalidConfigurationException;
-use Pimcore\Bundle\DataImporterBundle\Mapping\Operator\Simple\LoadDataObject;
 use Pimcore\Bundle\DataImporterBundle\PimcoreDataImporterBundle;
 use Pimcore\Model\DataObject;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject\Service;
+use Throwable;
+use TorqIT\DataImporterExtensionsBundle\Override\CustomLoadDataObject;
 
-class LoadOrCreateDataObject extends LoadDataObject
+class LoadOrCreateDataObject extends CustomLoadDataObject
 {
     protected bool $createIfNotFound = false;
 
@@ -64,7 +65,7 @@ class LoadOrCreateDataObject extends LoadDataObject
                     sprintf('Created new data object with key `%s` at `%s`', $created->getKey(), $created->getRealFullPath()),
                     ['component' => PimcoreDataImporterBundle::LOGGER_COMPONENT_PREFIX . $this->configName]
                 );
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 $this->applicationLogger->error(
                     sprintf('Failed to create data object from `%s`: %s', $data, $e->getMessage()),
                     ['component' => PimcoreDataImporterBundle::LOGGER_COMPONENT_PREFIX . $this->configName]

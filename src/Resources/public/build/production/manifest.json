@@ -1,0 +1,46 @@
+{
+  "allFiles": [
+    "/bundles/torqitdataimporterextensions/build/production/static/js/main.9ffb01cb.js",
+    "/bundles/torqitdataimporterextensions/build/production/static/js/remoteEntry.js",
+    "/bundles/torqitdataimporterextensions/build/production/static/js/async/538.48ecced4.js",
+    "/bundles/torqitdataimporterextensions/build/production/static/js/async/__federation_expose_default_export.d2e6b7db.js",
+    "/bundles/torqitdataimporterextensions/build/production/static/js/async/lib-axios.2c43cf35.js",
+    "/bundles/torqitdataimporterextensions/build/production/static/js/918.0e22b2c1.js",
+    "/bundles/torqitdataimporterextensions/build/production/mf-stats.json",
+    "/bundles/torqitdataimporterextensions/build/production/mf-manifest.json",
+    "/bundles/torqitdataimporterextensions/build/production/main.html"
+  ],
+  "entries": {
+    "main": {
+      "html": [
+        "/bundles/torqitdataimporterextensions/build/production/main.html"
+      ],
+      "initial": {
+        "js": [
+          "/bundles/torqitdataimporterextensions/build/production/static/js/918.0e22b2c1.js",
+          "/bundles/torqitdataimporterextensions/build/production/static/js/main.9ffb01cb.js"
+        ]
+      },
+      "async": {
+        "js": [
+          "/bundles/torqitdataimporterextensions/build/production/static/js/async/538.48ecced4.js"
+        ]
+      }
+    },
+    "torqit_data_importer_extensions_bundle": {
+      "initial": {
+        "js": [
+          "/bundles/torqitdataimporterextensions/build/production/static/js/remoteEntry.js"
+        ]
+      },
+      "async": {
+        "js": [
+          "/bundles/torqitdataimporterextensions/build/production/static/js/async/lib-axios.2c43cf35.js",
+          "/bundles/torqitdataimporterextensions/build/production/static/js/async/__federation_expose_default_export.d2e6b7db.js",
+          "/bundles/torqitdataimporterextensions/build/production/static/js/async/538.48ecced4.js"
+        ]
+      }
+    }
+  },
+  "integrity": {}
+}

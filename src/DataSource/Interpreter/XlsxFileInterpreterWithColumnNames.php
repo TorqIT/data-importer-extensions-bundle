@@ -12,9 +12,9 @@ use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Pimcore\Bundle\DataImporterBundle\Preview\Model\PreviewData;
-use Pimcore\Bundle\DataImporterBundle\DataSource\Interpreter\XlsxFileInterpreter;
+use TorqIT\DataImporterExtensionsBundle\Override\CustomXlsxFileInterpreter;
 
-abstract class XlsxFileInterpreterWithColumnNames extends XlsxFileInterpreter
+abstract class XlsxFileInterpreterWithColumnNames extends CustomXlsxFileInterpreter
 {
     /**
      * @var bool
@@ -145,8 +145,8 @@ abstract class XlsxFileInterpreterWithColumnNames extends XlsxFileInterpreter
 
     public function setSettings(array $settings): void
     {
-        parent::setSettings($settings);
-
+        $this->skipFirstRow = $settings['skipFirstRow'] ?? false;
+        $this->sheetName = $settings['sheetName'] ?? 'Sheet1';
         $this->saveHeaderName = $settings['saveHeaderName'] ?? false;
         $this->headerRow = (int)($settings['headerRow'] ?? 1);
     }

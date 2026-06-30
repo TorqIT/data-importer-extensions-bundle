@@ -14,6 +14,10 @@ services:
         public: true
         tags: ["controller.service_arguments"]
 
+    TorqIT\DataImporterExtensionsBundle\Override\:
+        resource: "../../Override"
+        public: true
+
     TorqIT\DataImporterExtensionsBundle\Service\:
         resource: "../../Service"
         public: true
@@ -30,6 +34,10 @@ services:
         resource: "../../Mapping"
         public: true
 
+    TorqIT\DataImporterExtensionsBundle\Webpack\:
+        resource: "../../Webpack"
+        public: true
+
     ################
     ### EXTERNAL ###
     ################
@@ -39,9 +47,7 @@ services:
         tags:
             - { name: "pimcore.datahub.data_importer.operator", type: "quantityValueArray" }
 
-    Pimcore\Bundle\DataImporterBundle\Mapping\Type\TransformationDataTypeService:
-        class: TorqIT\DataImporterExtensionsBundle\Mapping\Type\TransformationDataTypeService
-
+    # Noting that any services which type-hint the Pimcore\...\LoadDataObject service will throw TypeError because of the broken inheritance chain
     Pimcore\Bundle\DataImporterBundle\Mapping\Operator\Simple\LoadDataObject:
         class: TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Simple\LoadOrCreateDataObject
         tags:

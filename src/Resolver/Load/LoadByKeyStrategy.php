@@ -5,6 +5,7 @@ namespace TorqIT\DataImporterExtensionsBundle\Resolver\Load;
 use Pimcore\Bundle\DataImporterBundle\Resolver\Load\AbstractLoad;
 use Pimcore\Model\DataObject;
 use Pimcore\Model\Element\ElementInterface;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
 /**
  * Loads a data object by its Pimcore system key (o_key / object filename in tree).
@@ -13,6 +14,7 @@ use Pimcore\Model\Element\ElementInterface;
  * the class-specific table (object_CLASSID) which does not contain the key column.
  * This strategy queries via the Listing class, which uses the correct system table.
  */
+#[AutoconfigureTag(name: 'pimcore.datahub.data_importer.resolver.load', attributes: ['type' => 'loadByKey'])]
 class LoadByKeyStrategy extends AbstractLoad
 {
     protected bool $includeUnpublished = false;

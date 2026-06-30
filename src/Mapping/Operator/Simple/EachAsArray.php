@@ -3,7 +3,7 @@
 namespace TorqIT\DataImporterExtensionsBundle\Mapping\Operator\Simple;
 
 use Pimcore\Bundle\DataImporterBundle\Mapping\Operator\AbstractOperator;
-use Pimcore\Log\ApplicationLogger;
+use Pimcore\Bundle\ApplicationLoggerBundle\ApplicationLogger;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
 #[AutoconfigureTag(name: 'pimcore.datahub.data_importer.operator', attributes: ['type' => 'eachAsArray'])]

@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace TorqIT\DataImporterExtensionsBundle\Controller;
 
-use Pimcore\Bundle\AdminBundle\Controller\AdminAbstractController;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use TorqIT\DataImporterExtensionsBundle\Exception\DoctrineConnectionsNotReturnedAsArrayException;
 
-#[Route("/admin/pimcoredataimporter")]
-class ConnectionController extends AdminAbstractController
+#[Route("/pimcoredataimporter")]
+#[IsGranted('plugin_datahub_adapter_dataImporterDataObject')]
+class ConnectionController extends AbstractController
 {
     /** @throws DoctrineConnectionsNotReturnedAsArrayException */
     #[Route("/get-bulk-connections", name: 'pimcore_dataimporter_bulk_connections', methods: ['GET'])]
