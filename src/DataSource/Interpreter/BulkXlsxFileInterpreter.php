@@ -11,10 +11,12 @@ use OpenSpout\Writer\CSV\Options;
 use OpenSpout\Writer\CSV\Writer;
 use Pimcore\Bundle\DataImporterBundle\Processing\ImportProcessingService;
 use Pimcore\Db;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use TorqIT\DataImporterExtensionsBundle\DataSource\DataLoader\Xlsx\XlsxDataLoaderFactory;
 
+#[Autoconfigure(calls: [['setLogger', ['@logger']]])]
 #[AutoconfigureTag('monolog.logger', ['channel' => 'DATA-IMPORTER'])]
 #[AutoconfigureTag('pimcore.datahub.data_importer.interpreter', ['type' => 'bulkXlsx'])]
 class BulkXlsxFileInterpreter extends XlsxFileInterpreterWithColumnNames
