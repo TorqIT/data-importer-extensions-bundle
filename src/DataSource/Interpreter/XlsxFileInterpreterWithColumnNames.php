@@ -82,13 +82,32 @@ abstract class XlsxFileInterpreterWithColumnNames extends CustomXlsxFileInterpre
         $headerRowData = null;
 
         if ($this->fileValid($path)) {
+            // Get total row count without loading the workbook into memory
+            $highestRow = $this->getTotalRows($path);
+
+            // Calculate which row to preview (data starts after header row)
+            $dataStartRow = $this->headerRow + 1;
+            $totalDataRows = $highestRow - $this->headerRow;
+
+            // Determine the actual row number to read
+            $targetRow = $dataStartRow + $recordNumber;
+            if ($targetRow > $highestRow) {
+                $targetRow = $highestRow;
+                $readRecordNumber = max(0, $totalDataRows - 1);
+            } else {
+                $readRecordNumber = $recordNumber;
+            }
+
+            // Only load the header row and the target row instead of the whole
+            // workbook - large files would otherwise exhaust the memory limit.
+            // Formulas and their cached values are still loaded for the filtered
+            // rows, so getCellValueSafe() keeps working.
             $reader = IOFactory::createReaderForFile($path);
+            $reader->setLoadSheetsOnly($this->sheetName);
+            $reader->setReadFilter(new PreviewRowsReadFilter([$this->headerRow, $targetRow]));
             $spreadSheet = $reader->load($path);
             $spreadSheet->setActiveSheetIndexByName($this->sheetName);
             $sheet = $spreadSheet->getActiveSheet();
-
-            // Get total row count
-            $highestRow = $sheet->getHighestRow();
 
             // Read header row with safe formula handling
             $headerRowData = $this->readRowSafe($sheet, $this->headerRow);
@@ -102,19 +121,6 @@ abstract class XlsxFileInterpreterWithColumnNames extends CustomXlsxFileInterpre
                 foreach ($headerRowData as $index => $columnHeader) {
                     $columns[$index] = trim((string)$columnHeader) . " [$index]";
                 }
-            }
-
-            // Calculate which row to preview (data starts after header row)
-            $dataStartRow = $this->headerRow + 1;
-            $totalDataRows = $highestRow - $this->headerRow;
-
-            // Determine the actual row number to read
-            $targetRow = $dataStartRow + $recordNumber;
-            if ($targetRow > $highestRow) {
-                $targetRow = $highestRow;
-                $readRecordNumber = max(0, $totalDataRows - 1);
-            } else {
-                $readRecordNumber = $recordNumber;
             }
 
             // Read the preview row with safe formula handling
