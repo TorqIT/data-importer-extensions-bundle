@@ -29,14 +29,14 @@
   },
   "dependencies": {
     "@ant-design/icons": "^6.2.2",
-    "@pimcore/studio-ui-bundle": "^0.15.17",
+    "@pimcore/studio-ui-bundle": "^2026.1.2",
     "antd": "5.22.x",
     "nodemon": "^3.1.14",
     "react": "18.3.x",
     "react-dom": "18.3.x"
   },
   "overrides": {
-    "koa": ">=2.16.4"
+    "adm-zip": "^0.6.0"
   },
   "prettier": {
     "printWidth": 120
