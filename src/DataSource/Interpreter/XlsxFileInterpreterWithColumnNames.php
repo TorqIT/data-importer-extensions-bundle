@@ -9,6 +9,7 @@ namespace TorqIT\DataImporterExtensionsBundle\DataSource\Interpreter;
 
 use PhpOffice\PhpSpreadsheet\Cell\Cell;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Pimcore\Bundle\DataImporterBundle\Preview\Model\PreviewData;
@@ -34,23 +35,26 @@ abstract class XlsxFileInterpreterWithColumnNames extends CustomXlsxFileInterpre
     /**
      * Get cell value with graceful formula error handling.
      *
-     * For cells with formulas that can't be calculated (e.g., Excel-specific functions
-     * like _xlfn._LONGTEXT), this will return the cached value if available,
-     * or null if no cached value exists.
+     * Formula cells prefer the result cached in the file: only parts of the
+     * workbook are loaded for previews, so recalculating formulas with
+     * cross-row or cross-sheet references would silently produce wrong
+     * values ("#REF!", zeros). The cached value also covers formulas that
+     * can't be calculated at all (e.g. Excel-specific functions like
+     * _xlfn._LONGTEXT).
      */
     private function getCellValueSafe(Cell $cell): mixed
     {
-        try {
-            return $cell->getCalculatedValue();
-        } catch (\Throwable $e) {
-            // Formula calculation failed - try to get the cached value
-            // This is the value that Excel calculated and stored in the file
+        if ($cell->getDataType() === DataType::TYPE_FORMULA) {
             $oldValue = $cell->getOldCalculatedValue();
             if ($oldValue !== null) {
                 return $oldValue;
             }
+        }
 
-            // No cached value available, return null
+        try {
+            return $cell->getCalculatedValue();
+        } catch (\Throwable $e) {
+            // Formula calculation failed and no cached value available
             return null;
         }
     }
