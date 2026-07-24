@@ -2,7 +2,12 @@
 
 namespace TorqIT\DataImporterExtensionsBundle\Override;
 
+use PhpOffice\PhpSpreadsheet\Cell\Cell;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\RichText\RichText;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Pimcore\Bundle\DataImporterBundle\DataSource\Interpreter\AbstractInterpreter;
 use Pimcore\Bundle\DataImporterBundle\Preview\Model\PreviewData;
 use TorqIT\DataImporterExtensionsBundle\DataSource\Interpreter\PreviewRowsReadFilter;
@@ -72,13 +77,13 @@ class CustomXlsxFileInterpreter extends AbstractInterpreter
                 $highestColumn = $sheet->getHighestColumn();
 
                 if ($this->skipFirstRow) {
-                    $firstRow = $sheet->rangeToArray('A' . $headerRowNumber . ':' . $highestColumn . $headerRowNumber)[0];
+                    $firstRow = $this->readPreviewRow($sheet, $headerRowNumber, $highestColumn);
                     foreach ($firstRow as $index => $columnHeader) {
                         $columns[$index] = trim((string)$columnHeader) . " [$index]";
                     }
                 }
 
-                $previewDataRow = $sheet->rangeToArray('A' . $targetRowNumber . ':' . $highestColumn . $targetRowNumber)[0];
+                $previewDataRow = $this->readPreviewRow($sheet, $targetRowNumber, $highestColumn);
 
                 foreach ($previewDataRow as $index => $columnData) {
                     $previewData[$index] = $columnData;
@@ -91,6 +96,46 @@ class CustomXlsxFileInterpreter extends AbstractInterpreter
         }
 
         return new PreviewData($columns, $previewData, $readRecordNumber, $mappedColumns);
+    }
+
+    protected function readPreviewRow(Worksheet $sheet, int $rowNumber, string $lastColumnLetter): array
+    {
+        $lastColumnIndex = Coordinate::columnIndexFromString($lastColumnLetter);
+        $rowData = [];
+
+        for ($column = 1; $column <= $lastColumnIndex; $column++) {
+            $rowData[] = $this->getPreviewCellValue($sheet->getCell([$column, $rowNumber]));
+        }
+
+        return $rowData;
+    }
+
+    /**
+     * Formula cells prefer the result cached in the file: only parts of the
+     * workbook are loaded for previews, so recalculating formulas with
+     * cross-row or cross-sheet references would silently produce wrong
+     * values ("#REF!", zeros).
+     */
+    protected function getPreviewCellValue(Cell $cell): mixed
+    {
+        if ($cell->getDataType() === DataType::TYPE_FORMULA) {
+            $cachedValue = $cell->getOldCalculatedValue();
+            if ($cachedValue !== null) {
+                return $cachedValue;
+            }
+        }
+
+        try {
+            $value = $cell->getCalculatedValue();
+        } catch (\Throwable $e) {
+            return null;
+        }
+
+        if ($value instanceof RichText) {
+            return $value->getPlainText();
+        }
+
+        return $value;
     }
 
     protected function getTotalRows(string $path): int
