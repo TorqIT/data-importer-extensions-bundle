@@ -1,37 +1,10 @@
-import React, { useCallback, useEffect, useState } from "react";
-import axios from "axios";
+import React from "react";
 import { Input } from "antd";
 import { Form, FormKit, Select } from "@pimcore/studio-ui-bundle/components";
+import { useConnections } from "./useConnections";
 
 export function BulkSqlLoaderSettings(): React.JSX.Element {
-    const [connectionOptions, setConnectionOptions] = useState<Array<{ label: string; value: string }>>([]);
-    const [isLoading, setIsLoading] = useState(false);
-
-    const fetchConnections = useCallback(async (controller?: AbortController) => {
-        setIsLoading(true);
-        try {
-            const res = await axios.get("/pimcore-studio/api/pimcoredataimporter/get-bulk-connections", {
-                signal: controller?.signal,
-            });
-            setConnectionOptions(
-                res.data.map((c: { name: string; value: string }) => ({ label: c.name, value: c.value })),
-            );
-        } catch (e) {
-            if (!axios.isCancel(e)) {
-                console.error("Unable to fetch bulk SQL connections.");
-            }
-        } finally {
-            setIsLoading(false);
-        }
-    }, []);
-
-    useEffect(() => {
-        const controller = new AbortController();
-        fetchConnections(controller);
-        return () => {
-            controller.abort();
-        };
-    }, [fetchConnections]);
+    const { connections, isLoading } = useConnections();
 
     return (
         <FormKit.Panel>
@@ -41,7 +14,7 @@ export function BulkSqlLoaderSettings(): React.JSX.Element {
                 required
                 rules={[{ required: true, message: "Connection is required." }]}
             >
-                <Select loading={isLoading} options={connectionOptions} />
+                <Select loading={isLoading} options={connections} />
             </Form.Item>
             <Form.Item
                 name={["loaderConfig", "settings", "select"]}
