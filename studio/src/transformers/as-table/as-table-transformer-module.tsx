@@ -10,7 +10,12 @@ export const AsTableTransformerModule: AbstractModule = {
             label: "As Table",
             group: "dataTypes",
             renderSettings(settings, onChange) {
-                return <AsTableTransformerForm onChange={onChange} settings={settings} />;
+                return (
+                  <AsTableTransformerForm
+                    onChange={ onChange }
+                    settings={ settings }
+                  />
+                );
             },
         });
     },

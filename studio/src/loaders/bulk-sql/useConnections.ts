@@ -23,7 +23,7 @@ export function useConnections() {
             });
             const data: BackendConnection[] = await res.json();
             setconnections(data.map(({ name: label, value }) => ({ label, value })));
-        } catch (e) {
+        } catch (_e) {
             console.error("Unable to fetch bulk SQL connections.");
         } finally {
             setIsLoading(false);

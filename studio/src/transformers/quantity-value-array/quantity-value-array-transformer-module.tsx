@@ -10,7 +10,12 @@ export const QuantityValueArrayTransformerModule: AbstractModule = {
             label: "Quantity Value Array",
             group: "dataTypes",
             renderSettings(settings, onChange) {
-                return <QuantityValueArrayTransformerForm onChange={onChange} settings={settings} />;
+                return (
+                  <QuantityValueArrayTransformerForm
+                    onChange={ onChange }
+                    settings={ settings }
+                  />
+                );
             },
         });
     },

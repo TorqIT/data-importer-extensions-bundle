@@ -9,12 +9,12 @@ export function ImageGalleryAppenderDataTargetSettings({
     const s = settings.settings ?? {};
 
     return (
-        <Form.Item label="Include Duplicates">
-            <Switch
-                checked={s.includeDuplicates ?? false}
-                onChange={(checked) => onChange({ ...settings, settings: { ...s, includeDuplicates: checked } })}
-                size="small"
-            />
-        </Form.Item>
+      <Form.Item label="Include Duplicates">
+        <Switch
+          checked={ s.includeDuplicates ?? false }
+          onChange={ (checked) => onChange({ ...settings, settings: { ...s, includeDuplicates: checked } }) }
+          size="small"
+        />
+      </Form.Item>
     );
 }

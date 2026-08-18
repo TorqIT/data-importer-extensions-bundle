@@ -7,12 +7,12 @@ interface TransformerSettingsLayoutProps {
 }
 
 export const TransformerSettingsLayout = ({ children }: TransformerSettingsLayoutProps): React.JSX.Element => (
-    <FieldWidthProvider>
-        <Form
-            colon={ false }
-            layout="vertical"
-        >
-            { children }
-        </Form>
-    </FieldWidthProvider>
+  <FieldWidthProvider>
+    <Form
+      colon={ false }
+      layout="vertical"
+    >
+      { children }
+    </Form>
+  </FieldWidthProvider>
 )

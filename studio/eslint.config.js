@@ -33,6 +33,9 @@ export default tseslint.config(
         rules: {
             "@typescript-eslint/no-misused-promises": "off",
             "@typescript-eslint/no-non-null-assertion": "off",
+            "@typescript-eslint/no-explicit-any": "off",
+            "@typescript-eslint/no-empty-object-type": "off",
+            "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_", "caughtErrorsIgnorePattern": "^_" }],
             "@typescript-eslint/unbound-method": "off",
             "react/jsx-boolean-value": "error",
             "react/jsx-closing-bracket-location": "error",

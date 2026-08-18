@@ -10,7 +10,12 @@ export const ToClassificationStoreKvPairTransformerModule: AbstractModule = {
             label: "To Classification Store Key-Value Pair",
             group: "dataTypes",
             renderSettings(settings, onChange) {
-                return <ToClassificationStoreKvPairTransformerForm onChange={onChange} settings={settings} />;
+                return (
+                  <ToClassificationStoreKvPairTransformerForm
+                    onChange={ onChange }
+                    settings={ settings }
+                  />
+                );
             },
         });
     },

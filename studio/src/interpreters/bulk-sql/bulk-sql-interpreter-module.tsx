@@ -10,10 +10,10 @@ export const BulkSqlInterpreterModule: AbstractModule = {
             label: "Bulk SQL",
             renderSettings() {
                 return (
-                    <Alert
-                        message={"Bulk SQL interpreter uses the query configuration from the Bulk SQL loader."}
-                        type="info"
-                    />
+                  <Alert
+                    message={ "Bulk SQL interpreter uses the query configuration from the Bulk SQL loader." }
+                    type="info"
+                  />
                 );
             },
         });

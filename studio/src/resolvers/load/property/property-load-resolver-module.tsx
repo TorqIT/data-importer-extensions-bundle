@@ -12,7 +12,7 @@ export const PropertyLoadResolverModule: AbstractModule = {
             label: "Property",
             group: "loading",
             renderSettings(props: DynamicTypeResolverRenderProps) {
-                return <PropertyLoadResolverSettings {...props} />;
+                return <PropertyLoadResolverSettings { ...props } />;
             },
         });
     },

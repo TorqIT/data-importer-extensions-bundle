@@ -10,11 +10,11 @@ export function DynamicLocalizedFieldDataTargetSettings({
     const s = settings.settings ?? {};
 
     return (
-        <Form.Item label="Field Name">
-            <Input
-                onChange={(e) => onChange({ ...settings, settings: { ...s, fieldName: e.target.value } })}
-                value={s.fieldName ?? ""}
-            />
-        </Form.Item>
+      <Form.Item label="Field Name">
+        <Input
+          onChange={ (e) => onChange({ ...settings, settings: { ...s, fieldName: e.target.value } }) }
+          value={ s.fieldName ?? "" }
+        />
+      </Form.Item>
     );
 }

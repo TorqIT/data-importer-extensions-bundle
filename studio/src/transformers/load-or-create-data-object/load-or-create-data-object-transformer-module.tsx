@@ -10,7 +10,12 @@ export const LoadOrCreateDataObjectTransformerModule: AbstractModule = {
             label: "Load or Create Data Object",
             group: "loadImport",
             renderSettings(settings, onChange) {
-                return <LoadOrCreateDataObjectTransformerForm onChange={onChange} settings={settings} />;
+                return (
+                  <LoadOrCreateDataObjectTransformerForm
+                    onChange={ onChange }
+                    settings={ settings }
+                  />
+                );
             },
         });
     },

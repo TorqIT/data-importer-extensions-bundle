@@ -11,18 +11,18 @@ export function AdvancedClassificationStoreDataTargetSettings({
     const writeIfTargetIsNotEmpty = s.writeIfTargetIsNotEmpty ?? true;
 
     return (
-        <>
-            <Form.Item label="Field Name">
-                <Select
-                    onChange={(v) => onChange({ ...settings, settings: { ...s, fieldName: v } })}
-                    options={classFieldOptions}
-                    value={s.fieldName}
-                />
-            </Form.Item>
-            <Form.Item label="Write if Target is Not Empty">
-                <Switch
-                    checked={writeIfTargetIsNotEmpty}
-                    onChange={(checked) =>
+      <>
+        <Form.Item label="Field Name">
+          <Select
+            onChange={ (v) => onChange({ ...settings, settings: { ...s, fieldName: v } }) }
+            options={ classFieldOptions }
+            value={ s.fieldName }
+          />
+        </Form.Item>
+        <Form.Item label="Write if Target is Not Empty">
+          <Switch
+            checked={ writeIfTargetIsNotEmpty }
+            onChange={ (checked) =>
                         onChange({
                             ...settings,
                             settings: {
@@ -32,17 +32,17 @@ export function AdvancedClassificationStoreDataTargetSettings({
                             },
                         })
                     }
-                    size="small"
-                />
-            </Form.Item>
-            <Form.Item label="Write if Source is Empty">
-                <Switch
-                    checked={s.writeIfSourceIsEmpty ?? false}
-                    disabled={!writeIfTargetIsNotEmpty}
-                    onChange={(checked) => onChange({ ...settings, settings: { ...s, writeIfSourceIsEmpty: checked } })}
-                    size="small"
-                />
-            </Form.Item>
-        </>
+            size="small"
+          />
+        </Form.Item>
+        <Form.Item label="Write if Source is Empty">
+          <Switch
+            checked={ s.writeIfSourceIsEmpty ?? false }
+            disabled={ !writeIfTargetIsNotEmpty }
+            onChange={ (checked) => onChange({ ...settings, settings: { ...s, writeIfSourceIsEmpty: checked } }) }
+            size="small"
+          />
+        </Form.Item>
+      </>
     );
 }

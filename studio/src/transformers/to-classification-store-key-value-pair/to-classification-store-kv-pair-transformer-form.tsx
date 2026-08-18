@@ -18,15 +18,18 @@ export const ToClassificationStoreKvPairTransformerForm = ({
     settings,
     onChange,
 }: ToClassificationStoreKvPairTransformerFormProps): React.JSX.Element => (
-    <TransformerSettingsLayout>
-        <Form.Item extra="TODO: replace with async Classification Store picker" label="Classification Store ID">
-            <Input
-                onChange={(e) => {
+  <TransformerSettingsLayout>
+    <Form.Item
+      extra="TODO: replace with async Classification Store picker"
+      label="Classification Store ID"
+    >
+      <Input
+        onChange={ (e) => {
                     onChange({ ...settings, storeId: e.target.value || null });
-                }}
-                placeholder="Store ID"
-                value={settings.storeId != null ? String(settings.storeId) : ""}
-            />
-        </Form.Item>
-    </TransformerSettingsLayout>
+                } }
+        placeholder="Store ID"
+        value={ settings.storeId != null ? String(settings.storeId) : "" }
+      />
+    </Form.Item>
+  </TransformerSettingsLayout>
 );

@@ -10,7 +10,12 @@ export const FieldCollectionOperatorTransformerModule: AbstractModule = {
             label: "Field Collection Operator",
             group: "dataTypes",
             renderSettings(settings, onChange) {
-                return <FieldCollectionOperatorTransformerForm onChange={onChange} settings={settings} />;
+                return (
+                  <FieldCollectionOperatorTransformerForm
+                    onChange={ onChange }
+                    settings={ settings }
+                  />
+                );
             },
         });
     },

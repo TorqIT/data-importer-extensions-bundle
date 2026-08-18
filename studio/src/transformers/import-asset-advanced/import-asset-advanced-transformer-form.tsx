@@ -24,24 +24,24 @@ export const ImportAssetAdvancedTransformerForm = ({
     };
 
     return (
-        <TransformerSettingsLayout>
-            <Form.Item label="Asset Path">
-                <Input
-                    onChange={(e) => {
+      <TransformerSettingsLayout>
+        <Form.Item label="Asset Path">
+          <Input
+            onChange={ (e) => {
                         update("path", e.target.value);
-                    }}
-                    placeholder="/"
-                    value={settings.path ?? "/"}
-                />
-            </Form.Item>
-            <Form.Item label="URL Property Name">
-                <Input
-                    onChange={(e) => {
+                    } }
+            placeholder="/"
+            value={ settings.path ?? "/" }
+          />
+        </Form.Item>
+        <Form.Item label="URL Property Name">
+          <Input
+            onChange={ (e) => {
                         update("urlPropertyName", e.target.value);
-                    }}
-                    value={settings.urlPropertyName ?? ""}
-                />
-            </Form.Item>
-        </TransformerSettingsLayout>
+                    } }
+            value={ settings.urlPropertyName ?? "" }
+          />
+        </Form.Item>
+      </TransformerSettingsLayout>
     );
 };

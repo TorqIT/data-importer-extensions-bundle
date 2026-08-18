@@ -29,33 +29,36 @@ export const QuantityValueRangeArrayTransformerForm = ({
     };
 
     return (
-        <TransformerSettingsLayout>
-            <Form.Item extra="TODO: replace with async unit picker from Pimcore API" label="Static Unit (ID)">
-                <Input
-                    onChange={(e) => {
+      <TransformerSettingsLayout>
+        <Form.Item
+          extra="TODO: replace with async unit picker from Pimcore API"
+          label="Static Unit (ID)"
+        >
+          <Input
+            onChange={ (e) => {
                         update("staticUnitSelect", e.target.value || null);
-                    }}
-                    placeholder="Leave empty to use source column"
-                    value={settings.staticUnitSelect ?? ""}
-                />
-            </Form.Item>
-            <Form.Item label="Unit Source">
-                <Select
-                    onChange={(v) => {
+                    } }
+            placeholder="Leave empty to use source column"
+            value={ settings.staticUnitSelect ?? "" }
+          />
+        </Form.Item>
+        <Form.Item label="Unit Source">
+          <Select
+            onChange={ (v) => {
                         update("unitSourceSelect", v);
-                    }}
-                    options={UNIT_SOURCE_OPTIONS}
-                    value={settings.unitSourceSelect ?? "id"}
-                />
-            </Form.Item>
-            <Form.Item label="Null if no value">
-                <Checkbox
-                    checked={settings.unitNullIfNoValueCheckbox ?? false}
-                    onChange={(e) => {
+                    } }
+            options={ UNIT_SOURCE_OPTIONS }
+            value={ settings.unitSourceSelect ?? "id" }
+          />
+        </Form.Item>
+        <Form.Item label="Null if no value">
+          <Checkbox
+            checked={ settings.unitNullIfNoValueCheckbox ?? false }
+            onChange={ (e) => {
                         update("unitNullIfNoValueCheckbox", e.target.checked);
-                    }}
-                />
-            </Form.Item>
-        </TransformerSettingsLayout>
+                    } }
+          />
+        </Form.Item>
+      </TransformerSettingsLayout>
     );
 };

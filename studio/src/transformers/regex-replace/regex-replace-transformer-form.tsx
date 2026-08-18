@@ -21,23 +21,23 @@ export const RegexReplaceTransformerForm = ({
     };
 
     return (
-        <TransformerSettingsLayout>
-            <Form.Item label="Pattern">
-                <Input
-                    onChange={(e) => {
+      <TransformerSettingsLayout>
+        <Form.Item label="Pattern">
+          <Input
+            onChange={ (e) => {
                         update("search", e.target.value);
-                    }}
-                    value={settings.search ?? ""}
-                />
-            </Form.Item>
-            <Form.Item label="Replace">
-                <Input
-                    onChange={(e) => {
+                    } }
+            value={ settings.search ?? "" }
+          />
+        </Form.Item>
+        <Form.Item label="Replace">
+          <Input
+            onChange={ (e) => {
                         update("replace", e.target.value);
-                    }}
-                    value={settings.replace ?? ""}
-                />
-            </Form.Item>
-        </TransformerSettingsLayout>
+                    } }
+            value={ settings.replace ?? "" }
+          />
+        </Form.Item>
+      </TransformerSettingsLayout>
     );
 };

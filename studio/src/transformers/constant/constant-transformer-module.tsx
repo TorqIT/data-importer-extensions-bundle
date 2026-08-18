@@ -10,7 +10,12 @@ export const ConstantTransformerModule: AbstractModule = {
             label: "Constant",
             group: "dataManipulation",
             renderSettings(settings, onChange) {
-                return <ConstantTransformerForm onChange={onChange} settings={settings} />;
+                return (
+                  <ConstantTransformerForm
+                    onChange={ onChange }
+                    settings={ settings }
+                  />
+                );
             },
         });
     },

@@ -10,7 +10,12 @@ export const ArrayValTransformerModule: AbstractModule = {
             label: "Array Value",
             group: "dataManipulation",
             renderSettings(settings, onChange) {
-                return <ArrayValTransformerForm onChange={onChange} settings={settings} />;
+                return (
+                  <ArrayValTransformerForm
+                    onChange={ onChange }
+                    settings={ settings }
+                  />
+                );
             },
         });
     },

@@ -28,24 +28,24 @@ export const ArithmeticTransformerForm = ({
     };
 
     return (
-        <TransformerSettingsLayout>
-            <Form.Item label="Arithmetic Operator">
-                <Select
-                    onChange={(v) => {
+      <TransformerSettingsLayout>
+        <Form.Item label="Arithmetic Operator">
+          <Select
+            onChange={ (v) => {
                         update("arithmeticOperator", v);
-                    }}
-                    options={ARITHMETIC_OPERATORS}
-                    value={settings.arithmeticOperator ?? "Addition"}
-                />
-            </Form.Item>
-            <Form.Item label="Static Number">
-                <Input
-                    onChange={(e) => {
+                    } }
+            options={ ARITHMETIC_OPERATORS }
+            value={ settings.arithmeticOperator ?? "Addition" }
+          />
+        </Form.Item>
+        <Form.Item label="Static Number">
+          <Input
+            onChange={ (e) => {
                         update("staticNumber", e.target.value);
-                    }}
-                    value={String(settings.staticNumber ?? 0)}
-                />
-            </Form.Item>
-        </TransformerSettingsLayout>
+                    } }
+            value={ String(settings.staticNumber ?? 0) }
+          />
+        </Form.Item>
+      </TransformerSettingsLayout>
     );
 };

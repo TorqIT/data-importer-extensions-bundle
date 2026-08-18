@@ -10,7 +10,12 @@ export const RegexReplaceTransformerModule: AbstractModule = {
             label: "Regex Replace",
             group: "dataManipulation",
             renderSettings(settings, onChange) {
-                return <RegexReplaceTransformerForm onChange={onChange} settings={settings} />;
+                return (
+                  <RegexReplaceTransformerForm
+                    onChange={ onChange }
+                    settings={ settings }
+                  />
+                );
             },
         });
     },

@@ -19,15 +19,15 @@ interface AsVideoTransformerFormProps {
 }
 
 export const AsVideoTransformerForm = ({ settings, onChange }: AsVideoTransformerFormProps): React.JSX.Element => (
-    <TransformerSettingsLayout>
-        <Form.Item label="Video Type">
-            <Select
-                onChange={(v) => {
+  <TransformerSettingsLayout>
+    <Form.Item label="Video Type">
+      <Select
+        onChange={ (v) => {
                     onChange({ ...settings, videoType: v });
-                }}
-                options={VIDEO_TYPES}
-                value={settings.videoType ?? "youtube"}
-            />
-        </Form.Item>
-    </TransformerSettingsLayout>
+                } }
+        options={ VIDEO_TYPES }
+        value={ settings.videoType ?? "youtube" }
+      />
+    </Form.Item>
+  </TransformerSettingsLayout>
 );

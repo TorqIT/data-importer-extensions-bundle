@@ -10,7 +10,12 @@ export const SymfonyExpressionTransformerModule: AbstractModule = {
             label: "Symfony Expression",
             group: "dataManipulation",
             renderSettings(settings, onChange) {
-                return <SymfonyExpressionTransformerForm onChange={onChange} settings={settings} />;
+                return (
+                  <SymfonyExpressionTransformerForm
+                    onChange={ onChange }
+                    settings={ settings }
+                  />
+                );
             },
         });
     },

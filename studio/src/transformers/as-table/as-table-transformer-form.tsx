@@ -18,23 +18,23 @@ export const AsTableTransformerForm = ({ settings, onChange }: AsTableTransforme
     };
 
     return (
-        <TransformerSettingsLayout>
-            <Form.Item label="Column Delimiter">
-                <Input
-                    onChange={(e) => {
+      <TransformerSettingsLayout>
+        <Form.Item label="Column Delimiter">
+          <Input
+            onChange={ (e) => {
                         update("columnDelimiter", e.target.value);
-                    }}
-                    value={settings.columnDelimiter ?? ","}
-                />
-            </Form.Item>
-            <Form.Item label="Row Delimiter">
-                <Input
-                    onChange={(e) => {
+                    } }
+            value={ settings.columnDelimiter ?? "," }
+          />
+        </Form.Item>
+        <Form.Item label="Row Delimiter">
+          <Input
+            onChange={ (e) => {
                         update("rowDelimiter", e.target.value);
-                    }}
-                    value={settings.rowDelimiter ?? "|"}
-                />
-            </Form.Item>
-        </TransformerSettingsLayout>
+                    } }
+            value={ settings.rowDelimiter ?? "|" }
+          />
+        </Form.Item>
+      </TransformerSettingsLayout>
     );
 };

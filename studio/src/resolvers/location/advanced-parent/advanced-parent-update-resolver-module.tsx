@@ -12,7 +12,7 @@ export const AdvancedParentUpdateResolverModule: AbstractModule = {
             label: "Advanced Parent",
             group: "updateLocation",
             renderSettings(props: DynamicTypeResolverRenderProps) {
-                return <AdvancedParentUpdateResolverSettings {...props} />;
+                return <AdvancedParentUpdateResolverSettings { ...props } />;
             },
         });
     },

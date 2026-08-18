@@ -20,15 +20,15 @@ export const FieldCollectionOperatorTransformerForm = ({
     settings,
     onChange,
 }: FieldCollectionOperatorTransformerFormProps): React.JSX.Element => (
-    <TransformerSettingsLayout>
-        <Form.Item label="Field Collection Key">
-            <Input
-                onChange={(e) => {
+  <TransformerSettingsLayout>
+    <Form.Item label="Field Collection Key">
+      <Input
+        onChange={ (e) => {
                     onChange({ ...settings, fieldCollectionKey: e.target.value });
-                }}
-                placeholder="e.g. MyFieldCollection"
-                value={settings.fieldCollectionKey ?? ""}
-            />
-        </Form.Item>
-    </TransformerSettingsLayout>
+                } }
+        placeholder="e.g. MyFieldCollection"
+        value={ settings.fieldCollectionKey ?? "" }
+      />
+    </Form.Item>
+  </TransformerSettingsLayout>
 );
