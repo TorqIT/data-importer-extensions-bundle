@@ -12,7 +12,7 @@ export const AdvancedPathLoadResolverModule: AbstractModule = {
             label: "Advanced Path",
             group: "loading",
             renderSettings(props: DynamicTypeResolverRenderProps) {
-                return <AdvancedPathLoadResolverSettings {...props} />;
+                return <AdvancedPathLoadResolverSettings { ...props } />;
             },
         });
     },

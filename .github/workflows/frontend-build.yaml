@@ -1,0 +1,27 @@
+name: "Frontend Build"
+
+on:
+  push:
+    paths:
+      - "studio/**"
+  pull_request:
+    paths:
+      - "studio/**"
+  workflow_dispatch:
+
+concurrency:
+  group: frontend-build-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  frontend-build:
+    permissions:
+      contents: write
+    uses: pimcore/workflows-collection-public/.github/workflows/reusable-studio-frontend-build.yaml@a7738feba5d7b0846a48c0fadfd5c993b484fa3f
+    with:
+      working-directory: ./studio
+      node-version: "26"
+      build-output-path: ./src/Resources/public/build/production/

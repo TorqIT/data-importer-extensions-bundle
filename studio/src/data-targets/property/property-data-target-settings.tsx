@@ -10,11 +10,14 @@ export function PropertyDataTargetSettings({
     const s = settings.settings ?? {};
 
     return (
-        <Form.Item label="Property Name" required>
-            <Input
-                onChange={(e) => onChange({ ...settings, settings: { ...s, propertyName: e.target.value } })}
-                value={s.propertyName ?? ""}
-            />
-        </Form.Item>
+      <Form.Item
+        label="Property Name"
+        required
+      >
+        <Input
+          onChange={ (e) => onChange({ ...settings, settings: { ...s, propertyName: e.target.value } }) }
+          value={ s.propertyName ?? "" }
+        />
+      </Form.Item>
     );
 }

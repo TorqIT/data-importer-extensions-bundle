@@ -26,32 +26,32 @@ export const LoadOrCreateDataObjectTransformerForm = ({
     };
 
     return (
-        <TransformerSettingsLayout>
-            <Form.Item label="Create Path">
-                <Input
-                    onChange={(e) => {
+      <TransformerSettingsLayout>
+        <Form.Item label="Create Path">
+          <Input
+            onChange={ (e) => {
                         update("createPath", e.target.value);
-                    }}
-                    placeholder="/"
-                    value={settings.createPath ?? "/"}
-                />
-            </Form.Item>
-            <Form.Item label="Publish on Create">
-                <Checkbox
-                    checked={settings.publishOnCreate ?? false}
-                    onChange={(e) => {
+                    } }
+            placeholder="/"
+            value={ settings.createPath ?? "/" }
+          />
+        </Form.Item>
+        <Form.Item label="Publish on Create">
+          <Checkbox
+            checked={ settings.publishOnCreate ?? false }
+            onChange={ (e) => {
                         update("publishOnCreate", e.target.checked);
-                    }}
-                />
-            </Form.Item>
-            <Form.Item label="Create if Not Found">
-                <Checkbox
-                    checked={settings.createIfNotFound ?? false}
-                    onChange={(e) => {
+                    } }
+          />
+        </Form.Item>
+        <Form.Item label="Create if Not Found">
+          <Checkbox
+            checked={ settings.createIfNotFound ?? false }
+            onChange={ (e) => {
                         update("createIfNotFound", e.target.checked);
-                    }}
-                />
-            </Form.Item>
-        </TransformerSettingsLayout>
+                    } }
+          />
+        </Form.Item>
+      </TransformerSettingsLayout>
     );
 };

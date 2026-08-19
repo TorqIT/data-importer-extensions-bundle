@@ -10,7 +10,12 @@ export const ImportAssetAdvancedTransformerModule: AbstractModule = {
             label: "Import Asset Advanced",
             group: "loadImport",
             renderSettings(settings, onChange) {
-                return <ImportAssetAdvancedTransformerForm onChange={onChange} settings={settings} />;
+                return (
+                  <ImportAssetAdvancedTransformerForm
+                    onChange={ onChange }
+                    settings={ settings }
+                  />
+                );
             },
         });
     },

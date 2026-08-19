@@ -12,14 +12,14 @@ interface ConstantTransformerFormProps {
 }
 
 export const ConstantTransformerForm = ({ settings, onChange }: ConstantTransformerFormProps): React.JSX.Element => (
-    <TransformerSettingsLayout>
-        <Form.Item label="Constant Value">
-            <Input
-                onChange={(e) => {
+  <TransformerSettingsLayout>
+    <Form.Item label="Constant Value">
+      <Input
+        onChange={ (e) => {
                     onChange({ ...settings, constant: e.target.value });
-                }}
-                value={settings.constant ?? ""}
-            />
-        </Form.Item>
-    </TransformerSettingsLayout>
+                } }
+        value={ settings.constant ?? "" }
+      />
+    </Form.Item>
+  </TransformerSettingsLayout>
 );

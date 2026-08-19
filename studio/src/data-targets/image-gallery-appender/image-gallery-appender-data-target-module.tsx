@@ -13,7 +13,7 @@ export const ImageGalleryAppenderDataTargetModule: AbstractModule = {
                 return true;
             },
             renderSettings(props: DynamicTypeDataTargetRenderProps) {
-                return <ImageGalleryAppenderDataTargetSettings {...props} />;
+                return <ImageGalleryAppenderDataTargetSettings { ...props } />;
             },
         });
     },

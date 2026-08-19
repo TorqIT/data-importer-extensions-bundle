@@ -12,7 +12,7 @@ export const LoadByKeyLoadResolverModule: AbstractModule = {
             label: "Load by Key",
             group: "loading",
             renderSettings(props: DynamicTypeResolverRenderProps) {
-                return <LoadByKeyLoadResolverSettings {...props} />;
+                return <LoadByKeyLoadResolverSettings { ...props } />;
             },
         });
     },

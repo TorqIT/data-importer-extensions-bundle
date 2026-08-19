@@ -13,7 +13,7 @@ export const PropertyDataTargetModule: AbstractModule = {
                 return true;
             },
             renderSettings(props: DynamicTypeDataTargetRenderProps) {
-                return <PropertyDataTargetSettings {...props} />;
+                return <PropertyDataTargetSettings { ...props } />;
             },
         });
     },

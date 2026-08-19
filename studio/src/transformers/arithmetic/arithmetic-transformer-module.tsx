@@ -10,7 +10,12 @@ export const ArithmeticTransformerModule: AbstractModule = {
             label: "Arithmetic",
             group: "dataManipulation",
             renderSettings(settings, onChange) {
-                return <ArithmeticTransformerForm onChange={onChange} settings={settings} />;
+                return (
+                  <ArithmeticTransformerForm
+                    onChange={ onChange }
+                    settings={ settings }
+                  />
+                );
             },
         });
     },

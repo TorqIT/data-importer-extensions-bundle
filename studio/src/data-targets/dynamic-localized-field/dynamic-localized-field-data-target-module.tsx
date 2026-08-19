@@ -13,7 +13,7 @@ export const DynamicLocalizedFieldDataTargetModule: AbstractModule = {
                 return true;
             },
             renderSettings(props: DynamicTypeDataTargetRenderProps) {
-                return <DynamicLocalizedFieldDataTargetSettings {...props} />;
+                return <DynamicLocalizedFieldDataTargetSettings { ...props } />;
             },
         });
     },

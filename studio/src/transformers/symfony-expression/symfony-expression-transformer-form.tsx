@@ -16,19 +16,19 @@ export const SymfonyExpressionTransformerForm = ({
     settings,
     onChange,
 }: SymfonyExpressionTransformerFormProps): React.JSX.Element => (
-    <TransformerSettingsLayout>
-        <Form.Item
-            extra="Available variables: attributes[0], attributes[1], … (values from selected source columns)"
-            label="Expression"
-        >
-            <Input.TextArea
-                onChange={(e) => {
+  <TransformerSettingsLayout>
+    <Form.Item
+      extra="Available variables: attributes[0], attributes[1], … (values from selected source columns)"
+      label="Expression"
+    >
+      <Input.TextArea
+        onChange={ (e) => {
                     onChange({ ...settings, expression: e.target.value });
-                }}
-                placeholder="e.g. attributes[0] == 'Demo Value' ? attributes[1] : null"
-                rows={4}
-                value={settings.expression ?? ""}
-            />
-        </Form.Item>
-    </TransformerSettingsLayout>
+                } }
+        placeholder="e.g. attributes[0] == 'Demo Value' ? attributes[1] : null"
+        rows={ 4 }
+        value={ settings.expression ?? "" }
+      />
+    </Form.Item>
+  </TransformerSettingsLayout>
 );

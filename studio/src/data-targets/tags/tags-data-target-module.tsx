@@ -13,7 +13,7 @@ export const TagsDataTargetModule: AbstractModule = {
                 return true;
             },
             renderSettings(props: DynamicTypeDataTargetRenderProps) {
-                return <TagsDataTargetSettings {...props} />;
+                return <TagsDataTargetSettings { ...props } />;
             },
         });
     },

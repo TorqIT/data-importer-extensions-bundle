@@ -13,7 +13,7 @@ export const TableDataTargetModule: AbstractModule = {
                 return true;
             },
             renderSettings(props: DynamicTypeDataTargetRenderProps) {
-                return <TableDataTargetSettings {...props} />;
+                return <TableDataTargetSettings { ...props } />;
             },
         });
     },

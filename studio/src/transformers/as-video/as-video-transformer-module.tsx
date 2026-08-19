@@ -10,7 +10,12 @@ export const AsVideoTransformerModule: AbstractModule = {
             label: "As Video",
             group: "dataTypes",
             renderSettings(settings, onChange) {
-                return <AsVideoTransformerForm onChange={onChange} settings={settings} />;
+                return (
+                  <AsVideoTransformerForm
+                    onChange={ onChange }
+                    settings={ settings }
+                  />
+                );
             },
         });
     },

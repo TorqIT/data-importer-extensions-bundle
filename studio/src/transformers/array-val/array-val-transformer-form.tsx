@@ -19,31 +19,31 @@ export const ArrayValTransformerForm = ({ settings, onChange }: ArrayValTransfor
     };
 
     return (
-        <TransformerSettingsLayout>
-            <Form.Item label="Array Value (index or key)">
-                <Input
-                    onChange={(e) => {
+      <TransformerSettingsLayout>
+        <Form.Item label="Array Value (index or key)">
+          <Input
+            onChange={ (e) => {
                         update("index", e.target.value);
-                    }}
-                    value={String(settings.index ?? 0)}
-                />
-            </Form.Item>
-            <Form.Item label="Search Arrays (recursive)">
-                <Checkbox
-                    checked={settings.recursiveSearch ?? false}
-                    onChange={(e) => {
+                    } }
+            value={ String(settings.index ?? 0) }
+          />
+        </Form.Item>
+        <Form.Item label="Search Arrays (recursive)">
+          <Checkbox
+            checked={ settings.recursiveSearch ?? false }
+            onChange={ (e) => {
                         update("recursiveSearch", e.target.checked);
-                    }}
-                />
-            </Form.Item>
-            <Form.Item label="Return null if key nonexistent">
-                <Checkbox
-                    checked={settings.returnNullIfNotFound ?? false}
-                    onChange={(e) => {
+                    } }
+          />
+        </Form.Item>
+        <Form.Item label="Return null if key nonexistent">
+          <Checkbox
+            checked={ settings.returnNullIfNotFound ?? false }
+            onChange={ (e) => {
                         update("returnNullIfNotFound", e.target.checked);
-                    }}
-                />
-            </Form.Item>
-        </TransformerSettingsLayout>
+                    } }
+          />
+        </Form.Item>
+      </TransformerSettingsLayout>
     );
 };

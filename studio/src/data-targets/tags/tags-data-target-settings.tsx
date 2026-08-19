@@ -9,21 +9,21 @@ export function TagsDataTargetSettings({
     const s = settings.settings ?? {};
 
     return (
-        <>
-            <Form.Item label="Remove Other Tags">
-                <Switch
-                    checked={s.removeOtherTags ?? false}
-                    onChange={(checked) => onChange({ ...settings, settings: { ...s, removeOtherTags: checked } })}
-                    size="small"
-                />
-            </Form.Item>
-            <Form.Item label="Create Tags if Not Exists">
-                <Switch
-                    checked={s.createTagsIfNotExists ?? false}
-                    onChange={(checked) => onChange({ ...settings, settings: { ...s, createTagsIfNotExists: checked } })}
-                    size="small"
-                />
-            </Form.Item>
-        </>
+      <>
+        <Form.Item label="Remove Other Tags">
+          <Switch
+            checked={ s.removeOtherTags ?? false }
+            onChange={ (checked) => onChange({ ...settings, settings: { ...s, removeOtherTags: checked } }) }
+            size="small"
+          />
+        </Form.Item>
+        <Form.Item label="Create Tags if Not Exists">
+          <Switch
+            checked={ s.createTagsIfNotExists ?? false }
+            onChange={ (checked) => onChange({ ...settings, settings: { ...s, createTagsIfNotExists: checked } }) }
+            size="small"
+          />
+        </Form.Item>
+      </>
     );
 }

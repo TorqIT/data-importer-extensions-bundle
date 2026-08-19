@@ -13,7 +13,7 @@ export const AdvancedClassificationStoreDataTargetModule: AbstractModule = {
                 return true;
             },
             renderSettings(props: DynamicTypeDataTargetRenderProps) {
-                return <AdvancedClassificationStoreDataTargetSettings {...props} />;
+                return <AdvancedClassificationStoreDataTargetSettings { ...props } />;
             },
         });
     },

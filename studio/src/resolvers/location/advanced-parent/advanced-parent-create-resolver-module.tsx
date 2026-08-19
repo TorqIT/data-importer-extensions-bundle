@@ -12,7 +12,7 @@ export const AdvancedParentCreateResolverModule: AbstractModule = {
             label: "Advanced Parent",
             group: "createLocation",
             renderSettings(props: DynamicTypeResolverRenderProps) {
-                return <AdvancedParentCreateResolverSettings {...props} />;
+                return <AdvancedParentCreateResolverSettings { ...props } />;
             },
         });
     },
