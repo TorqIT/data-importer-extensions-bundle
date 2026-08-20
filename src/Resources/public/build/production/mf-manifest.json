@@ -34,7 +34,7 @@
         "js": {
           "async": [],
           "sync": [
-            "static/js/async/538.4fb1dbcb.js"
+            "static/js/async/538.7bbadc8d.js"
           ]
         },
         "css": {
@@ -55,7 +55,7 @@
           "async": [],
           "sync": [
             "static/js/remoteEntry.js",
-            "static/js/918.616c0ae9.js"
+            "static/js/918.9e7c5ac6.js"
           ]
         },
         "css": {
@@ -76,7 +76,7 @@
           "async": [],
           "sync": [
             "static/js/remoteEntry.js",
-            "static/js/918.616c0ae9.js"
+            "static/js/918.9e7c5ac6.js"
           ]
         },
         "css": {
@@ -97,7 +97,7 @@
           "async": [],
           "sync": [
             "static/js/remoteEntry.js",
-            "static/js/918.616c0ae9.js"
+            "static/js/918.9e7c5ac6.js"
           ]
         },
         "css": {
@@ -141,7 +141,7 @@
       "assets": {
         "js": {
           "sync": [
-            "static/js/async/__federation_expose_default_export.16317c15.js"
+            "static/js/async/__federation_expose_default_export.846d9db3.js"
           ],
           "async": []
         },
