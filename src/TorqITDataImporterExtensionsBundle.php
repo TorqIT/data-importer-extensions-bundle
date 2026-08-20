@@ -11,7 +11,9 @@ namespace Pimcore\Extension\Bundle {
 namespace TorqIT\DataImporterExtensionsBundle {
     use Pimcore\Extension\Bundle\AbstractPimcoreBundle;
     use Pimcore\Extension\Bundle\PimcoreBundleAdminClassicInterface;
+    use Symfony\Component\DependencyInjection\ContainerBuilder;
     use Torq\PimcoreHelpersBundle\Service\Common\BundleAssetResolverTrait;
+    use TorqIT\DataImporterExtensionsBundle\DependencyInjection\Compiler\TransformationDataTypeMappingPass;
 
     class TorqITDataImporterExtensionsBundle extends AbstractPimcoreBundle implements PimcoreBundleAdminClassicInterface
     {
