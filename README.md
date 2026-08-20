@@ -174,6 +174,14 @@ This is used to set a property on a Data Object.
 
 This is used to add tags on a Data Object.
 
+### Object Brick
+
+Interprets the mapped value as an object brick type name and ensures a brick of that type exists in the configured brick container field. Combine it with a value mapping operator (e.g. Conditional Conversion) to translate source values into brick type names. The optional `Remove Bricks Of Other Types` setting marks bricks of any other type for deletion, so a type change in the source data swaps the brick.
+
+### Object Brick Field
+
+Writes the mapped value into the configured attribute of whatever brick type is currently set in the brick container, without the mapping needing to know the brick type up front (e.g. a brick resolved by the Object Brick Data Target earlier in the same mapping). Bricks that do not define the attribute are skipped. Supports the same `Overwrite` options as the `Direct` Data Target.
+
 
 ## Operators
 
