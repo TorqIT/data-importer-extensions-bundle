@@ -128,12 +128,8 @@ pimcore.plugin.pimcoreDataImporterBundle.configuration.components.mapping.datata
                 items: [
                     brickFieldSelection,
                     attributeSelection,
-                    {
-                        xtype: 'fieldcontainer',
-                        layout: 'hbox',
-                        defaultType: 'checkboxfield',
-                        items: [writeIfTargetIsNotEmpty, writeIfSourceIsEmpty]
-                    }
+                    writeIfTargetIsNotEmpty,
+                    writeIfSourceIsEmpty
                 ]
             });
 
