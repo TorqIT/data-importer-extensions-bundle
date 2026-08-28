@@ -97,9 +97,7 @@ class CustomXmlFileInterpreter extends AbstractInterpreter
             if ($this->getStreamingElementPath() !== null) {
                 // stream through the whole document (well-formedness + schema) without
                 // building a DOM tree - large files would otherwise exhaust the memory limit
-                foreach ($this->streamRecords($path) as $record) {
-                    // iterate to let the streaming parser see the whole document
-                }
+                iterator_count($this->streamRecords($path));
 
                 return true;
             }
@@ -174,7 +172,9 @@ class CustomXmlFileInterpreter extends AbstractInterpreter
      */
     protected function getStreamingElementPath(): ?array
     {
-        if (preg_match('#^(/[A-Za-z_][A-Za-z0-9_.\-]*)+$#', $this->xpath) !== 1) {
+        // element names: a word character or underscore start (no digit), then word
+        // characters, dots or hyphens - anything else needs the full-DOM XPath engine
+        if (preg_match('#^(/[^\W\d][\w.\-]*)+$#', $this->xpath) !== 1) {
             return null;
         }
 
@@ -193,7 +193,6 @@ class CustomXmlFileInterpreter extends AbstractInterpreter
     protected function streamRecords(string $path): Generator
     {
         $segments = $this->getStreamingElementPath();
-        $targetDepth = count($segments) - 1;
 
         $reader = new XMLReader();
         $useInternalErrors = libxml_use_internal_errors(true);
@@ -205,40 +204,9 @@ class CustomXmlFileInterpreter extends AbstractInterpreter
                 throw new XmlParsingException(sprintf('Could not open XML file `%s`.', $path));
             }
 
-            if (!empty($this->schema)) {
-                $schemaFile = tempnam(sys_get_temp_dir(), 'data_importer_xsd_');
-                file_put_contents($schemaFile, $this->schema);
-                if (!@$reader->setSchema($schemaFile)) {
-                    throw new XmlParsingException($this->buildLibXmlErrorMessage('Invalid XSD schema.'));
-                }
-            }
+            $schemaFile = $this->applySchemaToReader($reader);
 
-            $elementStack = [];
-            $keepReading = @$reader->read();
-
-            while ($keepReading) {
-                if ($reader->nodeType === XMLReader::ELEMENT) {
-                    // elements in a namespace can never match the un-prefixed path segments,
-                    // mirroring how DOMXPath treats un-prefixed name tests
-                    $elementStack[$reader->depth] = ($reader->namespaceURI === '') ? $reader->localName : null;
-
-                    if ($reader->depth === $targetDepth && $this->elementStackMatches($elementStack, $segments)) {
-                        $node = @$reader->expand(new DOMDocument());
-                        if ($node === false) {
-                            throw new XmlParsingException($this->buildLibXmlErrorMessage('Could not expand XML record.'));
-                        }
-                        if ($node instanceof DOMElement) {
-                            yield XmlUtils::convertDomElementToArray($node);
-                        }
-
-                        // skips the subtree that was just expanded
-                        $keepReading = @$reader->next();
-                        continue;
-                    }
-                }
-
-                $keepReading = @$reader->read();
-            }
+            yield from $this->readMatchingRecords($reader, $segments);
 
             $this->assertNoLibXmlErrors();
         } finally {
@@ -249,6 +217,79 @@ class CustomXmlFileInterpreter extends AbstractInterpreter
             libxml_clear_errors();
             libxml_use_internal_errors($useInternalErrors);
         }
+    }
+
+    /**
+     * Writes the configured XSD schema (if any) to a temporary file and attaches it to the
+     * reader for incremental validation. Returns the temporary file path for later cleanup.
+     *
+     * @throws XmlParsingException
+     */
+    protected function applySchemaToReader(XMLReader $reader): ?string
+    {
+        if (empty($this->schema)) {
+            return null;
+        }
+
+        $schemaFile = tempnam(sys_get_temp_dir(), 'data_importer_xsd_');
+        file_put_contents($schemaFile, $this->schema);
+
+        if (!@$reader->setSchema($schemaFile)) {
+            @unlink($schemaFile);
+
+            throw new XmlParsingException($this->buildLibXmlErrorMessage('Invalid XSD schema.'));
+        }
+
+        return $schemaFile;
+    }
+
+    /**
+     * @param string[] $segments
+     *
+     * @return Generator<array>
+     */
+    protected function readMatchingRecords(XMLReader $reader, array $segments): Generator
+    {
+        $targetDepth = count($segments) - 1;
+        $elementStack = [];
+        $keepReading = @$reader->read();
+
+        while ($keepReading) {
+            if ($reader->nodeType !== XMLReader::ELEMENT) {
+                $keepReading = @$reader->read();
+
+                continue;
+            }
+
+            // elements in a namespace can never match the un-prefixed path segments,
+            // mirroring how DOMXPath treats un-prefixed name tests
+            $elementStack[$reader->depth] = ($reader->namespaceURI === '') ? $reader->localName : null;
+
+            if ($reader->depth !== $targetDepth || !$this->elementStackMatches($elementStack, $segments)) {
+                $keepReading = @$reader->read();
+
+                continue;
+            }
+
+            yield $this->expandRecord($reader);
+
+            // skips the subtree that was just expanded
+            $keepReading = @$reader->next();
+        }
+    }
+
+    /**
+     * @throws XmlParsingException
+     */
+    protected function expandRecord(XMLReader $reader): array
+    {
+        $node = @$reader->expand(new DOMDocument());
+
+        if (!$node instanceof DOMElement) {
+            throw new XmlParsingException($this->buildLibXmlErrorMessage('Could not expand XML record.'));
+        }
+
+        return XmlUtils::convertDomElementToArray($node);
     }
 
     /**
@@ -281,7 +322,8 @@ class CustomXmlFileInterpreter extends AbstractInterpreter
     {
         $messages = [];
         foreach (libxml_get_errors() as $error) {
-            $messages[] = sprintf('[%s %s] %s (in %s - line %d, column %d)',
+            $messages[] = sprintf(
+                '[%s %s] %s (in %s - line %d, column %d)',
                 LIBXML_ERR_WARNING === $error->level ? 'WARNING' : 'ERROR',
                 $error->code,
                 trim($error->message),
