@@ -30,7 +30,7 @@
   "dependencies": {
     "@ant-design/icons": "^6.2.2",
     "@pimcore/studio-ui-bundle": "^2026.2",
-    "antd": "5.22.x",
+    "antd": "5.29.x",
     "nodemon": "^3.1.14",
     "react": "18.3.x",
     "react-dom": "18.3.x"
