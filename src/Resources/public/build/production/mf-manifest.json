@@ -25,37 +25,17 @@
   },
   "shared": [
     {
-      "id": "torqit_data_importer_extensions_bundle:@ant-design/icons",
-      "name": "@ant-design/icons",
-      "version": "5.6.1",
-      "singleton": true,
-      "requiredVersion": "^6.2.2",
-      "assets": {
-        "js": {
-          "async": [],
-          "sync": [
-            "static/js/async/538.bd3cb647.js"
-          ]
-        },
-        "css": {
-          "async": [],
-          "sync": []
-        }
-      },
-      "fallback": ""
-    },
-    {
       "id": "torqit_data_importer_extensions_bundle:antd",
       "name": "antd",
-      "version": "5.22.7",
+      "version": "5.29.3",
       "singleton": true,
-      "requiredVersion": "^5.22.7",
+      "requiredVersion": "^5.29.3",
       "assets": {
         "js": {
           "async": [],
           "sync": [
-            "static/js/remoteEntry.js",
-            "static/js/918.2ddb93e0.js"
+            "static/js/237.b156d103.js",
+            "static/js/remoteEntry.js"
           ]
         },
         "css": {
@@ -75,8 +55,8 @@
         "js": {
           "async": [],
           "sync": [
-            "static/js/remoteEntry.js",
-            "static/js/918.2ddb93e0.js"
+            "static/js/237.b156d103.js",
+            "static/js/remoteEntry.js"
           ]
         },
         "css": {
@@ -96,8 +76,8 @@
         "js": {
           "async": [],
           "sync": [
-            "static/js/remoteEntry.js",
-            "static/js/918.2ddb93e0.js"
+            "static/js/237.b156d103.js",
+            "static/js/remoteEntry.js"
           ]
         },
         "css": {
