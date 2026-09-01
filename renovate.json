@@ -1,0 +1,25 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "reviewers": ["lukemacausland", "rjjackson22"],
+  "enabledManagers": ["npm", "github-actions"],
+  "packageRules": [
+    {
+      "matchManagers": ["github-actions"],
+      "pinDigests": true,
+      "groupName": "GitHub Actions"
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "matchPackagePrefixes": ["TorqIT/"],
+      "pinDigests": false
+    },
+    {
+      "matchManagers": ["npm"],
+      "groupName": "Studio npm dependencies"
+    },
+    {
+      "matchDepTypes": ["overrides"],
+      "enabled": false
+    }
+  ]
+}
