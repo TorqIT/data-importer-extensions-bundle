@@ -9,31 +9,53 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\RichText\RichText;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Pimcore\Bundle\DataImporterBundle\DataSource\Interpreter\AbstractInterpreter;
+use Pimcore\Bundle\DataImporterBundle\Exception\InvalidConfigurationException;
 use Pimcore\Bundle\DataImporterBundle\Preview\Model\PreviewData;
+use TorqIT\DataImporterExtensionsBundle\DataSource\Interpreter\ChunkedRowsReadFilter;
 use TorqIT\DataImporterExtensionsBundle\DataSource\Interpreter\PreviewRowsReadFilter;
 
 // Copy of Pimcore\Bundle\DataImporterBundle\DataSource\Interpreter\XlsxFileInterpreter
 class CustomXlsxFileInterpreter extends AbstractInterpreter
 {
+    protected const IMPORT_CHUNK_SIZE = 1000;
+
     protected bool $skipFirstRow;
     protected string $sheetName;
 
+    /**
+     * Reads the workbook in bounded chunks instead of one toArray() call -
+     * large files would otherwise exhaust the memory limit.
+     */
     protected function doInterpretFileAndCallProcessRow(string $path): void
     {
-        $reader = IOFactory::createReaderForFile($path);
-        $reader->setReadDataOnly(true);
-        $spreadSheet = $reader->load($path);
+        $worksheetInfo = $this->getWorksheetInfo($path);
 
-        $spreadSheet->setActiveSheetIndexByName($this->sheetName);
-
-        $data = $spreadSheet->getActiveSheet()->toArray();
-
-        if ($this->skipFirstRow) {
-            array_shift($data);
+        if ($worksheetInfo === null) {
+            throw new InvalidConfigurationException(sprintf('Sheet "%s" not found in file.', $this->sheetName));
         }
 
-        foreach ($data as $rowData) {
-            $this->processImportRow($rowData);
+        $totalRows = $worksheetInfo['totalRows'];
+        $lastColumnLetter = $worksheetInfo['lastColumnLetter'];
+        $startRow = $this->skipFirstRow ? 2 : 1;
+
+        for ($chunkStart = $startRow; $chunkStart <= $totalRows; $chunkStart += static::IMPORT_CHUNK_SIZE) {
+            $chunkEnd = min($chunkStart + static::IMPORT_CHUNK_SIZE - 1, $totalRows);
+
+            $reader = IOFactory::createReaderForFile($path);
+            $reader->setReadDataOnly(true);
+            $reader->setLoadSheetsOnly($this->sheetName);
+            $reader->setReadFilter(new ChunkedRowsReadFilter($chunkStart, $chunkEnd));
+            $spreadSheet = $reader->load($path);
+
+            $spreadSheet->setActiveSheetIndexByName($this->sheetName);
+            $sheet = $spreadSheet->getActiveSheet();
+
+            for ($rowNumber = $chunkStart; $rowNumber <= $chunkEnd; $rowNumber++) {
+                $this->processImportRow($this->readPreviewRow($sheet, $rowNumber, $lastColumnLetter));
+            }
+
+            $spreadSheet->disconnectWorksheets();
+            unset($spreadSheet);
         }
     }
 
@@ -140,15 +162,29 @@ class CustomXlsxFileInterpreter extends AbstractInterpreter
 
     protected function getTotalRows(string $path): int
     {
+        return (int)($this->getWorksheetInfo($path)['totalRows'] ?? 0);
+    }
+
+    /**
+     * Reads the worksheet dimensions without loading any cells.
+     * Returns null when the configured sheet does not exist in the file.
+     *
+     * @return array{totalRows: int, lastColumnLetter: string}|null
+     */
+    protected function getWorksheetInfo(string $path): ?array
+    {
         $reader = IOFactory::createReaderForFile($path);
 
         foreach ($reader->listWorksheetInfo($path) as $worksheetInfo) {
             if (($worksheetInfo['worksheetName'] ?? null) === $this->sheetName) {
-                return (int)($worksheetInfo['totalRows'] ?? 0);
+                return [
+                    'totalRows' => (int)($worksheetInfo['totalRows'] ?? 0),
+                    'lastColumnLetter' => (string)($worksheetInfo['lastColumnLetter'] ?? 'A'),
+                ];
             }
         }
 
-        return 0;
+        return null;
     }
 
     public function setSettings(array $settings): void
