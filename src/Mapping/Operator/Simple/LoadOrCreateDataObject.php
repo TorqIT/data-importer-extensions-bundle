@@ -31,53 +31,55 @@ class LoadOrCreateDataObject extends CustomLoadDataObject
 
     public function process($inputData, bool $dryRun = false)
     {
-        $result = parent::process($inputData, $dryRun);
-
-        if (!$this->createIfNotFound) {
-            return $result;
+        if (!$this->createIfNotFound || $dryRun) {
+            return parent::process($inputData, $dryRun);
         }
 
-        $returnScalar = !is_array($inputData);
-
-        if ($returnScalar && $result !== null) {
-            return $result;
-        }
-        if (!$returnScalar && !empty($result)) {
-            return $result;
+        if (!is_array($inputData)) {
+            return $this->loadOrCreate($inputData);
         }
 
-        if ($dryRun) {
-            return $returnScalar ? null : [];
-        }
-
-        // Not found — create
-        $inputItems = $returnScalar ? [$inputData] : $inputData;
+        // Resolve every value on its own. The parent returns only the objects it found, so a
+        // whole-array check cannot tell which values are missing: as soon as one value in the
+        // cell resolved, the rest were silently dropped instead of created.
         $objects = [];
-        foreach ($inputItems as $data) {
-            if (empty($data) && $data !== '0') {
-                continue;
+        foreach ($inputData as $data) {
+            $object = $this->loadOrCreate($data);
+            if ($object instanceof DataObject) {
+                $objects[] = $object;
             }
-
-            try {
-                $created = $this->createDataObject(trim((string) $data));
-                $objects[] = $created;
-                $this->applicationLogger->info(
-                    sprintf('Created new data object with key `%s` at `%s`', $created->getKey(), $created->getRealFullPath()),
-                    ['component' => PimcoreDataImporterBundle::LOGGER_COMPONENT_PREFIX . $this->configName]
-                );
-            } catch (Throwable $e) {
-                $this->applicationLogger->error(
-                    sprintf('Failed to create data object from `%s`: %s', $data, $e->getMessage()),
-                    ['component' => PimcoreDataImporterBundle::LOGGER_COMPONENT_PREFIX . $this->configName]
-                );
-            }
-        }
-
-        if ($returnScalar) {
-            return !empty($objects) ? reset($objects) : null;
         }
 
         return $objects;
+    }
+
+    private function loadOrCreate(mixed $data): ?DataObject
+    {
+        $object = parent::process($data);
+        if ($object instanceof DataObject) {
+            return $object;
+        }
+
+        if (empty($data) && $data !== '0') {
+            return null;
+        }
+
+        try {
+            $created = $this->createDataObject(trim((string) $data));
+            $this->applicationLogger->info(
+                sprintf('Created new data object with key `%s` at `%s`', $created->getKey(), $created->getRealFullPath()),
+                ['component' => PimcoreDataImporterBundle::LOGGER_COMPONENT_PREFIX . $this->configName]
+            );
+
+            return $created;
+        } catch (Throwable $e) {
+            $this->applicationLogger->error(
+                sprintf('Failed to create data object from `%s`: %s', $data, $e->getMessage()),
+                ['component' => PimcoreDataImporterBundle::LOGGER_COMPONENT_PREFIX . $this->configName]
+            );
+
+            return null;
+        }
     }
 
     private function createDataObject(string $keyValue): DataObject\Concrete
@@ -121,7 +123,19 @@ class LoadOrCreateDataObject extends CustomLoadDataObject
             }
         }
 
-        $object->save();
+        try {
+            $object->save();
+        } catch (Throwable $e) {
+            // Under parallel processing two workers can create the same missing object at
+            // once; the loser hits the unique path index. Re-fetch the winner's object so
+            // this value still resolves instead of being dropped.
+            $existing = DataObject::getByPath($fullPath, ['force' => true]);
+            if ($existing instanceof DataObject\Concrete) {
+                return $existing;
+            }
+
+            throw $e;
+        }
 
         return $object;
     }
