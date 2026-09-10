@@ -20,6 +20,10 @@
     {
       "matchDepTypes": ["overrides"],
       "enabled": false
+    },
+    {
+      "matchUpdateTypes": ["major"],
+      "enabled": false
     }
   ]
 }
