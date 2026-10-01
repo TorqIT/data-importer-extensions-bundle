@@ -20,7 +20,7 @@ jobs:
   frontend-build:
     permissions:
       contents: write
-    uses: pimcore/workflows-collection-public/.github/workflows/reusable-studio-frontend-build.yaml@becd699647df9e3123c5489327772396a8016dc1 # main
+    uses: pimcore/workflows-collection-public/.github/workflows/reusable-studio-frontend-build.yaml@4d0838551acbb7316a739469a4cfd529218445a3 # main
     with:
       working-directory: ./studio
       node-version: "26"
