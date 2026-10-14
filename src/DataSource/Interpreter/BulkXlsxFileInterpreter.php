@@ -30,19 +30,6 @@ class BulkXlsxFileInterpreter extends XlsxFileInterpreterWithColumnNames
         $this->uniqueHashes = array();
 
         $excelLoader = XlsxDataLoaderFactory::getExcelDataLoader();
-        $data = $excelLoader->getRows($path, $this->sheetName);
-
-        // Header row is 1-indexed, array is 0-indexed
-        $headerRowIndex = $this->headerRow - 1;
-
-        // Get header row for column names
-        $headerRow = null;
-        if ($this->saveHeaderName && isset($data[$headerRowIndex])) {
-            $headerRow = $data[$headerRowIndex];
-        }
-
-        // Skip rows up to and including the header row
-        $data = array_slice($data, $this->headerRow);
 
         $tmpCsv = tempnam(sys_get_temp_dir(), 'pimcore_bulk_load');
         $options = new Options();
@@ -53,7 +40,21 @@ class BulkXlsxFileInterpreter extends XlsxFileInterpreterWithColumnNames
         $carbonNow = Carbon::now();
         $db = Db::get();
 
-        foreach ($data as $rowData) {
+        $expressionLanguage = strlen($this->rowFilter) > 0 ? new ExpressionLanguage() : null;
+        $headerRow = null;
+        $rowNumber = 0;
+
+        // Rows are streamed one by one so large files never have to be loaded into memory at once.
+        foreach ($excelLoader->getRows($path, $this->sheetName) as $rowData) {
+            $rowNumber++;
+
+            // Rows up to and including the header row (1-indexed) are skipped
+            if ($rowNumber <= $this->headerRow) {
+                if ($rowNumber === $this->headerRow && $this->saveHeaderName) {
+                    $headerRow = $rowData;
+                }
+                continue;
+            }
 
             $hashKey = '';
 
@@ -65,9 +66,7 @@ class BulkXlsxFileInterpreter extends XlsxFileInterpreterWithColumnNames
                 continue;
             }
 
-            if(strlen($this->rowFilter) > 0){
-                $expressionLanguage = new ExpressionLanguage();
-
+            if($expressionLanguage !== null){
                 $filterResult = $expressionLanguage->evaluate($this->rowFilter, ['row' => $rowData]);
 
                 if(!$filterResult){

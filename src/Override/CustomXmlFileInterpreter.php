@@ -6,6 +6,7 @@ use DOMDocument;
 use DOMElement;
 use DOMNodeList;
 use DOMXpath;
+use Generator;
 use Pimcore\Bundle\DataImporterBundle\DataSource\Interpreter\AbstractInterpreter;
 use Pimcore\Bundle\DataImporterBundle\Exception\InvalidConfigurationException;
 use Pimcore\Bundle\DataImporterBundle\Exception\InvalidInputException;
@@ -13,6 +14,7 @@ use Pimcore\Bundle\DataImporterBundle\PimcoreDataImporterBundle;
 use Pimcore\Bundle\DataImporterBundle\Preview\Model\PreviewData;
 use Symfony\Component\Config\Util\Exception\XmlParsingException;
 use Symfony\Component\Config\Util\XmlUtils;
+use XMLReader;
 
 // Copy of \Pimcore\Bundle\DataImporterBundle\DataSource\Interpreter\XmlFileInterpreter
 class CustomXmlFileInterpreter extends AbstractInterpreter
@@ -44,7 +46,7 @@ class CustomXmlFileInterpreter extends AbstractInterpreter
      */
     protected function loadData(string $path)
     {
-        if ($this->cachedFilePath !== $path || !empty($this->cachedContent)) {
+        if ($this->cachedFilePath !== $path || empty($this->cachedContent)) {
             $dom = $this->loadDataRaw($path);
         } else {
             $dom = $this->cachedContent;
@@ -62,6 +64,14 @@ class CustomXmlFileInterpreter extends AbstractInterpreter
 
     protected function doInterpretFileAndCallProcessRow(string $path): void
     {
+        if ($this->getStreamingElementPath() !== null) {
+            foreach ($this->streamRecords($path) as $dataRow) {
+                $this->processImportRow($dataRow);
+            }
+
+            return;
+        }
+
         $records = $this->loadData($path);
 
         /** @var DOMElement $item */
@@ -84,6 +94,14 @@ class CustomXmlFileInterpreter extends AbstractInterpreter
         }
 
         try {
+            if ($this->getStreamingElementPath() !== null) {
+                // stream through the whole document (well-formedness + schema) without
+                // building a DOM tree - large files would otherwise exhaust the memory limit
+                iterator_count($this->streamRecords($path));
+
+                return true;
+            }
+
             $dom = $this->loadDataRaw($path);
         } catch (XmlParsingException $exception) {
             $message = 'Error validating XML: ' . $exception->getMessage();
@@ -107,19 +125,26 @@ class CustomXmlFileInterpreter extends AbstractInterpreter
         $readRecordNumber = 0;
 
         if ($this->fileValid($path)) {
-            $records = $this->loadData($path);
-            $previewDataItem = $records->item($recordNumber);
-
-            if (empty($previewDataItem)) {
-                $readRecordNumber = $records->count() - 1;
-                $previewDataItem = $records->item($readRecordNumber);
+            if ($this->getStreamingElementPath() !== null) {
+                [$previewData, $readRecordNumber] = $this->readStreamedRecord($path, $recordNumber);
+                $previewData = $previewData ?? [];
             } else {
-                $readRecordNumber = $recordNumber;
+                $records = $this->loadData($path);
+                $previewDataItem = $records->item($recordNumber);
+
+                if (empty($previewDataItem)) {
+                    $readRecordNumber = $records->count() - 1;
+                    $previewDataItem = $records->item($readRecordNumber);
+                } else {
+                    $readRecordNumber = $recordNumber;
+                }
+
+                if (!empty($previewDataItem) && $previewDataItem instanceof DOMElement) {
+                    $previewData = XmlUtils::convertDomElementToArray($previewDataItem);
+                }
             }
 
-            if (!empty($previewDataItem) && $previewDataItem instanceof DOMElement) {
-                $previewData = XmlUtils::convertDomElementToArray($previewDataItem);
-
+            if (!empty($previewData)) {
                 $keys = array_keys($previewData);
                 $columns = array_combine($keys, $keys);
             }
@@ -135,5 +160,202 @@ class CustomXmlFileInterpreter extends AbstractInterpreter
         }
         $this->xpath = $settings['xpath'];
         $this->schema = $settings['schema'];
+    }
+
+    /**
+     * Returns the element names of the configured XPath expression when it is simple enough
+     * to stream: an absolute path of plain, un-prefixed element names (e.g. `/catalog/product`).
+     * Predicates, wildcards, attributes, `//` and namespace prefixes need a full DOM and
+     * return null here, falling back to the full-load code path.
+     *
+     * @return string[]|null
+     */
+    protected function getStreamingElementPath(): ?array
+    {
+        // element names: a word character or underscore start (no digit), then word
+        // characters, dots or hyphens - anything else needs the full-DOM XPath engine
+        if (preg_match('#^(/[^\W\d][\w.\-]*)+$#', $this->xpath) !== 1) {
+            return null;
+        }
+
+        return explode('/', trim($this->xpath, '/'));
+    }
+
+    /**
+     * Streams the records matching the configured element path one by one with XMLReader,
+     * so the whole document never has to be loaded into memory. The configured XSD schema
+     * (if any) is validated incrementally during the same pass.
+     *
+     * @return Generator<array>
+     *
+     * @throws XmlParsingException
+     */
+    protected function streamRecords(string $path): Generator
+    {
+        $segments = $this->getStreamingElementPath();
+
+        $reader = new XMLReader();
+        $useInternalErrors = libxml_use_internal_errors(true);
+        libxml_clear_errors();
+        $schemaFile = null;
+
+        try {
+            if (!$reader->open($path, null, LIBXML_NONET)) {
+                throw new XmlParsingException(sprintf('Could not open XML file `%s`.', $path));
+            }
+
+            $schemaFile = $this->applySchemaToReader($reader);
+
+            yield from $this->readMatchingRecords($reader, $segments);
+
+            $this->assertNoLibXmlErrors();
+        } finally {
+            $reader->close();
+            if ($schemaFile !== null) {
+                @unlink($schemaFile);
+            }
+            libxml_clear_errors();
+            libxml_use_internal_errors($useInternalErrors);
+        }
+    }
+
+    /**
+     * Writes the configured XSD schema (if any) to a temporary file and attaches it to the
+     * reader for incremental validation. Returns the temporary file path for later cleanup.
+     *
+     * @throws XmlParsingException
+     */
+    protected function applySchemaToReader(XMLReader $reader): ?string
+    {
+        if (empty($this->schema)) {
+            return null;
+        }
+
+        $schemaFile = tempnam(sys_get_temp_dir(), 'data_importer_xsd_');
+        file_put_contents($schemaFile, $this->schema);
+
+        if (!@$reader->setSchema($schemaFile)) {
+            @unlink($schemaFile);
+
+            throw new XmlParsingException($this->buildLibXmlErrorMessage('Invalid XSD schema.'));
+        }
+
+        return $schemaFile;
+    }
+
+    /**
+     * @param string[] $segments
+     *
+     * @return Generator<array>
+     */
+    protected function readMatchingRecords(XMLReader $reader, array $segments): Generator
+    {
+        $targetDepth = count($segments) - 1;
+        $elementStack = [];
+        $keepReading = @$reader->read();
+
+        while ($keepReading) {
+            if ($reader->nodeType !== XMLReader::ELEMENT) {
+                $keepReading = @$reader->read();
+
+                continue;
+            }
+
+            // elements in a namespace can never match the un-prefixed path segments,
+            // mirroring how DOMXPath treats un-prefixed name tests
+            $elementStack[$reader->depth] = ($reader->namespaceURI === '') ? $reader->localName : null;
+
+            if ($reader->depth !== $targetDepth || !$this->elementStackMatches($elementStack, $segments)) {
+                $keepReading = @$reader->read();
+
+                continue;
+            }
+
+            yield $this->expandRecord($reader);
+
+            // skips the subtree that was just expanded
+            $keepReading = @$reader->next();
+        }
+    }
+
+    /**
+     * @throws XmlParsingException
+     */
+    protected function expandRecord(XMLReader $reader): array
+    {
+        $node = @$reader->expand(new DOMDocument());
+
+        if (!$node instanceof DOMElement) {
+            throw new XmlParsingException($this->buildLibXmlErrorMessage('Could not expand XML record.'));
+        }
+
+        return XmlUtils::convertDomElementToArray($node);
+    }
+
+    /**
+     * @param array<int, ?string> $elementStack
+     * @param string[] $segments
+     */
+    protected function elementStackMatches(array $elementStack, array $segments): bool
+    {
+        foreach ($segments as $depth => $segment) {
+            if (($elementStack[$depth] ?? null) !== $segment) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * @throws XmlParsingException when the streaming parser recorded any well-formedness
+     *                             or schema validation error
+     */
+    protected function assertNoLibXmlErrors(): void
+    {
+        if (libxml_get_errors() !== []) {
+            throw new XmlParsingException($this->buildLibXmlErrorMessage('Invalid XML document.'));
+        }
+    }
+
+    protected function buildLibXmlErrorMessage(string $fallbackMessage): string
+    {
+        $messages = [];
+        foreach (libxml_get_errors() as $error) {
+            $messages[] = sprintf(
+                '[%s %s] %s (in %s - line %d, column %d)',
+                LIBXML_ERR_WARNING === $error->level ? 'WARNING' : 'ERROR',
+                $error->code,
+                trim($error->message),
+                $error->file ?: 'n/a',
+                $error->line,
+                $error->column
+            );
+        }
+
+        return $messages === [] ? $fallbackMessage : implode("\n", $messages);
+    }
+
+    /**
+     * Streams up to the requested record and returns it together with the record number that
+     * was actually read (the last record when the requested one is out of range).
+     *
+     * @return array{0: ?array, 1: int}
+     */
+    protected function readStreamedRecord(string $path, int $recordNumber): array
+    {
+        $currentRecordNumber = -1;
+        $currentRow = null;
+
+        foreach ($this->streamRecords($path) as $row) {
+            $currentRow = $row;
+            $currentRecordNumber++;
+
+            if ($currentRecordNumber === $recordNumber && !empty($currentRow)) {
+                return [$currentRow, $currentRecordNumber];
+            }
+        }
+
+        return [$currentRow, max(0, $currentRecordNumber)];
     }
 }
