@@ -1,8 +1,8 @@
 {
   "allFiles": [
-    "/bundles/torqitdataimporterextensions/build/production/static/js/main.d17bd3a6.js",
+    "/bundles/torqitdataimporterextensions/build/production/static/js/main.83894621.js",
     "/bundles/torqitdataimporterextensions/build/production/static/js/remoteEntry.js",
-    "/bundles/torqitdataimporterextensions/build/production/static/js/async/__federation_expose_default_export.c27f8f28.js",
+    "/bundles/torqitdataimporterextensions/build/production/static/js/async/__federation_expose_default_export.a4a3cd68.js",
     "/bundles/torqitdataimporterextensions/build/production/static/js/420.fc2522d2.js",
     "/bundles/torqitdataimporterextensions/build/production/mf-stats.json",
     "/bundles/torqitdataimporterextensions/build/production/mf-manifest.json",
@@ -16,7 +16,7 @@
       "initial": {
         "js": [
           "/bundles/torqitdataimporterextensions/build/production/static/js/420.fc2522d2.js",
-          "/bundles/torqitdataimporterextensions/build/production/static/js/main.d17bd3a6.js"
+          "/bundles/torqitdataimporterextensions/build/production/static/js/main.83894621.js"
         ]
       }
     },
@@ -28,7 +28,7 @@
       },
       "async": {
         "js": [
-          "/bundles/torqitdataimporterextensions/build/production/static/js/async/__federation_expose_default_export.c27f8f28.js"
+          "/bundles/torqitdataimporterextensions/build/production/static/js/async/__federation_expose_default_export.a4a3cd68.js"
         ]
       }
     }
