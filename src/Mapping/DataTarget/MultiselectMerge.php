@@ -13,8 +13,7 @@ class MultiselectMerge extends Direct
 {
     public function setSettings(array $settings): void
     {
-        // Merging only makes sense on top of the existing value, so the direct write switches
-        // are pinned: always write into a non-empty target, never write an empty source.
+        // Merging requires existing value so always write to non-empty target, never an empty source
         $settings['writeIfTargetIsNotEmpty'] = true;
         $settings['writeIfSourceIsEmpty'] = false;
 
