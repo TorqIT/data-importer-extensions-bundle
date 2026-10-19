@@ -8,15 +8,6 @@ use Pimcore\Bundle\DataImporterBundle\Mapping\DataTarget\Direct;
 use Pimcore\Model\DataObject;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
-/**
- * Merges incoming values into a multiselect field instead of replacing it.
- *
- * Incoming data is an array of values (a scalar is treated as a single value, never split).
- * Existing values are kept, new values are appended in input order and duplicates are dropped
- * (exact match after trim). An empty source never clears the field - a sheet that lists only
- * the values to add must not remove the rest.
- * Works for plain, localized and objectbrick multiselects (same fieldName forms as "direct").
- */
 #[AutoconfigureTag(name: 'pimcore.datahub.data_importer.data_target', attributes: ['type' => 'multiselectMerge'])]
 class MultiselectMerge extends Direct
 {
