@@ -47,7 +47,7 @@ class MultiselectMerge extends Direct
      *
      * @return list<string>
      */
-    public static function merge(array $existing, array $incoming): array
+    protected static function merge(array $existing, array $incoming): array
     {
         return array_values(array_unique(array_merge($existing, $incoming)));
     }
@@ -57,7 +57,7 @@ class MultiselectMerge extends Direct
      *
      * @return list<string>
      */
-    public static function normalize(mixed $data): array
+    protected static function normalize(mixed $data): array
     {
         if ($data === null || $data === '' || $data === []) {
             return [];
