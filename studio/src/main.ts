@@ -9,6 +9,7 @@ import { AdvancedClassificationStoreDataTargetModule } from "./data-targets/adva
 import { DynamicLocalizedFieldDataTargetModule } from "./data-targets/dynamic-localized-field/dynamic-localized-field-data-target-module";
 import { FieldCollectionDataTargetModule } from "./data-targets/field-collection/field-collection-data-target-module";
 import { ImageGalleryAppenderDataTargetModule } from "./data-targets/image-gallery-appender/image-gallery-appender-data-target-module";
+import { MultiselectMergeDataTargetModule } from "./data-targets/multiselect-merge/multiselect-merge-data-target-module";
 import { ObjectBrickDataTargetModule } from "./data-targets/object-brick/object-brick-data-target-module";
 import { ObjectBrickFieldDataTargetModule } from "./data-targets/object-brick-field/object-brick-field-data-target-module";
 import { PropertyDataTargetModule } from "./data-targets/property/property-data-target-module";
@@ -57,6 +58,7 @@ export default {
         moduleSystem.registerModule(DynamicLocalizedFieldDataTargetModule);
         moduleSystem.registerModule(FieldCollectionDataTargetModule);
         moduleSystem.registerModule(ImageGalleryAppenderDataTargetModule);
+        moduleSystem.registerModule(MultiselectMergeDataTargetModule);
         moduleSystem.registerModule(ObjectBrickDataTargetModule);
         moduleSystem.registerModule(ObjectBrickFieldDataTargetModule);
         moduleSystem.registerModule(PropertyDataTargetModule);
