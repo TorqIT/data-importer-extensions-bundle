@@ -31,53 +31,53 @@ class LoadOrCreateDataObject extends CustomLoadDataObject
 
     public function process($inputData, bool $dryRun = false)
     {
-        $result = parent::process($inputData, $dryRun);
-
         if (!$this->createIfNotFound) {
-            return $result;
+            return parent::process($inputData, $dryRun);
         }
 
-        $returnScalar = !is_array($inputData);
-
-        if ($returnScalar && $result !== null) {
-            return $result;
-        }
-        if (!$returnScalar && !empty($result)) {
-            return $result;
+        if (!is_array($inputData)) {
+            return $this->loadOrCreate($inputData, $dryRun);
         }
 
-        if ($dryRun) {
-            return $returnScalar ? null : [];
-        }
-
-        // Not found — create
-        $inputItems = $returnScalar ? [$inputData] : $inputData;
+        // Resolve each item on its own so one found value doesn't stop the missing ones being created
         $objects = [];
-        foreach ($inputItems as $data) {
-            if (empty($data) && $data !== '0') {
-                continue;
+        foreach ($inputData as $data) {
+            $object = $this->loadOrCreate($data, $dryRun);
+            if ($object !== null) {
+                $objects[] = $object;
             }
-
-            try {
-                $created = $this->createDataObject(trim((string) $data));
-                $objects[] = $created;
-                $this->applicationLogger->info(
-                    sprintf('Created new data object with key `%s` at `%s`', $created->getKey(), $created->getRealFullPath()),
-                    ['component' => PimcoreDataImporterBundle::LOGGER_COMPONENT_PREFIX . $this->configName]
-                );
-            } catch (Throwable $e) {
-                $this->applicationLogger->error(
-                    sprintf('Failed to create data object from `%s`: %s', $data, $e->getMessage()),
-                    ['component' => PimcoreDataImporterBundle::LOGGER_COMPONENT_PREFIX . $this->configName]
-                );
-            }
-        }
-
-        if ($returnScalar) {
-            return !empty($objects) ? reset($objects) : null;
         }
 
         return $objects;
+    }
+
+    private function loadOrCreate(mixed $data, bool $dryRun): ?DataObject
+    {
+        $object = parent::process($data, $dryRun);
+        if ($object !== null) {
+            return $object;
+        }
+
+        if ($dryRun || (empty($data) && $data !== '0')) {
+            return null;
+        }
+
+        try {
+            $created = $this->createDataObject(trim((string) $data));
+            $this->applicationLogger->info(
+                sprintf('Created new data object with key `%s` at `%s`', $created->getKey(), $created->getRealFullPath()),
+                ['component' => PimcoreDataImporterBundle::LOGGER_COMPONENT_PREFIX . $this->configName]
+            );
+
+            return $created;
+        } catch (Throwable $e) {
+            $this->applicationLogger->error(
+                sprintf('Failed to create data object from `%s`: %s', $data, $e->getMessage()),
+                ['component' => PimcoreDataImporterBundle::LOGGER_COMPONENT_PREFIX . $this->configName]
+            );
+
+            return null;
+        }
     }
 
     private function createDataObject(string $keyValue): DataObject\Concrete
