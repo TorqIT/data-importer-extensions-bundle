@@ -3,11 +3,13 @@
 namespace TorqIT\DataImporterExtensionsBundle\DataSource\Interpreter;
 
 use PhpOffice\PhpSpreadsheet\Reader\IReadFilter;
+use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
 /**
  * Restricts spreadsheet reading to a contiguous row range so imports can be
  * processed chunk by chunk instead of loading the whole workbook into memory.
  */
+#[Exclude]
 class ChunkedRowsReadFilter implements IReadFilter
 {
     public function __construct(
