@@ -166,6 +166,12 @@ This is the same as the [Classification Store](https://pimcore.com/docs/platform
 
 This can be used to add an image into an Image Gallery field.
 
+### Multiselect Merge
+
+Appends values into a Multiselect field instead of replacing it. The `Direct` Data Target overwrites the whole field, so a source that only lists the values to add (e.g. one more website for a batch of products) would wipe the rest.
+
+The mapped value must be an array (use an operator such as `Explode` first); a scalar is treated as a single value and is never split. Values are trimmed, empties dropped and duplicates removed. Existing values keep their order and new values are appended in input order. An empty source never clears the field and no change is written when nothing new arrives. Supports the same field name forms as `Direct` (plain, localized, object brick attribute).
+
 ### Property
 
 This is used to set a property on a Data Object.
