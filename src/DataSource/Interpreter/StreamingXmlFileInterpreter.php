@@ -1,6 +1,6 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace TorqIT\DataImporterExtensionsBundle\Override;
+namespace TorqIT\DataImporterExtensionsBundle\DataSource\Interpreter;
 
 use DOMDocument;
 use DOMElement;
@@ -16,8 +16,12 @@ use Symfony\Component\Config\Util\Exception\XmlParsingException;
 use Symfony\Component\Config\Util\XmlUtils;
 use XMLReader;
 
-// Copy of \Pimcore\Bundle\DataImporterBundle\DataSource\Interpreter\XmlFileInterpreter
-class CustomXmlFileInterpreter extends AbstractInterpreter
+/**
+ * Base XML interpreter that streams records with XMLReader when the configured XPath is a
+ * plain absolute element path, so large documents never have to be loaded into memory.
+ * Any other XPath expression falls back to loading the whole document into a DOM.
+ */
+abstract class StreamingXmlFileInterpreter extends AbstractInterpreter
 {
     protected string $xpath;
     protected ?string $schema;
