@@ -1,6 +1,4 @@
-<?php
-
-
+<?php declare(strict_types=1);
 
 namespace TorqIT\DataImporterExtensionsBundle\DataSource\Interpreter;
 
@@ -13,94 +11,30 @@ use Pimcore\Bundle\DataImporterBundle\Processing\ImportProcessingService;
 use Pimcore\Db;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
-use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
-use TorqIT\DataImporterExtensionsBundle\DataSource\DataLoader\Xlsx\XlsxDataLoaderFactory;
 
 #[Autoconfigure(calls: [['setLogger', ['@logger']]])]
 #[AutoconfigureTag('monolog.logger', ['channel' => 'DATA-IMPORTER'])]
 #[AutoconfigureTag('pimcore.datahub.data_importer.interpreter', ['type' => 'bulkXlsx'])]
-class BulkXlsxFileInterpreter extends XlsxFileInterpreterWithColumnNames
+class BulkXlsxFileInterpreter extends StreamingXlsxFileInterpreter
 {
-    protected array $uniqueColumns;
-    protected array $uniqueHashes;
-    protected string $rowFilter;
-
     protected function doInterpretFileAndCallProcessRow(string $path): void
     {
-        $this->uniqueHashes = array();
-
-        $excelLoader = XlsxDataLoaderFactory::getExcelDataLoader();
-        $data = $excelLoader->getRows($path, $this->sheetName);
-
-        // Header row is 1-indexed, array is 0-indexed
-        $headerRowIndex = $this->headerRow - 1;
-
-        // Get header row for column names
-        $headerRow = null;
-        if ($this->saveHeaderName && isset($data[$headerRowIndex])) {
-            $headerRow = $data[$headerRowIndex];
-        }
-
-        // Skip rows up to and including the header row
-        $data = array_slice($data, $this->headerRow);
-
         $tmpCsv = tempnam(sys_get_temp_dir(), 'pimcore_bulk_load');
         $options = new Options();
         $options->FIELD_ENCLOSURE = "'";
         $writer = new Writer($options);
         $writer->openToFile($tmpCsv);
-        /** @var Carbon $carbonNow */
         $carbonNow = Carbon::now();
-        $db = Db::get();
+        $timestamp = (int)($carbonNow->getTimestamp() . str_pad((string)$carbonNow->milli, 3, '0'));
 
-        foreach ($data as $rowData) {
-
-            $hashKey = '';
-
-            foreach($this->uniqueColumns as $index){
-                $hashKey .= $rowData[$index];
-            }
-
-            if($hashKey !== '' && array_key_exists($hashKey, $this->uniqueHashes)){
-                continue;
-            }
-
-            if(strlen($this->rowFilter) > 0){
-                $expressionLanguage = new ExpressionLanguage();
-
-                $filterResult = $expressionLanguage->evaluate($this->rowFilter, ['row' => $rowData]);
-
-                if(!$filterResult){
-                    continue;
-                }
-            }
-
-            // TO use header names as keys, we set the keys for rowData:
-            if (!is_null($headerRow)) {
-                if (count($headerRow) > count($rowData)) {
-                    $rowData = array_pad($rowData, count($headerRow), null);
-                } elseif (count($headerRow) < count($rowData)) {
-                    $rowData = array_slice($rowData, 0, count($headerRow));
-                }
-                $rowData = array_combine($headerRow, $rowData);
-            }
-
-            $json =  json_encode($rowData);
-
-            $c = Cell::fromValue($json);
-
-            $cells = [
-                Cell::fromValue((int)($carbonNow->getTimestamp() . str_pad((string)$carbonNow->milli, 3, '0'))),
+        foreach ($this->streamImportRows($path) as $rowData) {
+            $writer->addRow(new Row([
+                Cell::fromValue($timestamp),
                 Cell::fromValue($this->configName),
-                $c,
+                Cell::fromValue(json_encode($rowData)),
                 Cell::fromValue($this->executionType),
-                Cell::fromValue(ImportProcessingService::JOB_TYPE_PROCESS)
-            ];
-
-            $singleRow = new Row($cells);
-            $writer->addRow($singleRow);
-
-            $this->uniqueHashes[$hashKey]=true;
+                Cell::fromValue(ImportProcessingService::JOB_TYPE_PROCESS),
+            ]));
         }
 
         $writer->close();
@@ -117,23 +51,8 @@ class BulkXlsxFileInterpreter extends XlsxFileInterpreterWithColumnNames
             (timestamp, configName, data, executionType, jobType)
         SQL;
 
-        $db->executeQuery($sql);
+        Db::get()->executeQuery($sql);
 
         unlink($tmpCsv);
-    }
-
-    public function setSettings(array $settings): void
-    {
-        parent::setSettings($settings);
-
-        $this->rowFilter = $settings['rowFilter'] ?? '';
-
-        if($settings['uniqueColumns'] && strlen($settings['uniqueColumns'] ) > 0){
-            $this->uniqueColumns = explode(",", $settings["uniqueColumns"]);
-        }
-        else{
-            $this->uniqueColumns = array();
-        }
-
     }
 }

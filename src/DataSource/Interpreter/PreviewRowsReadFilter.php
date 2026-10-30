@@ -1,13 +1,15 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace TorqIT\DataImporterExtensionsBundle\DataSource\Interpreter;
 
 use PhpOffice\PhpSpreadsheet\Reader\IReadFilter;
+use Symfony\Component\DependencyInjection\Attribute\Exclude;
 
 /*
  * Restricts spreadsheet reading to the given row numbers so previews do not
  * need to load the whole workbook into memory.
  */
+#[Exclude]
 class PreviewRowsReadFilter implements IReadFilter
 {
     /**
