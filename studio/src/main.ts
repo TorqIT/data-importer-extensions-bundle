@@ -30,6 +30,7 @@ import { ConstantTransformerModule } from "./transformers/constant/constant-tran
 import { EachAsArrayTransformerModule } from "./transformers/each-as-array/each-as-array-transformer-module";
 import { FieldCollectionOperatorTransformerModule } from "./transformers/field-collection-operator/field-collection-operator-transformer-module";
 import { ImportAssetAdvancedTransformerModule } from "./transformers/import-asset-advanced/import-asset-advanced-transformer-module";
+import { LoadOrCreateByPathTransformerModule } from "./transformers/load-or-create-by-path/load-or-create-by-path-transformer-module";
 import { LoadOrCreateDataObjectTransformerModule } from "./transformers/load-or-create-data-object/load-or-create-data-object-transformer-module";
 import { QuantityValueArrayTransformerModule } from "./transformers/quantity-value-array/quantity-value-array-transformer-module";
 import { QuantityValueRangeArrayTransformerModule } from "./transformers/quantity-value-range-array/quantity-value-range-array-transformer-module";
@@ -83,6 +84,7 @@ export default {
         moduleSystem.registerModule(EachAsArrayTransformerModule);
         moduleSystem.registerModule(FieldCollectionOperatorTransformerModule);
         moduleSystem.registerModule(ImportAssetAdvancedTransformerModule);
+        moduleSystem.registerModule(LoadOrCreateByPathTransformerModule);
         moduleSystem.registerModule(LoadOrCreateDataObjectTransformerModule);
         moduleSystem.registerModule(QuantityValueArrayTransformerModule);
         moduleSystem.registerModule(QuantityValueRangeArrayTransformerModule);
