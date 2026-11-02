@@ -17,7 +17,7 @@ use TorqIT\DataImporterExtensionsBundle\Helper\PathNodeOptions;
 use TorqIT\DataImporterExtensionsBundle\Service\PathNodeResolver;
 
 /**
- * Turns a delimited taxonomy string ("Venting > SnapRabbit ... > End Pipe") into a
+ * Turns a delimited taxonomy string ("Plumbing > Pipes & Fittings > Elbows") into a
  * data object beneath a fixed path prefix, creating any missing node on the way down.
  *
  * Returns the leaf object (or the whole branch, with returnAllLevels), so the result
@@ -25,7 +25,7 @@ use TorqIT\DataImporterExtensionsBundle\Service\PathNodeResolver;
  * add to existing relations rather than replace them.
  *
  * Splits on the separator FIRST and sanitises each segment afterwards: term names in
- * the wild contain forward slashes ("... Single Wall Rigid / Flexible Venting"), so a
+ * the wild contain forward slashes ("Rigid / Flexible Ducting"), so a
  * blind str_replace(' > ', '/') would invent tree levels.
  */
 #[AutoconfigureTag(name: 'pimcore.datahub.data_importer.operator', attributes: ['type' => 'loadOrCreateByPath'])]
@@ -204,7 +204,7 @@ class LoadOrCreateByPath extends AbstractOperator
 
         foreach (explode($this->separator, $raw) as $part) {
             // Collapse whitespace runs: source sheets carry stray double spaces
-            // inside term names ("Cleat Fold Duct -  26 Gauge").
+            // inside term names ("Steel Duct -  26 Gauge").
             $part = trim((string) preg_replace('/[\s\x{00A0}]+/u', ' ', $part));
             if ($part !== '') {
                 $segments[] = $part;

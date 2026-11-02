@@ -38,7 +38,7 @@ export const LoadOrCreateByPathTransformerForm = ({
             onChange={ (e) => {
                         update("pathPrefix", e.target.value);
                     } }
-            placeholder="/ECCO Manufacturing/Categories/Website"
+            placeholder="/Categories"
             value={ settings.pathPrefix ?? "" }
           />
         </Form.Item>
