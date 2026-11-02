@@ -95,6 +95,7 @@ This interpreter uses `openspout` as the Excel parser. Open Spout XLSX parsing u
 
 | Configuration Option   | Description                                    | 
 | ---------------------- | ---------------------------------------------- |
+| Header Row Number      | The row holding the column headers; rows above it are ignored and data starts on the next row. Empty rows are skipped by the parser and are not counted, so this is the Nth **non-empty** row (e.g. if rows 1–2 are blank and the headers are on row 3, use `1`). The import preview counts records the same way. |
 | Unique Column Indexes  | Accepts a comma separated list of column indexes to treat as unique values. Used to filter the rows in an excel file. For example an excel file with the headers `Brand,Model,SubModel` and you want to import a unique `Brand` object for each new `Brand` you encounter. In this case, use value `0` to only take unique values from the first column in the Excel file. If you want to create a data object for each `Brand` and `Model` use `0,1` as the value.                                           |
 | Row Filter             | This accepts a [Symfony Expression](https://symfony.com/doc/current/reference/formats/expression_language.html) to be applied to the rows of the Excel file. Each row in the Excel file get's handed to the expression evaluator as a variable named `row`. The expression `row[0] == 'Apple'` would only process rows where the value of the first column is Apple.
 
