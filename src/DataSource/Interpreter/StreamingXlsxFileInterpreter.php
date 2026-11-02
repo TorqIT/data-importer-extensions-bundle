@@ -3,12 +3,7 @@
 namespace TorqIT\DataImporterExtensionsBundle\DataSource\Interpreter;
 
 use Generator;
-use PhpOffice\PhpSpreadsheet\Cell\Cell;
-use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
-use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\RichText\RichText;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use Pimcore\Bundle\DataImporterBundle\DataSource\Interpreter\AbstractInterpreter;
 use Pimcore\Bundle\DataImporterBundle\Exception\InvalidConfigurationException;
 use Pimcore\Bundle\DataImporterBundle\Preview\Model\PreviewData;
@@ -16,10 +11,10 @@ use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use TorqIT\DataImporterExtensionsBundle\DataSource\DataLoader\Xlsx\XlsxDataLoaderFactory;
 
 /**
- * Base XLSX interpreter that streams the sheet row by row through the configured data loader
- * and reads previews through a row filter, so large workbooks never have to be loaded into
- * memory. Supports a configurable header row, header names as column keys, de-duplication on
- * unique columns and an expression-language row filter.
+ * Base XLSX interpreter that streams the sheet row by row through the configured data loader,
+ * for both the import and the preview, so large workbooks never have to be loaded into memory.
+ * Supports a configurable header row, header names as column keys, de-duplication on unique
+ * columns and an expression-language row filter.
  */
 abstract class StreamingXlsxFileInterpreter extends AbstractInterpreter
 {
@@ -31,7 +26,8 @@ abstract class StreamingXlsxFileInterpreter extends AbstractInterpreter
     protected bool $saveHeaderName = false;
 
     /**
-     * 1-based number of the row containing the headers. Rows up to and including it are not imported.
+     * 1-based position of the header row among the non-empty rows of the sheet (the data loader
+     * skips empty rows). Rows up to and including it are not imported.
      */
     protected int $headerRow = 1;
 
@@ -70,12 +66,8 @@ abstract class StreamingXlsxFileInterpreter extends AbstractInterpreter
         $expressionLanguage = $this->rowFilter !== '' ? new ExpressionLanguage() : null;
         $headerRow = null;
         $uniqueHashes = [];
-        $rowNumber = 0;
 
-        foreach (XlsxDataLoaderFactory::getExcelDataLoader()->getRows($path, $this->sheetName) as $rowData) {
-            $rowNumber++;
-            $rowData = array_pad($rowData, $worksheetInfo['totalColumns'], null);
-
+        foreach ($this->streamSheetRows($path, $worksheetInfo['totalColumns']) as $rowNumber => $rowData) {
             if ($rowNumber <= $this->headerRow) {
                 if ($rowNumber === $this->headerRow && $this->saveHeaderName) {
                     $headerRow = $rowData;
@@ -100,6 +92,22 @@ abstract class StreamingXlsxFileInterpreter extends AbstractInterpreter
             yield $rowData;
 
             $uniqueHashes[$hashKey] = true;
+        }
+    }
+
+    /**
+     * Yields every non-empty row of the configured sheet keyed by its 1-based position, padded to
+     * the sheet width so column indexes stay stable across rows. Import and preview both read
+     * through here so preview record N is the row the import processes as record N.
+     *
+     * @return Generator<int, array<int, mixed>>
+     */
+    protected function streamSheetRows(string $path, int $totalColumns): Generator
+    {
+        $rowNumber = 0;
+
+        foreach (XlsxDataLoaderFactory::getExcelDataLoader()->getRows($path, $this->sheetName) as $rowData) {
+            yield ++$rowNumber => array_pad($rowData, $totalColumns, null);
         }
     }
 
@@ -169,40 +177,48 @@ abstract class StreamingXlsxFileInterpreter extends AbstractInterpreter
     }
 
     /**
-     * Reads the header row and the requested data row without loading the whole
-     * workbook - large files would otherwise exhaust the memory limit. Formulas and
-     * their cached values are still loaded for the filtered rows.
+     * Streams up to the requested data row, so only the rows before it are read. Rows are not
+     * filtered or de-duplicated, matching the standard interpreters' preview.
      *
      * @return array{0: array<int, mixed>, 1: array<int, mixed>, 2: int}|null null when the sheet holds no data rows
      */
     protected function loadPreviewRows(string $path, int $recordNumber): ?array
     {
-        $totalRows = $this->getTotalRows($path);
-        $totalDataRows = $totalRows - $this->headerRow;
+        $worksheetInfo = $this->getWorksheetInfo($path);
 
-        if ($totalDataRows < 1) {
+        if ($worksheetInfo === null) {
             return null;
         }
 
-        $targetRow = $this->headerRow + 1 + $recordNumber;
-        $readRecordNumber = $recordNumber;
-        if ($recordNumber < 0 || $targetRow > $totalRows) {
-            $targetRow = $totalRows;
-            $readRecordNumber = $totalDataRows - 1;
+        $recordNumber = max(0, $recordNumber);
+        $headerRowData = [];
+        $previewRowData = null;
+        $dataRowNumber = -1;
+
+        foreach ($this->streamSheetRows($path, $worksheetInfo['totalColumns']) as $rowNumber => $rowData) {
+            if ($rowNumber < $this->headerRow) {
+                continue;
+            }
+
+            if ($rowNumber === $this->headerRow) {
+                $headerRowData = $rowData;
+
+                continue;
+            }
+
+            $dataRowNumber++;
+            $previewRowData = $rowData;
+
+            if ($dataRowNumber >= $recordNumber) {
+                break;
+            }
         }
 
-        $reader = IOFactory::createReaderForFile($path);
-        $reader->setLoadSheetsOnly($this->sheetName);
-        $reader->setReadFilter(new PreviewRowsReadFilter([$this->headerRow, $targetRow]));
-        $spreadSheet = $reader->load($path);
-        $spreadSheet->setActiveSheetIndexByName($this->sheetName);
-        $sheet = $spreadSheet->getActiveSheet();
+        if ($previewRowData === null) {
+            return null;
+        }
 
-        return [
-            $this->readPreviewRow($sheet, $this->headerRow),
-            $this->readPreviewRow($sheet, $targetRow),
-            $readRecordNumber,
-        ];
+        return [$headerRowData, $previewRowData, $dataRowNumber];
     }
 
     /**
@@ -223,56 +239,6 @@ abstract class StreamingXlsxFileInterpreter extends AbstractInterpreter
         }
 
         return $columns;
-    }
-
-    /**
-     * @return array<int, mixed>
-     */
-    protected function readPreviewRow(Worksheet $sheet, int $rowNumber): array
-    {
-        $highestColumnIndex = Coordinate::columnIndexFromString($sheet->getHighestColumn($rowNumber));
-        $rowData = [];
-
-        for ($column = 1; $column <= $highestColumnIndex; $column++) {
-            $rowData[] = $this->getPreviewCellValue($sheet->getCell([$column, $rowNumber]));
-        }
-
-        return $rowData;
-    }
-
-    /**
-     * Formula cells prefer the result cached in the file: only parts of the
-     * workbook are loaded for previews, so recalculating formulas with
-     * cross-row or cross-sheet references would silently produce wrong
-     * values ("#REF!", zeros). The cached value also covers formulas that
-     * cannot be calculated at all (e.g. Excel-specific functions like
-     * _xlfn._LONGTEXT).
-     */
-    protected function getPreviewCellValue(Cell $cell): mixed
-    {
-        if ($cell->getDataType() === DataType::TYPE_FORMULA) {
-            $cachedValue = $cell->getOldCalculatedValue();
-            if ($cachedValue !== null) {
-                return $cachedValue;
-            }
-        }
-
-        try {
-            $value = $cell->getCalculatedValue();
-        } catch (\Throwable) {
-            return null;
-        }
-
-        if ($value instanceof RichText) {
-            return $value->getPlainText();
-        }
-
-        return $value;
-    }
-
-    protected function getTotalRows(string $path): int
-    {
-        return $this->getWorksheetInfo($path)['totalRows'] ?? 0;
     }
 
     /**
@@ -301,7 +267,7 @@ abstract class StreamingXlsxFileInterpreter extends AbstractInterpreter
     {
         $this->sheetName = (string)($settings['sheetName'] ?? 'Sheet1');
         $this->saveHeaderName = (bool)($settings['saveHeaderName'] ?? false);
-        $this->headerRow = (int)($settings['headerRow'] ?? 1);
+        $this->headerRow = max(1, (int)($settings['headerRow'] ?? 1));
         $this->rowFilter = (string)($settings['rowFilter'] ?? '');
 
         $uniqueColumns = trim((string)($settings['uniqueColumns'] ?? ''));
