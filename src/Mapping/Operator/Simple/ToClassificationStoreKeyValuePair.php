@@ -10,12 +10,13 @@ use Pimcore\Bundle\DataImporterBundle\Mapping\Type\TransformationDataTypeService
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 use Torq\PimcoreHelpersBundle\Repository\GroupRepository;
 use Torq\PimcoreHelpersBundle\Repository\KeyRepository;
+use Pimcore\Bundle\ApplicationLoggerBundle\ApplicationLogger;
 
 #[AutoconfigureTag(name: 'pimcore.datahub.data_importer.operator', attributes: ['type' => 'toClassificationStoreKeyValuePair'])]
 class ToClassificationStoreKeyValuePair extends AbstractOperator
 {
     public function __construct(
-        \Pimcore\Log\ApplicationLogger $applicationLogger,
+        ApplicationLogger $applicationLogger,
         private GroupRepository $groupRepository,
         private KeyRepository $keyRepository
     ) {

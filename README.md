@@ -11,6 +11,20 @@ This extension adds a number of additional features to the [Pimcore Data Importe
 composer require torqit/data-importer-extensions-bundle
 ```
 
+Update `bundles.php`
+```
+return [
+    //...
+    Torq\PimcoreHelpersBundle\TorqPimcoreHelpersBundle::class => ['all' => true],
+    TorqIT\DataImporterExtensionsBundle\TorqITDataImporterExtensionsBundle::class => ['all' => true],
+];
+```
+
+Install assets
+```
+bin/console assets:install
+```
+
 ## Path Syntax
 
 A number of our extensions make use of the **Path** syntax that allows for Paths to be created based on values in the import. 
@@ -152,6 +166,12 @@ This is the same as the [Classification Store](https://pimcore.com/docs/platform
 
 This can be used to add an image into an Image Gallery field.
 
+### Multiselect Merge
+
+Appends values into a Multiselect field instead of replacing it. The `Direct` Data Target overwrites the whole field, so a source that only lists the values to add (e.g. one more website for a batch of products) would wipe the rest.
+
+The mapped value must be an array (use an operator such as `Explode` first); a scalar is treated as a single value and is never split. Values are trimmed, empties dropped and duplicates removed. Existing values keep their order and new values are appended in input order. An empty source never clears the field and no change is written when nothing new arrives. Supports the same field name forms as `Direct` (plain, localized, object brick attribute).
+
 ### Property
 
 This is used to set a property on a Data Object.
@@ -159,6 +179,14 @@ This is used to set a property on a Data Object.
 ### Tags
 
 This is used to add tags on a Data Object.
+
+### Object Brick
+
+Interprets the mapped value as an object brick type name and ensures a brick of that type exists in the configured brick container field. Combine it with a value mapping operator (e.g. Conditional Conversion) to translate source values into brick type names. The optional `Remove Bricks Of Other Types` setting marks bricks of any other type for deletion, so a type change in the source data swaps the brick.
+
+### Object Brick Field
+
+Writes the mapped value into the configured attribute of whatever brick type is currently set in the brick container, without the mapping needing to know the brick type up front (e.g. a brick resolved by the Object Brick Data Target earlier in the same mapping). Bricks that do not define the attribute are skipped. Supports the same `Overwrite` options as the `Direct` Data Target.
 
 
 ## Operators

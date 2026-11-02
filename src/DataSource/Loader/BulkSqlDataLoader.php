@@ -17,7 +17,7 @@ use TorqIT\DataImporterExtensionsBundle\Exception\InvalidConnectionException;
 use TorqIT\DataImporterExtensionsBundle\Exception\NotResourceException;
 use TorqIT\DataImporterExtensionsBundle\Exception\ParseArrayToJsonException;
 
-#[AutoconfigureTag(name: 'pimcore.datahub.data_importer.data_target', attributes: ['type' => 'bulkSql'])]
+#[AutoconfigureTag(name: 'pimcore.datahub.data_importer.loader', attributes: ['type' => 'bulkSql'])]
 class BulkSqlDataLoader implements DataLoaderInterface
 {
     private string $connection;

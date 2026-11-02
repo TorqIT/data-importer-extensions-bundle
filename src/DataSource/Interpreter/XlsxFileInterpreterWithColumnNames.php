@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This class allows one definition of previewData() to be shared by all extending XLS Interpreters.
  */
@@ -7,10 +9,10 @@
 namespace TorqIT\DataImporterExtensionsBundle\DataSource\Interpreter;
 
 use Pimcore\Bundle\DataImporterBundle\Preview\Model\PreviewData;
-use Pimcore\Bundle\DataImporterBundle\DataSource\Interpreter\XlsxFileInterpreter;
 use TorqIT\DataImporterExtensionsBundle\DataSource\DataLoader\Xlsx\XlsxDataLoaderFactory;
+use TorqIT\DataImporterExtensionsBundle\Override\CustomXlsxFileInterpreter;
 
-abstract class XlsxFileInterpreterWithColumnNames extends XlsxFileInterpreter
+abstract class XlsxFileInterpreterWithColumnNames extends CustomXlsxFileInterpreter
 {
     /**
      * @var bool
@@ -22,69 +24,86 @@ abstract class XlsxFileInterpreterWithColumnNames extends XlsxFileInterpreter
     /**
      * @var int
      *
-     * The row number containing the headers (1-indexed). Rows before this are skipped.
-     * Default is 1 (first row).
+     * The position of the header row (1-indexed) among the non-empty rows of the sheet,
+     * because OpenSpout skips empty rows. Rows before it are skipped. Default is 1.
      */
     protected int $headerRow = 1;
 
-    /* Overriding parent method to allow for using column header names as keys and configurable header row.
-     * Uses the same OpenSpout loader as doInterpretFileAndCallProcessRow to ensure consistent empty-row handling. */
+    /*
+     * Reads rows through the same OpenSpout loader as doInterpretFileAndCallProcessRow so preview
+     * record N is the same row the import processes as record N (both skip empty rows).
+     * Rows are streamed and reading stops at the requested record to keep memory flat on large files.
+     */
     public function previewData(string $path, int $recordNumber = 0, array $mappedColumns = []): PreviewData
     {
         $previewData = [];
         $columns = [];
         $readRecordNumber = 0;
 
-        if ($this->fileValid($path)) {
-            $excelLoader = XlsxDataLoaderFactory::getExcelDataLoader();
-            $data = $excelLoader->getRows($path, $this->sheetName);
+        if (!$this->fileValid($path)) {
+            return new PreviewData($columns, $previewData, $readRecordNumber, $mappedColumns);
+        }
 
-            // Header row is 1-indexed; array is 0-indexed
-            $headerRowIndex = $this->headerRow - 1;
-            $headerRowData = $data[$headerRowIndex] ?? [];
+        $headerRowIndex = $this->headerRow - 1;
+        $headerRowData = [];
+        $previewDataRow = null;
+        $dataRowNumber = -1;
 
-            // Build column names from header row
-            if ($this->saveHeaderName) {
-                foreach ($headerRowData as $columnHeader) {
-                    $columns[$columnHeader] = trim((string)$columnHeader);
-                }
-            } else {
-                foreach ($headerRowData as $index => $columnHeader) {
-                    $columns[$index] = trim((string)$columnHeader) . " [$index]";
-                }
+        $rows = XlsxDataLoaderFactory::getExcelDataLoader()->iterateRows($path, $this->sheetName);
+        foreach ($rows as $rowIndex => $row) {
+            if ($rowIndex < $headerRowIndex) {
+                continue;
             }
 
-            // Data rows start after the header row (same slice as doInterpretFileAndCallProcessRow)
-            $dataRows = array_slice($data, $this->headerRow);
-            $totalDataRows = count($dataRows);
-
-            if ($totalDataRows > 0) {
-                if ($recordNumber >= $totalDataRows) {
-                    $recordNumber = $totalDataRows - 1;
-                }
-                $readRecordNumber = $recordNumber;
-
-                $previewDataRow = $dataRows[$recordNumber];
-
-                // Combine header names with data values if using header names
-                if ($this->saveHeaderName && !empty($headerRowData)) {
-                    if (count($headerRowData) > count($previewDataRow)) {
-                        $previewDataRow = array_pad($previewDataRow, count($headerRowData), null);
-                    } elseif (count($headerRowData) < count($previewDataRow)) {
-                        $previewDataRow = array_slice($previewDataRow, 0, count($headerRowData));
-                    }
-                    $previewDataRow = array_combine($headerRowData, $previewDataRow);
-                }
-
-                $previewData = $previewDataRow;
+            if ($rowIndex === $headerRowIndex) {
+                $headerRowData = $row;
+                continue;
             }
 
-            if (empty($columns)) {
-                $columns = array_keys($previewData);
+            $dataRowNumber++;
+            $previewDataRow = $row;
+
+            if ($dataRowNumber >= $recordNumber) {
+                break;
             }
         }
 
+        if ($this->saveHeaderName) {
+            foreach ($headerRowData as $columnHeader) {
+                $columns[$columnHeader] = trim((string)$columnHeader);
+            }
+        } else {
+            foreach ($headerRowData as $index => $columnHeader) {
+                $columns[$index] = trim((string)$columnHeader) . " [$index]";
+            }
+        }
+
+        if ($previewDataRow !== null) {
+            $readRecordNumber = $dataRowNumber;
+            $previewData = $this->combineWithHeader($headerRowData, $previewDataRow);
+        }
+
+        if (empty($columns)) {
+            $columns = array_keys($previewData);
+        }
+
         return new PreviewData($columns, $previewData, $readRecordNumber, $mappedColumns);
+    }
+
+    private function combineWithHeader(array $headerRowData, array $rowData): array
+    {
+        if (!$this->saveHeaderName || empty($headerRowData)) {
+            return $rowData;
+        }
+
+        $headerCount = count($headerRowData);
+        if ($headerCount > count($rowData)) {
+            $rowData = array_pad($rowData, $headerCount, null);
+        } elseif ($headerCount < count($rowData)) {
+            $rowData = array_slice($rowData, 0, $headerCount);
+        }
+
+        return array_combine($headerRowData, $rowData);
     }
 
     public function setSettings(array $settings): void
@@ -92,6 +111,6 @@ abstract class XlsxFileInterpreterWithColumnNames extends XlsxFileInterpreter
         parent::setSettings($settings);
 
         $this->saveHeaderName = $settings['saveHeaderName'] ?? false;
-        $this->headerRow = (int)($settings['headerRow'] ?? 1);
+        $this->headerRow = max(1, (int)($settings['headerRow'] ?? 1));
     }
 }

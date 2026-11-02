@@ -1,33 +1,49 @@
-<?php
+<?php 
 
-namespace TorqIT\DataImporterExtensionsBundle;
+declare(strict_types=1);
 
-use Pimcore\Extension\Bundle\AbstractPimcoreBundle;
-use Pimcore\Extension\Bundle\PimcoreBundleAdminClassicInterface;
-use Torq\PimcoreHelpersBundle\Service\Common\BundleAssetResolverTrait;
-
-class TorqITDataImporterExtensionsBundle extends AbstractPimcoreBundle implements PimcoreBundleAdminClassicInterface
-{
-    use BundleAssetResolverTrait;
-
-    public function getCssPaths(): array
-    {
-        return [];
+namespace Pimcore\Extension\Bundle {
+    if (!interface_exists(PimcoreBundleAdminClassicInterface::class)) {
+        interface PimcoreBundleAdminClassicInterface {}
     }
+}
 
-    public function getEditmodeJsPaths(): array
-    {
-        return [];
-    }
+namespace TorqIT\DataImporterExtensionsBundle {
+    use Pimcore\Extension\Bundle\AbstractPimcoreBundle;
+    use Pimcore\Extension\Bundle\PimcoreBundleAdminClassicInterface;
+    use Symfony\Component\DependencyInjection\ContainerBuilder;
+    use Torq\PimcoreHelpersBundle\Service\Common\BundleAssetResolverTrait;
+    use TorqIT\DataImporterExtensionsBundle\DependencyInjection\Compiler\TransformationDataTypeMappingPass;
 
-    public function getEditmodeCssPaths(): array
+    class TorqITDataImporterExtensionsBundle extends AbstractPimcoreBundle implements PimcoreBundleAdminClassicInterface
     {
-        return [];
-    }
+        use BundleAssetResolverTrait;
 
-    public function getJsPaths(): array
-    {
-        $paths = $this->getBundleAssetPaths($this->getPath() . '/Resources/public/js', 'js');
-        return array_map(fn($p) => "/bundles/torqitdataimporterextensions/$p", $paths);
+        public function build(ContainerBuilder $container): void
+        {
+            parent::build($container);
+            $container->addCompilerPass(new TransformationDataTypeMappingPass());
+        }
+        
+        public function getCssPaths(): array
+        {
+            return [];
+        }
+
+        public function getEditmodeJsPaths(): array
+        {
+            return [];
+        }
+
+        public function getEditmodeCssPaths(): array
+        {
+            return [];
+        }
+
+        public function getJsPaths(): array
+        {
+            $paths = $this->getBundleAssetPaths($this->getPath() . '/Resources/public/js', 'js');
+            return array_map(fn($p) => "/bundles/torqitdataimporterextensions/$p", $paths);
+        }
     }
 }

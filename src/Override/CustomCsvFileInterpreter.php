@@ -1,0 +1,157 @@
+<?php
+
+namespace TorqIT\DataImporterExtensionsBundle\Override;
+
+use Pimcore\Bundle\DataImporterBundle\DataSource\Interpreter\AbstractInterpreter;
+use Pimcore\Bundle\DataImporterBundle\Preview\Model\PreviewData;
+use Pimcore\Helper\MimeTypeHelper;
+use Pimcore\Version;
+use Symfony\Component\Mime\MimeTypes;
+
+// Copy of \Pimcore\Bundle\DataImporterBundle\DataSource\Interpreter\CsvFileInterpreter
+class CustomCsvFileInterpreter extends AbstractInterpreter
+{
+    protected const string UTF8_BOM = "\xEF\xBB\xBF";
+    protected bool $skipFirstRow;
+    protected bool $saveHeaderName;
+    protected string $delimiter;
+    protected string $enclosure;
+    protected string $escape;
+
+    protected function doInterpretFileAndCallProcessRow(string $path): void
+    {
+        if (($handle = fopen($path, 'r')) !== false) {
+            $this->skipByteOrderMark($handle);
+
+            $header = null;
+            if ($this->skipFirstRow) {
+                //load first row and ignore it
+                $data = fgetcsv($handle, 0, $this->delimiter, $this->enclosure, $this->escape);
+                if ($this->saveHeaderName) {
+                    $header = $data;
+                }
+            }
+
+            while (($data = fgetcsv($handle, 0, $this->delimiter, $this->enclosure, $this->escape)) !== false) {
+                if ($header !== null) {
+                    $data = array_combine($header, $data);
+                }
+                $this->processImportRow($data);
+            }
+            fclose($handle);
+        }
+    }
+
+    public function setSettings(array $settings): void
+    {
+        $this->skipFirstRow = $settings['skipFirstRow'] ?? false;
+        $this->saveHeaderName = $settings['saveHeaderName'] ?? false;
+        $this->delimiter = $settings['delimiter'] ?? ',';
+        $this->enclosure = $settings['enclosure'] ?? '"';
+        $this->escape = $settings['escape'] ?? '\\';
+    }
+
+    public function fileValid(string $path, bool $originalFilename = false): bool
+    {
+        if ($originalFilename) {
+            $filename = $path;
+            $ext = pathinfo($filename, PATHINFO_EXTENSION);
+            if ($ext !== 'csv') {
+                return false;
+            }
+        }
+
+        // csv that has html tags might be recognized as text/html
+        $csvMimes = [
+            'text/html',
+            'text/x-comma-separated-values',
+            'text/comma-separated-values',
+            'application/octet-stream',
+            'application/vnd.ms-excel',
+            'application/x-csv',
+            'text/x-csv',
+            'text/csv',
+            'application/csv',
+            'application/excel',
+            'application/vnd.msexcel',
+            'text/plain',
+        ];
+
+        if (Version::getMajorVersion() >= 12) {
+            $mime = (new MimeTypeHelper())->guessMimeType($path);
+        } else {
+            $mime = (new MimeTypes())->guessMimeType($path);
+        }
+
+        return in_array($mime, $csvMimes);
+    }
+
+    public function previewData(string $path, int $recordNumber = 0, array $mappedColumns = []): PreviewData
+    {
+        $previewData = [];
+        $columns = [];
+        $readRecordNumber = -1;
+        $header = null;
+
+        if ($this->fileValid($path) && ($handle = fopen($path, 'r')) !== false) {
+            $this->skipByteOrderMark($handle);
+
+            if ($this->skipFirstRow) {
+                //load first row and ignore it
+                $data = fgetcsv($handle, 0, $this->delimiter, $this->enclosure, $this->escape);
+
+                if ($this->saveHeaderName) {
+                    $header = $data;
+                    foreach ($data as $index => $columnHeader) {
+                        $columns[$columnHeader] = trim($columnHeader);
+                    }
+                } else {
+                    foreach ($data as $index => $columnHeader) {
+                        $columns[$index] = trim($columnHeader) . " [$index]";
+                    }
+                }
+            }
+
+            $previousData = null;
+            while ($readRecordNumber < $recordNumber &&
+                ($data = fgetcsv($handle, 0, $this->delimiter, $this->enclosure, $this->escape)) !== false) {
+                if ($header !== null) {
+                    $data = array_combine($header, $data);
+                }
+                $previousData = $data;
+                $readRecordNumber++;
+            }
+
+            if (empty($data)) {
+                $data = $previousData;
+            }
+
+            foreach ($data as $index => $columnData) {
+                $previewData[$index] = $columnData;
+            }
+
+            fclose($handle);
+        }
+
+        $previewDataColumns = array_keys($previewData);
+        if (empty($columns)) {
+            $columns = $previewDataColumns;
+        } elseif (count($columns) < count($previewDataColumns)) {
+            foreach ($previewDataColumns as $columnIdx) {
+                if (isset($columns[$columnIdx]) === false) {
+                    $columns[$columnIdx] = "[$columnIdx]";
+                }
+            }
+        }
+
+        return new PreviewData($columns, $previewData, $readRecordNumber, $mappedColumns);
+    }
+
+    private function skipByteOrderMark($handle): void
+    {
+        $bom = fread($handle, strlen(self::UTF8_BOM));
+        if (0 !== strncmp(self::UTF8_BOM, $bom, strlen(self::UTF8_BOM))) {
+            rewind($handle);
+        }
+    }
+}

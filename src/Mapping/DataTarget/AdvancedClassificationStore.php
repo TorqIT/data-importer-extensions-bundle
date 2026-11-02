@@ -5,14 +5,14 @@
 namespace TorqIT\DataImporterExtensionsBundle\Mapping\DataTarget;
 
 use Pimcore\Bundle\DataImporterBundle\Exception\InvalidConfigurationException;
-use Pimcore\Bundle\DataImporterBundle\Mapping\DataTarget\Classificationstore as ClassificationStoreDataTarget;
 use Pimcore\Model\DataObject\Classificationstore;
 use Pimcore\Model\DataObject\Data\QuantityValue;
 use Pimcore\Model\Element\ElementInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
+use TorqIT\DataImporterExtensionsBundle\Override\CustomClassificationstore;
 
 #[AutoconfigureTag(name: 'pimcore.datahub.data_importer.data_target', attributes: ['type' => 'advancedClassificationStore'])]
-class AdvancedClassificationStore extends ClassificationStoreDataTarget
+class AdvancedClassificationStore extends CustomClassificationstore
 {
     protected bool $writeIfSourceIsEmpty;
     protected bool $writeIfTargetIsNotEmpty;
