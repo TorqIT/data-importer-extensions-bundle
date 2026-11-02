@@ -31,5 +31,10 @@ class PhpOfficeXlsxDataLoader implements XlsxDataLoaderInterface
 
         return $spreadSheet->getActiveSheet()->toArray();
     }
+
+    public function iterateRows(string $file, string $sheet): iterable
+    {
+        return $this->getRows($file, $sheet);
+    }
     
 }
