@@ -6,19 +6,16 @@ namespace TorqIT\DataImporterExtensionsBundle\DataSource\DataLoader\Xlsx;
 interface XlsxDataLoaderInterface
 {
     /**
+     * Returns the rows of the given sheet one by one. Implementations should stream
+     * (yield) rows instead of building the full array in memory, so large files do
+     * not exhaust the memory limit.
+     *
      * @param string $file
      *
      * @param string $sheet
      *
-     * @return array
+     * @return iterable<array>
      */
-    public function getRows(string $file, string $sheet): array;
-
-    /**
-     * Yields the rows one at a time, keyed from 0, so callers can stop early without loading the whole sheet.
-     *
-     * @return iterable<int, array>
-     */
-    public function iterateRows(string $file, string $sheet): iterable;
+    public function getRows(string $file, string $sheet): iterable;
 
 }

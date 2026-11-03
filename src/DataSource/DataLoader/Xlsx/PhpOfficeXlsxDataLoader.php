@@ -16,12 +16,12 @@ class PhpOfficeXlsxDataLoader implements XlsxDataLoaderInterface
 {
     /**
      * @param string $file
-     * 
+     *
      * @param string $sheet
-     * 
-     * @return array
+     *
+     * @return iterable<array>
      */
-    public function getRows(string $file, string $sheet): array{
+    public function getRows(string $file, string $sheet): iterable{
 
         $reader = IOFactory::createReaderForFile($file);
         $reader->setReadDataOnly(true);
@@ -30,11 +30,6 @@ class PhpOfficeXlsxDataLoader implements XlsxDataLoaderInterface
         $spreadSheet->setActiveSheetIndexByName($sheet);
 
         return $spreadSheet->getActiveSheet()->toArray();
-    }
-
-    public function iterateRows(string $file, string $sheet): iterable
-    {
-        return $this->getRows($file, $sheet);
     }
     
 }
