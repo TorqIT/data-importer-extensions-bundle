@@ -3,12 +3,15 @@
 namespace TorqIT\DataImporterExtensionsBundle\DataSource\Interpreter;
 
 use Carbon\Carbon;
+use Doctrine\DBAL\Connection;
 use OpenSpout\Common\Entity\Cell;
 use OpenSpout\Common\Entity\Row;
 use OpenSpout\Writer\CSV\Options;
 use OpenSpout\Writer\CSV\Writer;
+use Pimcore\Bundle\ApplicationLoggerBundle\ApplicationLogger;
+use Pimcore\Bundle\DataImporterBundle\DataSource\Interpreter\DeltaChecker\DeltaChecker;
 use Pimcore\Bundle\DataImporterBundle\Processing\ImportProcessingService;
-use Pimcore\Db;
+use Pimcore\Bundle\DataImporterBundle\Queue\QueueService;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
@@ -17,6 +20,15 @@ use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 #[AutoconfigureTag('pimcore.datahub.data_importer.interpreter', ['type' => 'bulkXlsx'])]
 class BulkXlsxFileInterpreter extends StreamingXlsxFileInterpreter
 {
+    public function __construct(
+        DeltaChecker $deltaChecker,
+        QueueService $queueService,
+        ApplicationLogger $applicationLogger,
+        private readonly Connection $db,
+    ) {
+        parent::__construct($deltaChecker, $queueService, $applicationLogger);
+    }
+
     protected function doInterpretFileAndCallProcessRow(string $path): void
     {
         $tmpCsv = tempnam(sys_get_temp_dir(), 'pimcore_bulk_load');
@@ -51,7 +63,7 @@ class BulkXlsxFileInterpreter extends StreamingXlsxFileInterpreter
             (timestamp, configName, data, executionType, jobType)
         SQL;
 
-        Db::get()->executeQuery($sql);
+        $this->db->executeQuery($sql);
 
         unlink($tmpCsv);
     }
