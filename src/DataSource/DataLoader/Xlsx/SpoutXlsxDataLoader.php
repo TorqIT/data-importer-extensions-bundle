@@ -46,13 +46,6 @@ class SpoutXlsxDataLoader implements XlsxDataLoaderInterface
         }
     }
 
-    /**
-     * Formula cells resolve to the calculation result cached in the file (spreadsheet
-     * applications always store one when saving); a formula without a cached result
-     * yields null, as recalculation is not possible while streaming. Numbers become
-     * strings, booleans "TRUE"/"FALSE" and dates, times and durations their Excel serial
-     * number, matching the output of a data-only PhpSpreadsheet toArray().
-     */
     private function formatCellValue(Cell $cell): ?string
     {
         if ($cell instanceof EmptyCell) {
@@ -63,6 +56,7 @@ class SpoutXlsxDataLoader implements XlsxDataLoaderInterface
             return $cell->getRawValue();
         }
 
+        // Formulas cannot be recalculated while streaming, only the result cached in the file is available.
         $value = $cell instanceof FormulaCell ? $cell->getComputedValue() : $cell->getValue();
 
         if ($value === null) {
