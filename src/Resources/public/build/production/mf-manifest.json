@@ -20,7 +20,7 @@
       "api": ""
     },
     "globalName": "torqit_data_importer_extensions_bundle",
-    "pluginVersion": "2.9.2",
+    "pluginVersion": "2.9.3",
     "publicPath": "/bundles/torqitdataimporterextensions/build/production/"
   },
   "shared": [
@@ -34,7 +34,7 @@
         "js": {
           "async": [],
           "sync": [
-            "static/js/420.9bca0820.js",
+            "static/js/420.9667099a.js",
             "static/js/remoteEntry.js"
           ]
         },
@@ -55,7 +55,7 @@
         "js": {
           "async": [],
           "sync": [
-            "static/js/420.9bca0820.js",
+            "static/js/420.9667099a.js",
             "static/js/remoteEntry.js"
           ]
         },
@@ -76,7 +76,7 @@
         "js": {
           "async": [],
           "sync": [
-            "static/js/420.9bca0820.js",
+            "static/js/420.9667099a.js",
             "static/js/remoteEntry.js"
           ]
         },
