@@ -92,6 +92,10 @@ The Advanced XLSX interpreter makes a few improvements over the default XLSX int
 
 This interpreter uses `openspout` as the Excel parser. Open Spout XLSX parsing uses **much** less memory than the default XLSX parses which makes use of `PHPOffice`. We've seen files that required >4GB RAM on PHPOffice use less than 50MB with openspout. We've also detected a memory leak in some cases with the PHPOffice implementation where RAM gets allocated on the server and never released.
 
+Rows are streamed one at a time for both the import and the preview, so the sheet is never held in memory as a whole. Every cell arrives as a string, or `null` when empty, formatted the way Pimcore's standard XLSX interpreter (PhpSpreadsheet `toArray()`) formats it: numbers as plain strings, booleans as `TRUE`/`FALSE`, and dates and times as Excel serial numbers (e.g. `45231`). Formula cells use the result cached in the file. The preview shows the same values the import receives.
+
+**Upgrading from v6.4.x or earlier:** these interpreters used to pass OpenSpout's native values (integers, floats, booleans and `DateTimeImmutable` objects). Check mappings and row filters that relied on those types; for example, the row filter `row[3] == true` now also matches `"FALSE"`.
+
 
 | Configuration Option   | Description                                    | 
 | ---------------------- | ---------------------------------------------- |

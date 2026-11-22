@@ -28,7 +28,6 @@ services:
 
     TorqIT\DataImporterExtensionsBundle\DataSource\:
         resource: "../../DataSource"
-        exclude: "../../DataSource/Interpreter/PreviewRowsReadFilter.php"
         public: true
 
     TorqIT\DataImporterExtensionsBundle\Mapping\:

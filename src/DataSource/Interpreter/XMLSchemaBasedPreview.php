@@ -10,12 +10,11 @@ use Pimcore\Bundle\DataImporterBundle\Preview\Model\PreviewData;
 use Symfony\Component\Config\Util\XmlUtils;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
-use TorqIT\DataImporterExtensionsBundle\Override\CustomXmlFileInterpreter;
 
 #[Autoconfigure(calls: [['setLogger', ['@logger']]])]
 #[AutoconfigureTag('monolog.logger', ['channel' => 'DATA-IMPORTER'])]
 #[AutoconfigureTag('pimcore.datahub.data_importer.interpreter', ['type' => 'XMLSchemaBasedPreview'])]
-class XMLSchemaBasedPreview extends CustomXmlFileInterpreter
+class XMLSchemaBasedPreview extends StreamingXmlFileInterpreter
 {
     public function previewData(string $path, int $recordNumber = 0, array $mappedColumns = []): PreviewData
     {
