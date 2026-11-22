@@ -220,6 +220,26 @@ This allows you to apply addition, subtraction, multiplication, or division with
 
 This allows you to do string replaces using [preg_replace](https://www.php.net/manual/en/function.preg-replace.php)
 
+### Load or Create by Path
+
+Turns a delimited taxonomy string such as `Plumbing > Pipes & Fittings > Elbows` into a data object tree below a fixed folder, creating any missing level on the way down, and returns the leaf object so it can be mapped onto a relation field. Use it when categories arrive as paths that may or may not already exist; **Load Data Object** with **Create If Not Found** only creates objects flat in one folder.
+
+The value is split on the separator first and each segment is then turned into a valid key, so a `/` inside a name (`Rigid / Flexible Ducting`) becomes `-` instead of adding a tree level. Matching ignores case, repeated whitespace and dash, quote and slash variants unless **Exact Key Match Only** is set. In preview nothing is written; missing levels show as `[would create] /full/path`.
+
+| Configuration Option   | Default | Description |
+| ---------------------- | ------- | ----------- |
+| Path Prefix            |         | Folder or object the tree hangs from. It must already exist and is never created, so a typo can't build a second tree. |
+| Separator              | ` > `   | Delimiter between levels in the source value. |
+| Object Class           |         | Class name or ID used for every level. |
+| Name Field             |         | Field set to the original segment text on created objects; also used as a fallback when matching. |
+| Create If Not Found    | on      | Create missing levels. When off, rows with a missing level resolve to nothing and log a warning. |
+| Publish On Create      | on      | Publish created objects. |
+| Exact Key Match Only   | off     | Match keys exactly instead of the normalised comparison. |
+| Log Normalised Matches | on      | Log every match that only succeeded after normalising, which is useful for spotting spelling drift in the source. |
+| Return All Levels      | off     | Return every object on the branch instead of only the leaf, e.g. for breadcrumb relations. |
+
+Created objects skip mandatory-field validation, since a level built from a path alone can't fill them. With parallel import workers, creation takes a lock on the full path and checks again for the object inside it, so two workers never create the same level twice. Set the data target's overwrite mode to merge to add to existing relations instead of replacing them.
+
 ## Element Loading
 
 ### Advanced Path Strategy
