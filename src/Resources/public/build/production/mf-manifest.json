@@ -20,7 +20,7 @@
       "api": ""
     },
     "globalName": "torqit_data_importer_extensions_bundle",
-    "pluginVersion": "2.9.3",
+    "pluginVersion": "2.9.4",
     "publicPath": "/bundles/torqitdataimporterextensions/build/production/"
   },
   "shared": [
