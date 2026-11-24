@@ -2,8 +2,8 @@ import React from "react";
 import { Checkbox, Form, Input } from "@pimcore/studio-ui-bundle/components";
 import { TransformerSettingsLayout } from "../../common/components/transformer-settings-layout";
 
-// Overrides core loadDataObject transformer. Adds createPath, publishOnCreate,
-// and createIfNotFound settings on top of the core load-by-id behaviour.
+// Rendered below the core loadDataObject settings form, which keeps every core
+// setting. Both forms spread the full settings object, so neither drops the other's keys.
 // TODO: createPath should use a Pimcore object folder tree picker.
 
 interface LoadOrCreateDataObjectTransformerConfig {

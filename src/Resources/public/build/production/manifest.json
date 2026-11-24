@@ -2,7 +2,7 @@
   "allFiles": [
     "/bundles/torqitdataimporterextensions/build/production/static/js/main.08ff2cf3.js",
     "/bundles/torqitdataimporterextensions/build/production/static/js/remoteEntry.js",
-    "/bundles/torqitdataimporterextensions/build/production/static/js/async/__federation_expose_default_export.a4a3cd68.js",
+    "/bundles/torqitdataimporterextensions/build/production/static/js/async/__federation_expose_default_export.9feb48e4.js",
     "/bundles/torqitdataimporterextensions/build/production/static/js/420.9667099a.js",
     "/bundles/torqitdataimporterextensions/build/production/mf-stats.json",
     "/bundles/torqitdataimporterextensions/build/production/mf-manifest.json",
@@ -28,7 +28,7 @@
       },
       "async": {
         "js": [
-          "/bundles/torqitdataimporterextensions/build/production/static/js/async/__federation_expose_default_export.a4a3cd68.js"
+          "/bundles/torqitdataimporterextensions/build/production/static/js/async/__federation_expose_default_export.9feb48e4.js"
         ]
       }
     }

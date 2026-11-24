@@ -3,18 +3,26 @@ import { LoadOrCreateDataObjectTransformerForm } from "./load-or-create-data-obj
 import { AbstractModule, container } from "@pimcore/studio-ui-bundle";
 import { getTransformerRegistry } from "../../common/consts/registries";
 
+const LOAD_DATA_OBJECT_TYPE_ID = "loadDataObject";
+
 export const LoadOrCreateDataObjectTransformerModule: AbstractModule = {
     onInit() {
-        getTransformerRegistry(container).overrideDynamicType({
-            id: "loadDataObject",
+        const registry = getTransformerRegistry(container);
+        const coreLoadDataObject = registry.getDynamicType(LOAD_DATA_OBJECT_TYPE_ID);
+
+        registry.overrideDynamicType({
+            id: LOAD_DATA_OBJECT_TYPE_ID,
             label: "Load or Create Data Object",
             group: "loadImport",
             renderSettings(settings, onChange) {
                 return (
-                  <LoadOrCreateDataObjectTransformerForm
-                    onChange={ onChange }
-                    settings={ settings }
-                  />
+                  <>
+                    { coreLoadDataObject.renderSettings(settings, onChange) }
+                    <LoadOrCreateDataObjectTransformerForm
+                      onChange={ onChange }
+                      settings={ settings }
+                    />
+                  </>
                 );
             },
         });
